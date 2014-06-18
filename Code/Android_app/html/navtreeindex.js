@@ -1,0 +1,23 @@
+var NAVTREEINDEX =
+{
+"index.html":[],
+"annotated.html":[0,0],
+"classcom_1_1iitb_1_1beatdetector_1_1BeatDetector.html":[0,0,0],
+"classBeatDetector.html":[0,0,1],
+"classcom_1_1iitb_1_1justdance_1_1BluetoothTest.html":[0,0,2],
+"classcom_1_1iitb_1_1justdance_1_1CommunicationModule.html":[0,0,3],
+"classcom_1_1iitb_1_1justdance_1_1DanceMove.html":[0,0,4],
+"classcom_1_1iitb_1_1justdance_1_1MainActivity.html":[0,0,5],
+"classcom_1_1iitb_1_1justdance_1_1Scheduler.html":[0,0,6],
+"classes.html":[0,1],
+"functions.html":[0,2,0],
+"functions_func.html":[0,2,1],
+"functions_vars.html":[0,2,2],
+"files.html":[1,0],
+"BeatDetector_8java.html":[1,0,0],
+"BluetoothTest_8java.html":[1,0,1],
+"CommunicationModule_8java.html":[1,0,2],
+"DanceMove_8java.html":[1,0,3],
+"MainActivity_8java.html":[1,0,4],
+"Scheduler_8java.html":[1,0,5]
+};

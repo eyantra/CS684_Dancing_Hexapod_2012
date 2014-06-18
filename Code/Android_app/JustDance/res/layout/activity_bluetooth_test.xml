@@ -1,0 +1,54 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:orientation="vertical"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true">
+        
+        <TextView
+            android:id="@+id/status"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/hello_world"
+	        android:layout_marginBottom="20dp" />
+        
+        <Button
+            android:id="@+id/connect"
+            android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="10dp"
+	        android:text="@string/connect"/>
+        
+        <Button
+            android:id="@+id/disconnect"
+            android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="10dp"
+	        android:text="@string/disconnect"/>
+             
+        <EditText
+            android:id="@+id/characterToSend"
+            android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:inputType="textNoSuggestions"
+	        android:hint="@string/hintCharacter"
+	        android:enabled="false"
+	        />
+             
+        <Button
+            android:id="@+id/send"
+            android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/send"
+	        android:enabled="false"
+	        />
+        
+    </LinearLayout>
+        
+
+</RelativeLayout>

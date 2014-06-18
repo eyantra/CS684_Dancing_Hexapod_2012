@@ -1,0 +1,5077 @@
+Interrupt Vectors
+00000 940C 007F JMP	__start|__text_start
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+00022 940C 0238 JMP	_timer1_compa_isr   
+00024 940C 0283 JMP	_timer1_compb_isr   
+00026 940C 02CE JMP	_timer1_compc_isr   
+00028 940C 0319 JMP	_timer1_ovf_isr     
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+00032 940C 06D0 JMP	_uart0_rx_isr       
+Program Code (text area)
+FILE: C:\Users\dell\Dropbox\workspace\Hexapod_code_final\helpers.h
+(0001) #ifndef HELPERS_H
+(0002) #define HELPERS_H 0
+(0003) 
+(0004) #include "globals.h"
+(0005) 
+(0006) void buzzer_on (void)
+__start|__text_start:
+    0007F EFCF      LDI	R28,0xFF
+    00080 E2D1      LDI	R29,0x21
+    00081 BFCD      OUT	0x3D,R28
+    00082 BFDE      OUT	0x3E,R29
+    00083 51CE      SUBI	R28,0x1E
+    00084 40D0      SBCI	R29,0
+    00085 EA0A      LDI	R16,0xAA
+    00086 8308      ST	Y,R16
+    00087 2400      CLR	R0
+    00088 E1E9      LDI	R30,0x19
+    00089 E0F2      LDI	R31,2
+    0008A E012      LDI	R17,2
+    0008B 39E4      CPI	R30,0x94
+    0008C 07F1      CPC	R31,R17
+    0008D F011      BEQ	0x0090
+    0008E 9201      ST	Z+,R0
+    0008F CFFB      RJMP	0x008B
+    00090 8300      ST	Z,R16
+    00091 EEE4      LDI	R30,0xE4
+    00092 E0F0      LDI	R31,0
+    00093 E0A0      LDI	R26,0
+    00094 E0B2      LDI	R27,2
+    00095 E010      LDI	R17,0
+    00096 E000      LDI	R16,0
+    00097 BF0B      OUT	0x3B,R16
+    00098 3FED      CPI	R30,0xFD
+    00099 07F1      CPC	R31,R17
+    0009A F021      BEQ	0x009F
+    0009B 95C8      LPM
+    0009C 9631      ADIW	R30,1
+    0009D 920D      ST	X+,R0
+    0009E CFF9      RJMP	0x0098
+    0009F 940E 0741 CALL	_main
+_exit:
+    000A1 CFFF      RJMP	_exit
+_buzzer_on:
+    000A2 9A43      SBI	0x08,3
+    000A3 9508      RET
+(0007) {
+(0008)  PORTC = PORTC | 0x08;
+(0009) }
+(0010) 
+(0011) void buzzer_off (void)
+(0012) {
+(0013)  PORTC = PORTC & 0xF7;
+_buzzer_off:
+    000A4 B188      IN	R24,0x08
+    000A5 7F87      ANDI	R24,0xF7
+    000A6 B988      OUT	0x08,R24
+    000A7 9508      RET
+(0014) }
+(0015) 
+(0016) void delay_25ms(void)
+(0017) {
+(0018)  delay_count = 0;
+_delay_25ms:
+    000A8 2422      CLR	R2
+    000A9 2433      CLR	R3
+    000AA 9230 0205 STS	delay_count+1,R3
+    000AC 9220 0204 STS	delay_count,R2
+(0019)  while(delay_count < 10);
+    000AE 9180 0204 LDS	R24,delay_count
+    000B0 9190 0205 LDS	R25,delay_count+1
+    000B2 308A      CPI	R24,0xA
+    000B3 E0E0      LDI	R30,0
+    000B4 079E      CPC	R25,R30
+    000B5 F3C0      BCS	0x00AE
+    000B6 9508      RET
+_delay_xms:
+  x                    --> R10
+    000B7 92AA      ST	-Y,R10
+    000B8 92BA      ST	-Y,R11
+    000B9 0158      MOVW	R10,R16
+(0020) }
+(0021) 
+(0022) void delay_xms(unsigned int x){
+(0023) delay_count = 0;
+    000BA 2422      CLR	R2
+    000BB 2433      CLR	R3
+    000BC 9230 0205 STS	delay_count+1,R3
+    000BE 9220 0204 STS	delay_count,R2
+(0024) while(delay_count<2*(x/5));
+    000C0 E025      LDI	R18,5
+    000C1 E030      LDI	R19,0
+    000C2 0185      MOVW	R16,R10
+    000C3 940E 0CEC CALL	div16u
+    000C5 0118      MOVW	R2,R16
+    000C6 0C22      LSL	R2
+    000C7 1C33      ROL	R3
+    000C8 9040 0204 LDS	R4,delay_count
+    000CA 9050 0205 LDS	R5,delay_count+1
+    000CC 1442      CP	R4,R2
+    000CD 0453      CPC	R5,R3
+    000CE F388      BCS	0x00C0
+    000CF 90B9      LD	R11,Y+
+    000D0 90A9      LD	R10,Y+
+    000D1 9508      RET
+(0025) }
+(0026) 
+(0027) void delay_50ms(void)
+(0028) {
+(0029)  delay_count = 0;
+_delay_50ms:
+    000D2 2422      CLR	R2
+    000D3 2433      CLR	R3
+    000D4 9230 0205 STS	delay_count+1,R3
+    000D6 9220 0204 STS	delay_count,R2
+(0030)  while(delay_count < 20);
+    000D8 9180 0204 LDS	R24,delay_count
+    000DA 9190 0205 LDS	R25,delay_count+1
+    000DC 3184      CPI	R24,0x14
+    000DD E0E0      LDI	R30,0
+    000DE 079E      CPC	R25,R30
+    000DF F3C0      BCS	0x00D8
+    000E0 9508      RET
+(0031) }
+(0032) 
+(0033) void delay_100ms(void)
+(0034) {
+(0035)  delay_count = 0;
+_delay_100ms:
+    000E1 2422      CLR	R2
+    000E2 2433      CLR	R3
+    000E3 9230 0205 STS	delay_count+1,R3
+    000E5 9220 0204 STS	delay_count,R2
+(0036)  while(delay_count < 40);
+    000E7 9180 0204 LDS	R24,delay_count
+    000E9 9190 0205 LDS	R25,delay_count+1
+    000EB 3288      CPI	R24,0x28
+    000EC E0E0      LDI	R30,0
+    000ED 079E      CPC	R25,R30
+    000EE F3C0      BCS	0x00E7
+    000EF 9508      RET
+(0037) }
+(0038) 
+(0039) void delay_250ms(void)
+(0040) {
+(0041)  delay_count = 0;
+_delay_250ms:
+    000F0 2422      CLR	R2
+    000F1 2433      CLR	R3
+    000F2 9230 0205 STS	delay_count+1,R3
+    000F4 9220 0204 STS	delay_count,R2
+(0042)  while(delay_count < 100);
+    000F6 9180 0204 LDS	R24,delay_count
+    000F8 9190 0205 LDS	R25,delay_count+1
+    000FA 3684      CPI	R24,0x64
+    000FB E0E0      LDI	R30,0
+    000FC 079E      CPC	R25,R30
+    000FD F3C0      BCS	0x00F6
+    000FE 9508      RET
+(0043) }
+(0044) 
+(0045) void delay_500ms(void)
+(0046) {
+(0047)  delay_count = 0;
+_delay_500ms:
+    000FF 2422      CLR	R2
+    00100 2433      CLR	R3
+    00101 9230 0205 STS	delay_count+1,R3
+    00103 9220 0204 STS	delay_count,R2
+(0048)  while(delay_count < 200);
+    00105 9180 0204 LDS	R24,delay_count
+    00107 9190 0205 LDS	R25,delay_count+1
+    00109 3C88      CPI	R24,0xC8
+    0010A E0E0      LDI	R30,0
+    0010B 079E      CPC	R25,R30
+    0010C F3C0      BCS	0x0105
+    0010D 9508      RET
+(0049) }
+(0050) 
+(0051) void delay_1s(void)
+(0052) {
+(0053)  delay_count = 0;
+_delay_1s:
+    0010E 2422      CLR	R2
+    0010F 2433      CLR	R3
+    00110 9230 0205 STS	delay_count+1,R3
+    00112 9220 0204 STS	delay_count,R2
+(0054)  while(delay_count < 400);
+(0055) }
+(0056) 
+(0057) #endif
+FILE: C:\Users\dell\Dropbox\workspace\Hexapod_code_final\init.h
+(0001) 
+(0002) //#include "globals.h"
+(0003) #include "communication.h"
+(0004) 
+(0005) void reset_SP_LEFT (void)
+    00114 9180 0204 LDS	R24,delay_count
+    00116 9190 0205 LDS	R25,delay_count+1
+    00118 3980      CPI	R24,0x90
+    00119 E0E1      LDI	R30,1
+    0011A 079E      CPC	R25,R30
+    0011B F3C0      BCS	0x0114
+    0011C 9508      RET
+_reset_SP_LEFT:
+    0011D 9180 010B LDS	R24,0x10B
+    0011F 7F8D      ANDI	R24,0xFD
+    00120 9380 010B STS	0x10B,R24
+    00122 9508      RET
+(0006) { PORTL = PORTL & 0xFD; }
+(0007) 
+(0008) void set_SP_LEFT (void)
+(0009) { PORTL = PORTL | 0x02; }
+_set_SP_LEFT:
+    00123 9180 010B LDS	R24,0x10B
+    00125 6082      ORI	R24,2
+    00126 9380 010B STS	0x10B,R24
+    00128 9508      RET
+(0010) 
+(0011) void reset_1A (void)
+(0012) { PORTD = PORTD & 0xDF; }
+_reset_1A:
+    00129 B18B      IN	R24,0x0B
+    0012A 7D8F      ANDI	R24,0xDF
+    0012B B98B      OUT	0x0B,R24
+    0012C 9508      RET
+(0013) 
+(0014) void set_1A (void)
+(0015) { PORTD = PORTD | 0x20; }
+_set_1A:
+    0012D 9A5D      SBI	0x0B,5
+    0012E 9508      RET
+(0016) 
+(0017) void reset_1B (void)
+(0018) { PORTL = PORTL & 0xFB; }
+_reset_1B:
+    0012F 9180 010B LDS	R24,0x10B
+    00131 7F8B      ANDI	R24,0xFB
+    00132 9380 010B STS	0x10B,R24
+    00134 9508      RET
+(0019) 
+(0020) void set_1B (void)
+(0021) { PORTL = PORTL | 0x04; }
+_set_1B:
+    00135 9180 010B LDS	R24,0x10B
+    00137 6084      ORI	R24,4
+    00138 9380 010B STS	0x10B,R24
+    0013A 9508      RET
+(0022) 
+(0023) void reset_1C (void)
+(0024) { PORTG = PORTG & 0xFD; }
+_reset_1C:
+    0013B B384      IN	R24,0x14
+    0013C 7F8D      ANDI	R24,0xFD
+    0013D BB84      OUT	0x14,R24
+    0013E 9508      RET
+(0025) 
+(0026) void set_1C (void)
+(0027) { PORTG = PORTG | 0x02; }
+_set_1C:
+    0013F 9AA1      SBI	0x14,1
+    00140 9508      RET
+(0028) 
+(0029) void reset_2A (void)
+(0030) { PORTL = PORTL & 0xBF; }
+_reset_2A:
+    00141 9180 010B LDS	R24,0x10B
+    00143 7B8F      ANDI	R24,0xBF
+    00144 9380 010B STS	0x10B,R24
+    00146 9508      RET
+(0031) 
+(0032) void set_2A (void)
+(0033) { PORTL = PORTL | 0x40; }
+_set_2A:
+    00147 9180 010B LDS	R24,0x10B
+    00149 6480      ORI	R24,0x40
+    0014A 9380 010B STS	0x10B,R24
+    0014C 9508      RET
+(0034) 
+(0035) void reset_2B (void)
+(0036) { PORTD = PORTD & 0xEF; }
+_reset_2B:
+    0014D B18B      IN	R24,0x0B
+    0014E 7E8F      ANDI	R24,0xEF
+    0014F B98B      OUT	0x0B,R24
+    00150 9508      RET
+(0037) 
+(0038) void set_2B (void)
+(0039) { PORTD = PORTD | 0x10; }
+_set_2B:
+    00151 9A5C      SBI	0x0B,4
+    00152 9508      RET
+(0040) 
+(0041) void reset_2C (void)
+(0042) { PORTL = PORTL & 0x7F; }
+_reset_2C:
+    00153 9180 010B LDS	R24,0x10B
+    00155 778F      ANDI	R24,0x7F
+    00156 9380 010B STS	0x10B,R24
+    00158 9508      RET
+(0043) 
+(0044) void set_2C (void)
+(0045) { PORTL = PORTL | 0x80; }
+_set_2C:
+    00159 9180 010B LDS	R24,0x10B
+    0015B 6880      ORI	R24,0x80
+    0015C 9380 010B STS	0x10B,R24
+    0015E 9508      RET
+(0046) 
+(0047) void reset_3A (void)
+(0048) { PORTH = PORTH & 0xBF; }
+_reset_3A:
+    0015F 9180 0102 LDS	R24,0x102
+    00161 7B8F      ANDI	R24,0xBF
+    00162 9380 0102 STS	0x102,R24
+    00164 9508      RET
+(0049) 
+(0050) void set_3A (void)
+(0051) { PORTH = PORTH | 0x40; }
+_set_3A:
+    00165 9180 0102 LDS	R24,0x102
+    00167 6480      ORI	R24,0x40
+    00168 9380 0102 STS	0x102,R24
+    0016A 9508      RET
+(0052) 
+(0053) void reset_3B (void)
+(0054) { PORTH = PORTH & 0xEF; }
+_reset_3B:
+    0016B 9180 0102 LDS	R24,0x102
+    0016D 7E8F      ANDI	R24,0xEF
+    0016E 9380 0102 STS	0x102,R24
+    00170 9508      RET
+(0055) 
+(0056) void set_3B (void)
+(0057) { PORTH = PORTH | 0x10; }
+_set_3B:
+    00171 9180 0102 LDS	R24,0x102
+    00173 6180      ORI	R24,0x10
+    00174 9380 0102 STS	0x102,R24
+    00176 9508      RET
+(0058) 
+(0059) void reset_3C (void)
+(0060) { PORTH = PORTH & 0xDF; }
+_reset_3C:
+    00177 9180 0102 LDS	R24,0x102
+    00179 7D8F      ANDI	R24,0xDF
+    0017A 9380 0102 STS	0x102,R24
+    0017C 9508      RET
+(0061) 
+(0062) void set_3C (void)
+(0063) { PORTH = PORTH | 0x20; }
+_set_3C:
+    0017D 9180 0102 LDS	R24,0x102
+    0017F 6280      ORI	R24,0x20
+    00180 9380 0102 STS	0x102,R24
+    00182 9508      RET
+(0064) 
+(0065) 
+(0066) void reset_SP_RIGHT (void)
+(0067) { PORTJ = PORTJ & 0x7F; }
+_reset_SP_RIGHT:
+    00183 9180 0105 LDS	R24,0x105
+    00185 778F      ANDI	R24,0x7F
+    00186 9380 0105 STS	0x105,R24
+    00188 9508      RET
+(0068) 
+(0069) void set_SP_RIGHT (void)
+(0070) { PORTJ = PORTJ | 0x80; }
+_set_SP_RIGHT:
+    00189 9180 0105 LDS	R24,0x105
+    0018B 6880      ORI	R24,0x80
+    0018C 9380 0105 STS	0x105,R24
+    0018E 9508      RET
+(0071) 
+(0072) void reset_4A (void)
+(0073) { PORTG = PORTG & 0xFE; }
+_reset_4A:
+    0018F B384      IN	R24,0x14
+    00190 7F8E      ANDI	R24,0xFE
+    00191 BB84      OUT	0x14,R24
+    00192 9508      RET
+(0074) 
+(0075) void set_4A (void)
+(0076) { PORTG = PORTG | 0x01; }
+_set_4A:
+    00193 9AA0      SBI	0x14,0
+    00194 9508      RET
+(0077) 
+(0078) void reset_4B (void)
+(0079) { PORTD = PORTD & 0x7F; }
+_reset_4B:
+    00195 B18B      IN	R24,0x0B
+    00196 778F      ANDI	R24,0x7F
+    00197 B98B      OUT	0x0B,R24
+    00198 9508      RET
+(0080) 
+(0081) void set_4B (void)
+(0082) { PORTD = PORTD | 0x80; }
+_set_4B:
+    00199 9A5F      SBI	0x0B,7
+    0019A 9508      RET
+(0083) 
+(0084) void reset_4C (void)
+(0085) { PORTD = PORTD & 0xBF; }
+_reset_4C:
+    0019B B18B      IN	R24,0x0B
+    0019C 7B8F      ANDI	R24,0xBF
+    0019D B98B      OUT	0x0B,R24
+    0019E 9508      RET
+(0086) 
+(0087) void set_4C (void)
+(0088) { PORTD = PORTD | 0x40; }
+_set_4C:
+    0019F 9A5E      SBI	0x0B,6
+    001A0 9508      RET
+(0089) 
+(0090) void reset_5A (void)
+(0091) { PORTJ = PORTJ & 0xDF; }
+_reset_5A:
+    001A1 9180 0105 LDS	R24,0x105
+    001A3 7D8F      ANDI	R24,0xDF
+    001A4 9380 0105 STS	0x105,R24
+    001A6 9508      RET
+(0092) 
+(0093) void set_5A (void)
+(0094) { PORTJ = PORTJ | 0x20; }
+_set_5A:
+    001A7 9180 0105 LDS	R24,0x105
+    001A9 6280      ORI	R24,0x20
+    001AA 9380 0105 STS	0x105,R24
+    001AC 9508      RET
+(0095) 
+(0096) void reset_5B (void)
+(0097) { PORTJ = PORTJ & 0xBF; }
+_reset_5B:
+    001AD 9180 0105 LDS	R24,0x105
+    001AF 7B8F      ANDI	R24,0xBF
+    001B0 9380 0105 STS	0x105,R24
+    001B2 9508      RET
+(0098) 
+(0099) void set_5B (void)
+(0100) { PORTJ = PORTJ | 0x40; }
+_set_5B:
+    001B3 9180 0105 LDS	R24,0x105
+    001B5 6480      ORI	R24,0x40
+    001B6 9380 0105 STS	0x105,R24
+    001B8 9508      RET
+(0101) 
+(0102) void reset_5C (void)
+(0103) { PORTJ = PORTJ & 0xEF; }
+_reset_5C:
+    001B9 9180 0105 LDS	R24,0x105
+    001BB 7E8F      ANDI	R24,0xEF
+    001BC 9380 0105 STS	0x105,R24
+    001BE 9508      RET
+(0104) 
+(0105) void set_5C (void)
+(0106) { PORTJ = PORTJ | 0x10; }
+_set_5C:
+    001BF 9180 0105 LDS	R24,0x105
+    001C1 6180      ORI	R24,0x10
+    001C2 9380 0105 STS	0x105,R24
+    001C4 9508      RET
+(0107) 
+(0108) void reset_6A (void)
+(0109) { PORTJ = PORTJ & 0xF7; }
+_reset_6A:
+    001C5 9180 0105 LDS	R24,0x105
+    001C7 7F87      ANDI	R24,0xF7
+    001C8 9380 0105 STS	0x105,R24
+    001CA 9508      RET
+(0110) 
+(0111) void set_6A (void)
+(0112) { PORTJ = PORTJ | 0x08; }
+_set_6A:
+    001CB 9180 0105 LDS	R24,0x105
+    001CD 6088      ORI	R24,0x8
+    001CE 9380 0105 STS	0x105,R24
+    001D0 9508      RET
+(0113) 
+(0114) void reset_6B (void)
+(0115) { PORTJ = PORTJ & 0xFD; }
+_reset_6B:
+    001D1 9180 0105 LDS	R24,0x105
+    001D3 7F8D      ANDI	R24,0xFD
+    001D4 9380 0105 STS	0x105,R24
+    001D6 9508      RET
+(0116) 
+(0117) void set_6B (void)
+(0118) { PORTJ = PORTJ | 0x02; }
+_set_6B:
+    001D7 9180 0105 LDS	R24,0x105
+    001D9 6082      ORI	R24,2
+    001DA 9380 0105 STS	0x105,R24
+    001DC 9508      RET
+(0119) 
+(0120) void reset_6C (void)
+(0121) { PORTJ = PORTJ & 0xFB; }
+_reset_6C:
+    001DD 9180 0105 LDS	R24,0x105
+    001DF 7F8B      ANDI	R24,0xFB
+    001E0 9380 0105 STS	0x105,R24
+    001E2 9508      RET
+(0122) 
+(0123) void set_6C (void)
+(0124) { PORTJ = PORTJ | 0x04; }
+_set_6C:
+    001E3 9180 0105 LDS	R24,0x105
+    001E5 6084      ORI	R24,4
+    001E6 9380 0105 STS	0x105,R24
+    001E8 9508      RET
+(0125) 
+(0126) 
+(0127) void port_init(void)
+(0128) {
+(0129)  PORTA = 0x00;
+_port_init:
+    001E9 2422      CLR	R2
+    001EA B822      OUT	0x02,R2
+(0130)  DDRA  = 0xFF;
+    001EB EF8F      LDI	R24,0xFF
+    001EC B981      OUT	0x01,R24
+(0131)  PORTB = 0x00;
+    001ED B825      OUT	0x05,R2
+(0132)  DDRB  = 0x01;
+    001EE E081      LDI	R24,1
+    001EF B984      OUT	0x04,R24
+(0133)  PORTC = 0x00; //m103 output only
+    001F0 B828      OUT	0x08,R2
+(0134)  DDRC  = 0xFF;
+    001F1 EF8F      LDI	R24,0xFF
+    001F2 B987      OUT	0x07,R24
+(0135)  PORTD = 0x00;
+    001F3 B82B      OUT	0x0B,R2
+(0136)  DDRD  = 0xF0;
+    001F4 EF80      LDI	R24,0xF0
+    001F5 B98A      OUT	0x0A,R24
+(0137)  PORTE = 0x00;
+    001F6 B82E      OUT	0x0E,R2
+(0138)  DDRE  = 0x00;
+    001F7 B82D      OUT	0x0D,R2
+(0139)  PORTF = 0x00;
+    001F8 BA21      OUT	0x11,R2
+(0140)  DDRF  = 0x00;
+    001F9 BA20      OUT	0x10,R2
+(0141)  PORTG = 0x00;
+    001FA BA24      OUT	0x14,R2
+(0142)  DDRG  = 0x03;
+    001FB E083      LDI	R24,3
+    001FC BB83      OUT	0x13,R24
+(0143)  PORTH = 0x00;
+    001FD 9220 0102 STS	0x102,R2
+(0144)  DDRH  = 0x70;
+    001FF E780      LDI	R24,0x70
+    00200 9380 0101 STS	0x101,R24
+(0145)  PORTJ = 0x00;
+    00202 9220 0105 STS	0x105,R2
+(0146)  DDRJ  = 0xFE; //0xFE original
+    00204 EF8E      LDI	R24,0xFE
+    00205 9380 0104 STS	0x104,R24
+(0147)  PORTK = 0x00;
+    00207 9220 0108 STS	0x108,R2
+(0148)  DDRK  = 0x00;
+    00209 9220 0107 STS	0x107,R2
+(0149)  PORTL = 0x00;
+    0020B 9220 010B STS	0x10B,R2
+(0150)  DDRL  = 0xC7;
+    0020D EC87      LDI	R24,0xC7
+    0020E 9380 010A STS	0x10A,R24
+    00210 9508      RET
+(0151) }
+(0152) 
+(0153) //TIMER1 initialize - prescale:1
+(0154) // WGM: 0) Normal, TOP=0xFFFF
+(0155) // desired value: 400Hz
+(0156) // actual value: 400.007Hz (0.0%)
+(0157) void timer1_init(void)
+(0158) {
+(0159)  TCCR1B = 0x00; //stop
+_timer1_init:
+    00211 2422      CLR	R2
+    00212 9220 0081 STS	0x81,R2
+(0160)  TCNT1H = 0x94; //setup
+    00214 E984      LDI	R24,0x94
+    00215 9380 0085 STS	0x85,R24
+(0161)  TCNT1L = 0x01;
+    00217 E081      LDI	R24,1
+    00218 9380 0084 STS	0x84,R24
+(0162)  OCR1AH = 0x6B;
+    0021A E68B      LDI	R24,0x6B
+    0021B 9380 0089 STS	0x89,R24
+(0163)  OCR1AL = 0xFF;
+    0021D EF8F      LDI	R24,0xFF
+    0021E 9380 0088 STS	0x88,R24
+(0164)  OCR1BH = 0x6B;
+    00220 E68B      LDI	R24,0x6B
+    00221 9380 008B STS	0x8B,R24
+(0165)  OCR1BL = 0xFF;
+    00223 EF8F      LDI	R24,0xFF
+    00224 9380 008A STS	0x8A,R24
+(0166)  OCR1CH = 0x00;
+    00226 9220 008D STS	0x8D,R2
+(0167)  OCR1CL = 0x00;
+    00228 9220 008C STS	0x8C,R2
+(0168)  ICR1H  = 0x6B;
+    0022A E68B      LDI	R24,0x6B
+    0022B 9380 0087 STS	0x87,R24
+(0169)  ICR1L  = 0xFF;
+    0022D EF8F      LDI	R24,0xFF
+    0022E 9380 0086 STS	0x86,R24
+(0170)  TCCR1A = 0x00;
+    00230 9220 0080 STS	0x80,R2
+(0171)  TCCR1C = 0x00;
+    00232 9220 0082 STS	0x82,R2
+(0172)  TCCR1B = 0x01; //start Timer
+    00234 E081      LDI	R24,1
+    00235 9380 0081 STS	0x81,R24
+    00237 9508      RET
+_timer1_compa_isr:
+    00238 920A      ST	-Y,R0
+    00239 921A      ST	-Y,R1
+    0023A 922A      ST	-Y,R2
+    0023B 923A      ST	-Y,R3
+    0023C 924A      ST	-Y,R4
+    0023D 925A      ST	-Y,R5
+    0023E 926A      ST	-Y,R6
+    0023F 927A      ST	-Y,R7
+    00240 928A      ST	-Y,R8
+    00241 929A      ST	-Y,R9
+    00242 930A      ST	-Y,R16
+    00243 931A      ST	-Y,R17
+    00244 932A      ST	-Y,R18
+    00245 933A      ST	-Y,R19
+    00246 938A      ST	-Y,R24
+    00247 939A      ST	-Y,R25
+    00248 93AA      ST	-Y,R26
+    00249 93BA      ST	-Y,R27
+    0024A 93EA      ST	-Y,R30
+    0024B 93FA      ST	-Y,R31
+    0024C B60F      IN	R0,0x3F
+    0024D 920A      ST	-Y,R0
+(0173) }
+(0174) 
+(0175) #pragma interrupt_handler timer1_compa_isr:iv_TIM1_COMPA
+(0176) void timer1_compa_isr(void)
+(0177) {
+(0178)  //compare occured TCNT1=OCR1A
+(0179)  if (arm_number == 0) { reset_1A(); }
+    0024E 9020 0200 LDS	R2,arm_number
+    00250 2022      TST	R2
+    00251 F409      BNE	0x0253
+    00252 DED6      RCALL	_reset_1A
+(0180)  if (arm_number == 1) { reset_2A(); }
+    00253 9180 0200 LDS	R24,arm_number
+    00255 3081      CPI	R24,1
+    00256 F409      BNE	0x0258
+    00257 DEE9      RCALL	_reset_2A
+(0181)  if (arm_number == 2) { reset_3A(); }
+    00258 9180 0200 LDS	R24,arm_number
+    0025A 3082      CPI	R24,2
+    0025B F409      BNE	0x025D
+    0025C DF02      RCALL	_reset_3A
+(0182)  if (arm_number == 3) { reset_4A(); }
+    0025D 9180 0200 LDS	R24,arm_number
+    0025F 3083      CPI	R24,3
+    00260 F409      BNE	0x0262
+    00261 DF2D      RCALL	_reset_4A
+(0183)  if (arm_number == 4) { reset_5A(); }
+    00262 9180 0200 LDS	R24,arm_number
+    00264 3084      CPI	R24,4
+    00265 F409      BNE	0x0267
+    00266 DF3A      RCALL	_reset_5A
+(0184)  if (arm_number == 5) { reset_6A(); }
+    00267 9180 0200 LDS	R24,arm_number
+    00269 3085      CPI	R24,5
+    0026A F409      BNE	0x026C
+    0026B DF59      RCALL	_reset_6A
+    0026C 9009      LD	R0,Y+
+    0026D BE0F      OUT	0x3F,R0
+    0026E 91F9      LD	R31,Y+
+    0026F 91E9      LD	R30,Y+
+    00270 91B9      LD	R27,Y+
+    00271 91A9      LD	R26,Y+
+    00272 9199      LD	R25,Y+
+    00273 9189      LD	R24,Y+
+    00274 9139      LD	R19,Y+
+    00275 9129      LD	R18,Y+
+    00276 9119      LD	R17,Y+
+    00277 9109      LD	R16,Y+
+    00278 9099      LD	R9,Y+
+    00279 9089      LD	R8,Y+
+    0027A 9079      LD	R7,Y+
+    0027B 9069      LD	R6,Y+
+    0027C 9059      LD	R5,Y+
+    0027D 9049      LD	R4,Y+
+    0027E 9039      LD	R3,Y+
+    0027F 9029      LD	R2,Y+
+    00280 9019      LD	R1,Y+
+    00281 9009      LD	R0,Y+
+    00282 9518      RETI
+_timer1_compb_isr:
+    00283 920A      ST	-Y,R0
+    00284 921A      ST	-Y,R1
+    00285 922A      ST	-Y,R2
+    00286 923A      ST	-Y,R3
+    00287 924A      ST	-Y,R4
+    00288 925A      ST	-Y,R5
+    00289 926A      ST	-Y,R6
+    0028A 927A      ST	-Y,R7
+    0028B 928A      ST	-Y,R8
+    0028C 929A      ST	-Y,R9
+    0028D 930A      ST	-Y,R16
+    0028E 931A      ST	-Y,R17
+    0028F 932A      ST	-Y,R18
+    00290 933A      ST	-Y,R19
+    00291 938A      ST	-Y,R24
+    00292 939A      ST	-Y,R25
+    00293 93AA      ST	-Y,R26
+    00294 93BA      ST	-Y,R27
+    00295 93EA      ST	-Y,R30
+    00296 93FA      ST	-Y,R31
+    00297 B60F      IN	R0,0x3F
+    00298 920A      ST	-Y,R0
+(0185) }
+(0186) 
+(0187) #pragma interrupt_handler timer1_compb_isr:iv_TIM1_COMPB
+(0188) void timer1_compb_isr(void)
+(0189) {
+(0190)  //compare occured TCNT1=OCR1B
+(0191)  if (arm_number == 0) { reset_1B(); }
+    00299 9020 0200 LDS	R2,arm_number
+    0029B 2022      TST	R2
+    0029C F409      BNE	0x029E
+    0029D DE91      RCALL	_reset_1B
+(0192)  if (arm_number == 1) { reset_2B(); }
+    0029E 9180 0200 LDS	R24,arm_number
+    002A0 3081      CPI	R24,1
+    002A1 F409      BNE	0x02A3
+    002A2 DEAA      RCALL	_reset_2B
+(0193)  if (arm_number == 2) { reset_3B(); }
+    002A3 9180 0200 LDS	R24,arm_number
+    002A5 3082      CPI	R24,2
+    002A6 F409      BNE	0x02A8
+    002A7 DEC3      RCALL	_reset_3B
+(0194)  if (arm_number == 3) { reset_4B(); }
+    002A8 9180 0200 LDS	R24,arm_number
+    002AA 3083      CPI	R24,3
+    002AB F409      BNE	0x02AD
+    002AC DEE8      RCALL	_reset_4B
+(0195)  if (arm_number == 4) { reset_5B(); }
+    002AD 9180 0200 LDS	R24,arm_number
+    002AF 3084      CPI	R24,4
+    002B0 F409      BNE	0x02B2
+    002B1 DEFB      RCALL	_reset_5B
+(0196)  if (arm_number == 5) { reset_6B(); }
+    002B2 9180 0200 LDS	R24,arm_number
+    002B4 3085      CPI	R24,5
+    002B5 F409      BNE	0x02B7
+    002B6 DF1A      RCALL	_reset_6B
+    002B7 9009      LD	R0,Y+
+    002B8 BE0F      OUT	0x3F,R0
+    002B9 91F9      LD	R31,Y+
+    002BA 91E9      LD	R30,Y+
+    002BB 91B9      LD	R27,Y+
+    002BC 91A9      LD	R26,Y+
+    002BD 9199      LD	R25,Y+
+    002BE 9189      LD	R24,Y+
+    002BF 9139      LD	R19,Y+
+    002C0 9129      LD	R18,Y+
+    002C1 9119      LD	R17,Y+
+    002C2 9109      LD	R16,Y+
+    002C3 9099      LD	R9,Y+
+    002C4 9089      LD	R8,Y+
+    002C5 9079      LD	R7,Y+
+    002C6 9069      LD	R6,Y+
+    002C7 9059      LD	R5,Y+
+    002C8 9049      LD	R4,Y+
+    002C9 9039      LD	R3,Y+
+    002CA 9029      LD	R2,Y+
+    002CB 9019      LD	R1,Y+
+    002CC 9009      LD	R0,Y+
+    002CD 9518      RETI
+_timer1_compc_isr:
+    002CE 920A      ST	-Y,R0
+    002CF 921A      ST	-Y,R1
+    002D0 922A      ST	-Y,R2
+    002D1 923A      ST	-Y,R3
+    002D2 924A      ST	-Y,R4
+    002D3 925A      ST	-Y,R5
+    002D4 926A      ST	-Y,R6
+    002D5 927A      ST	-Y,R7
+    002D6 928A      ST	-Y,R8
+    002D7 929A      ST	-Y,R9
+    002D8 930A      ST	-Y,R16
+    002D9 931A      ST	-Y,R17
+    002DA 932A      ST	-Y,R18
+    002DB 933A      ST	-Y,R19
+    002DC 938A      ST	-Y,R24
+    002DD 939A      ST	-Y,R25
+    002DE 93AA      ST	-Y,R26
+    002DF 93BA      ST	-Y,R27
+    002E0 93EA      ST	-Y,R30
+    002E1 93FA      ST	-Y,R31
+    002E2 B60F      IN	R0,0x3F
+    002E3 920A      ST	-Y,R0
+(0197) }
+(0198) 
+(0199) #pragma interrupt_handler timer1_compc_isr:iv_TIM1_COMPC
+(0200) void timer1_compc_isr(void)
+(0201) {
+(0202)  //compare occured TCNT1=OCR1c
+(0203)  if (arm_number == 0) { reset_1C(); }
+    002E4 9020 0200 LDS	R2,arm_number
+    002E6 2022      TST	R2
+    002E7 F409      BNE	0x02E9
+    002E8 DE52      RCALL	_reset_1C
+(0204)  if (arm_number == 1) { reset_2C(); }
+    002E9 9180 0200 LDS	R24,arm_number
+    002EB 3081      CPI	R24,1
+    002EC F409      BNE	0x02EE
+    002ED DE65      RCALL	_reset_2C
+(0205)  if (arm_number == 2) { reset_3C(); }
+    002EE 9180 0200 LDS	R24,arm_number
+    002F0 3082      CPI	R24,2
+    002F1 F409      BNE	0x02F3
+    002F2 DE84      RCALL	_reset_3C
+(0206)  if (arm_number == 3) { reset_4C(); }
+    002F3 9180 0200 LDS	R24,arm_number
+    002F5 3083      CPI	R24,3
+    002F6 F409      BNE	0x02F8
+    002F7 DEA3      RCALL	_reset_4C
+(0207)  if (arm_number == 4) { reset_5C(); }
+    002F8 9180 0200 LDS	R24,arm_number
+    002FA 3084      CPI	R24,4
+    002FB F409      BNE	0x02FD
+    002FC DEBC      RCALL	_reset_5C
+(0208)  if (arm_number == 5) { reset_6C(); }
+    002FD 9180 0200 LDS	R24,arm_number
+    002FF 3085      CPI	R24,5
+    00300 F409      BNE	0x0302
+    00301 DEDB      RCALL	_reset_6C
+    00302 9009      LD	R0,Y+
+    00303 BE0F      OUT	0x3F,R0
+    00304 91F9      LD	R31,Y+
+    00305 91E9      LD	R30,Y+
+    00306 91B9      LD	R27,Y+
+    00307 91A9      LD	R26,Y+
+    00308 9199      LD	R25,Y+
+    00309 9189      LD	R24,Y+
+    0030A 9139      LD	R19,Y+
+    0030B 9129      LD	R18,Y+
+    0030C 9119      LD	R17,Y+
+    0030D 9109      LD	R16,Y+
+    0030E 9099      LD	R9,Y+
+    0030F 9089      LD	R8,Y+
+    00310 9079      LD	R7,Y+
+    00311 9069      LD	R6,Y+
+    00312 9059      LD	R5,Y+
+    00313 9049      LD	R4,Y+
+    00314 9039      LD	R3,Y+
+    00315 9029      LD	R2,Y+
+    00316 9019      LD	R1,Y+
+    00317 9009      LD	R0,Y+
+    00318 9518      RETI
+_timer1_ovf_isr:
+    00319 920A      ST	-Y,R0
+    0031A 921A      ST	-Y,R1
+    0031B 922A      ST	-Y,R2
+    0031C 923A      ST	-Y,R3
+    0031D 924A      ST	-Y,R4
+    0031E 925A      ST	-Y,R5
+    0031F 926A      ST	-Y,R6
+    00320 927A      ST	-Y,R7
+    00321 928A      ST	-Y,R8
+    00322 929A      ST	-Y,R9
+    00323 930A      ST	-Y,R16
+    00324 931A      ST	-Y,R17
+    00325 932A      ST	-Y,R18
+    00326 933A      ST	-Y,R19
+    00327 938A      ST	-Y,R24
+    00328 939A      ST	-Y,R25
+    00329 93AA      ST	-Y,R26
+    0032A 93BA      ST	-Y,R27
+    0032B 93EA      ST	-Y,R30
+    0032C 93FA      ST	-Y,R31
+    0032D B60F      IN	R0,0x3F
+    0032E 920A      ST	-Y,R0
+(0209) }
+(0210) 
+(0211) #pragma interrupt_handler timer1_ovf_isr:iv_TIM1_OVF
+(0212) void timer1_ovf_isr(void)
+(0213) {
+(0214)  //TIMER1 has overflowed
+(0215)  TCNT1H = 0x94; //reload counter high value
+    0032F E984      LDI	R24,0x94
+    00330 9380 0085 STS	0x85,R24
+(0216)  TCNT1L = 0x01; //reload counter low value
+    00332 E081      LDI	R24,1
+    00333 9380 0084 STS	0x84,R24
+(0217)  delay_count++;
+    00335 9180 0204 LDS	R24,delay_count
+    00337 9190 0205 LDS	R25,delay_count+1
+    00339 9601      ADIW	R24,1
+    0033A 9390 0205 STS	delay_count+1,R25
+    0033C 9380 0204 STS	delay_count,R24
+(0218)  arm_number ++;
+    0033E 9180 0200 LDS	R24,arm_number
+    00340 5F8F      SUBI	R24,0xFF
+    00341 9380 0200 STS	arm_number,R24
+(0219)  if (arm_number>7)
+    00343 E087      LDI	R24,7
+    00344 9020 0200 LDS	R2,arm_number
+    00346 1582      CP	R24,R2
+    00347 F418      BCC	0x034B
+(0220)  {
+(0221)   	arm_number = 0;
+    00348 2422      CLR	R2
+    00349 9220 0200 STS	arm_number,R2
+(0222)  }
+(0223)    
+(0224)  if (arm_number == 0)
+    0034B 9020 0200 LDS	R2,arm_number
+    0034D 2022      TST	R2
+    0034E F519      BNE	0x0372
+(0225)  {
+(0226)   set_1A(); 
+    0034F DDDD      RCALL	_set_1A
+(0227)   set_1B(); 
+    00350 DDE4      RCALL	_set_1B
+(0228)   set_1C();
+    00351 DDED      RCALL	_set_1C
+(0229)   OCR1AH = angle_upper_byte_1A;
+    00352 9020 0292 LDS	R2,angle_upper_byte_1A
+    00354 9220 0089 STS	0x89,R2
+(0230)   OCR1AL = angle_lower_byte_1A;
+    00356 9020 0291 LDS	R2,angle_lower_byte_1A
+    00358 9220 0088 STS	0x88,R2
+(0231)   OCR1BH = angle_upper_byte_1B;
+    0035A 9020 028F LDS	R2,angle_upper_byte_1B
+    0035C 9030 0290 LDS	R3,angle_upper_byte_1B+1
+    0035E 9220 008B STS	0x8B,R2
+(0232)   OCR1BL = angle_lower_byte_1B;
+    00360 9020 028D LDS	R2,angle_lower_byte_1B
+    00362 9030 028E LDS	R3,angle_lower_byte_1B+1
+    00364 9220 008A STS	0x8A,R2
+(0233)   OCR1CH = angle_upper_byte_1C;
+    00366 9020 028B LDS	R2,angle_upper_byte_1C
+    00368 9030 028C LDS	R3,angle_upper_byte_1C+1
+    0036A 9220 008D STS	0x8D,R2
+(0234)   OCR1CL = angle_lower_byte_1C;
+    0036C 9020 0289 LDS	R2,angle_lower_byte_1C
+    0036E 9030 028A LDS	R3,angle_lower_byte_1C+1
+    00370 9220 008C STS	0x8C,R2
+(0235)  }
+(0236)  
+(0237)  if (arm_number == 1)
+    00372 9180 0200 LDS	R24,arm_number
+    00374 3081      CPI	R24,1
+    00375 F519      BNE	0x0399
+(0238)  {
+(0239)   set_2A(); 
+    00376 DDD0      RCALL	_set_2A
+(0240)   set_2B(); 
+    00377 DDD9      RCALL	_set_2B
+(0241)   set_2C();
+    00378 DDE0      RCALL	_set_2C
+(0242)   OCR1AH = angle_upper_byte_2A;
+    00379 9020 0288 LDS	R2,angle_upper_byte_2A
+    0037B 9220 0089 STS	0x89,R2
+(0243)   OCR1AL = angle_lower_byte_2A;
+    0037D 9020 0287 LDS	R2,angle_lower_byte_2A
+    0037F 9220 0088 STS	0x88,R2
+(0244)   OCR1BH = angle_upper_byte_2B;
+    00381 9020 0285 LDS	R2,angle_upper_byte_2B
+    00383 9030 0286 LDS	R3,angle_upper_byte_2B+1
+    00385 9220 008B STS	0x8B,R2
+(0245)   OCR1BL = angle_lower_byte_2B;
+    00387 9020 0283 LDS	R2,angle_lower_byte_2B
+    00389 9030 0284 LDS	R3,angle_lower_byte_2B+1
+    0038B 9220 008A STS	0x8A,R2
+(0246)   OCR1CH = angle_upper_byte_2C;
+    0038D 9020 0281 LDS	R2,angle_upper_byte_2C
+    0038F 9030 0282 LDS	R3,angle_upper_byte_2C+1
+    00391 9220 008D STS	0x8D,R2
+(0247)   OCR1CL = angle_lower_byte_2C;
+    00393 9020 027F LDS	R2,angle_lower_byte_2C
+    00395 9030 0280 LDS	R3,angle_lower_byte_2C+1
+    00397 9220 008C STS	0x8C,R2
+(0248)  }
+(0249)  
+(0250)  if (arm_number == 2)
+    00399 9180 0200 LDS	R24,arm_number
+    0039B 3082      CPI	R24,2
+    0039C F519      BNE	0x03C0
+(0251)  {
+(0252)   set_3A(); 
+    0039D DDC7      RCALL	_set_3A
+(0253)   set_3B(); 
+    0039E DDD2      RCALL	_set_3B
+(0254)   set_3C();
+    0039F DDDD      RCALL	_set_3C
+(0255)   OCR1AH = angle_upper_byte_3A;
+    003A0 9020 027E LDS	R2,angle_upper_byte_3A
+    003A2 9220 0089 STS	0x89,R2
+(0256)   OCR1AL = angle_lower_byte_3A;
+    003A4 9020 027D LDS	R2,angle_lower_byte_3A
+    003A6 9220 0088 STS	0x88,R2
+(0257)   OCR1BH = angle_upper_byte_3B;
+    003A8 9020 027B LDS	R2,angle_upper_byte_3B
+    003AA 9030 027C LDS	R3,angle_upper_byte_3B+1
+    003AC 9220 008B STS	0x8B,R2
+(0258)   OCR1BL = angle_lower_byte_3B;
+    003AE 9020 0279 LDS	R2,angle_lower_byte_3B
+    003B0 9030 027A LDS	R3,angle_lower_byte_3B+1
+    003B2 9220 008A STS	0x8A,R2
+(0259)   OCR1CH = angle_upper_byte_3C;
+    003B4 9020 0277 LDS	R2,angle_upper_byte_3C
+    003B6 9030 0278 LDS	R3,angle_upper_byte_3C+1
+    003B8 9220 008D STS	0x8D,R2
+(0260)   OCR1CL = angle_lower_byte_3C;
+    003BA 9020 0275 LDS	R2,angle_lower_byte_3C
+    003BC 9030 0276 LDS	R3,angle_lower_byte_3C+1
+    003BE 9220 008C STS	0x8C,R2
+(0261)  }
+(0262)  
+(0263)  if (arm_number == 3)
+    003C0 9180 0200 LDS	R24,arm_number
+    003C2 3083      CPI	R24,3
+    003C3 F519      BNE	0x03E7
+(0264)  {
+(0265)   set_4A(); 
+    003C4 DDCE      RCALL	_set_4A
+(0266)   set_4B(); 
+    003C5 DDD3      RCALL	_set_4B
+(0267)   set_4C();
+    003C6 DDD8      RCALL	_set_4C
+(0268)   OCR1AH = angle_upper_byte_4A;
+    003C7 9020 0274 LDS	R2,angle_upper_byte_4A
+    003C9 9220 0089 STS	0x89,R2
+(0269)   OCR1AL = angle_lower_byte_4A;
+    003CB 9020 0273 LDS	R2,angle_lower_byte_4A
+    003CD 9220 0088 STS	0x88,R2
+(0270)   OCR1BH = angle_upper_byte_4B;
+    003CF 9020 0271 LDS	R2,angle_upper_byte_4B
+    003D1 9030 0272 LDS	R3,angle_upper_byte_4B+1
+    003D3 9220 008B STS	0x8B,R2
+(0271)   OCR1BL = angle_lower_byte_4B;
+    003D5 9020 026F LDS	R2,angle_lower_byte_4B
+    003D7 9030 0270 LDS	R3,angle_lower_byte_4B+1
+    003D9 9220 008A STS	0x8A,R2
+(0272)   OCR1CH = angle_upper_byte_4C;
+    003DB 9020 026D LDS	R2,angle_upper_byte_4C
+    003DD 9030 026E LDS	R3,angle_upper_byte_4C+1
+    003DF 9220 008D STS	0x8D,R2
+(0273)   OCR1CL = angle_lower_byte_4C;
+    003E1 9020 026B LDS	R2,angle_lower_byte_4C
+    003E3 9030 026C LDS	R3,angle_lower_byte_4C+1
+    003E5 9220 008C STS	0x8C,R2
+(0274)  }
+(0275)  
+(0276)  if (arm_number == 4)
+    003E7 9180 0200 LDS	R24,arm_number
+    003E9 3084      CPI	R24,4
+    003EA F519      BNE	0x040E
+(0277)  {
+(0278)   set_5A(); 
+    003EB DDBB      RCALL	_set_5A
+(0279)   set_5B(); 
+    003EC DDC6      RCALL	_set_5B
+(0280)   set_5C();
+    003ED DDD1      RCALL	_set_5C
+(0281)   OCR1AH = angle_upper_byte_5A;
+    003EE 9020 026A LDS	R2,angle_upper_byte_5A
+    003F0 9220 0089 STS	0x89,R2
+(0282)   OCR1AL = angle_lower_byte_5A;
+    003F2 9020 0269 LDS	R2,angle_lower_byte_5A
+    003F4 9220 0088 STS	0x88,R2
+(0283)   OCR1BH = angle_upper_byte_5B;
+    003F6 9020 0267 LDS	R2,angle_upper_byte_5B
+    003F8 9030 0268 LDS	R3,angle_upper_byte_5B+1
+    003FA 9220 008B STS	0x8B,R2
+(0284)   OCR1BL = angle_lower_byte_5B;
+    003FC 9020 0265 LDS	R2,angle_lower_byte_5B
+    003FE 9030 0266 LDS	R3,angle_lower_byte_5B+1
+    00400 9220 008A STS	0x8A,R2
+(0285)   OCR1CH = angle_upper_byte_5C;
+    00402 9020 0263 LDS	R2,angle_upper_byte_5C
+    00404 9030 0264 LDS	R3,angle_upper_byte_5C+1
+    00406 9220 008D STS	0x8D,R2
+(0286)   OCR1CL = angle_lower_byte_5C;
+    00408 9020 0261 LDS	R2,angle_lower_byte_5C
+    0040A 9030 0262 LDS	R3,angle_lower_byte_5C+1
+    0040C 9220 008C STS	0x8C,R2
+(0287)  }
+(0288)  
+(0289)  if (arm_number == 5)
+    0040E 9180 0200 LDS	R24,arm_number
+    00410 3085      CPI	R24,5
+    00411 F519      BNE	0x0435
+(0290)  {
+(0291)   set_6A(); 
+    00412 DDB8      RCALL	_set_6A
+(0292)   set_6B(); 
+    00413 DDC3      RCALL	_set_6B
+(0293)   set_6C();
+    00414 DDCE      RCALL	_set_6C
+(0294)   OCR1AH = angle_upper_byte_6A;
+    00415 9020 0260 LDS	R2,angle_upper_byte_6A
+    00417 9220 0089 STS	0x89,R2
+(0295)   OCR1AL = angle_lower_byte_6A;
+    00419 9020 025F LDS	R2,angle_lower_byte_6A
+    0041B 9220 0088 STS	0x88,R2
+(0296)   OCR1BH = angle_upper_byte_6B;
+    0041D 9020 025D LDS	R2,angle_upper_byte_6B
+    0041F 9030 025E LDS	R3,angle_upper_byte_6B+1
+    00421 9220 008B STS	0x8B,R2
+(0297)   OCR1BL = angle_lower_byte_6B;
+    00423 9020 025B LDS	R2,angle_lower_byte_6B
+    00425 9030 025C LDS	R3,angle_lower_byte_6B+1
+    00427 9220 008A STS	0x8A,R2
+(0298)   OCR1CH = angle_upper_byte_6C;
+    00429 9020 0259 LDS	R2,angle_upper_byte_6C
+    0042B 9030 025A LDS	R3,angle_upper_byte_6C+1
+    0042D 9220 008D STS	0x8D,R2
+(0299)   OCR1CL = angle_lower_byte_6C;
+    0042F 9020 0257 LDS	R2,angle_lower_byte_6C
+    00431 9030 0258 LDS	R3,angle_lower_byte_6C+1
+    00433 9220 008C STS	0x8C,R2
+(0300)  }
+(0301)  //serial communication related code
+(0302)  serial_communication_interval ++;
+    00435 9180 0206 LDS	R24,serial_communication_interval
+    00437 9190 0207 LDS	R25,serial_communication_interval+1
+    00439 9601      ADIW	R24,1
+    0043A 9390 0207 STS	serial_communication_interval+1,R25
+    0043C 9380 0206 STS	serial_communication_interval,R24
+(0303)   if (serial_communication_interval > 40) //gives time interval of 40*2.5ms = 100ms
+    0043E E288      LDI	R24,0x28
+    0043F E090      LDI	R25,0
+    00440 9020 0206 LDS	R2,serial_communication_interval
+    00442 9030 0207 LDS	R3,serial_communication_interval+1
+    00444 1582      CP	R24,R2
+    00445 0593      CPC	R25,R3
+    00446 F4B8      BCC	0x045E
+(0304)  {
+(0305)   serial_communication_interval = 0;
+    00447 2422      CLR	R2
+    00448 2433      CLR	R3
+    00449 9230 0207 STS	serial_communication_interval+1,R3
+    0044B 9220 0206 STS	serial_communication_interval,R2
+(0306)   serial_communication_channel_number++;
+    0044D 9180 0208 LDS	R24,serial_communication_channel_number
+    0044F 5F8F      SUBI	R24,0xFF
+    00450 9380 0208 STS	serial_communication_channel_number,R24
+(0307)   if(serial_communication_channel_number > 4) //set maximum number of command (can be set up to 7)
+    00452 E084      LDI	R24,4
+    00453 9020 0208 LDS	R2,serial_communication_channel_number
+    00455 1582      CP	R24,R2
+    00456 F418      BCC	0x045A
+(0308)   {
+(0309)   serial_communication_channel_number  = 3; //set first command to begin with (can be set up to 1)
+    00457 E083      LDI	R24,3
+    00458 9380 0208 STS	serial_communication_channel_number,R24
+(0310)   }
+(0311)   UDR0 = serial_communication_channel_number;
+    0045A 9020 0208 LDS	R2,serial_communication_channel_number
+    0045C 9220 00C6 STS	0xC6,R2
+(0312)  }
+    0045E 9009      LD	R0,Y+
+    0045F BE0F      OUT	0x3F,R0
+    00460 91F9      LD	R31,Y+
+    00461 91E9      LD	R30,Y+
+    00462 91B9      LD	R27,Y+
+    00463 91A9      LD	R26,Y+
+    00464 9199      LD	R25,Y+
+    00465 9189      LD	R24,Y+
+    00466 9139      LD	R19,Y+
+    00467 9129      LD	R18,Y+
+    00468 9119      LD	R17,Y+
+    00469 9109      LD	R16,Y+
+    0046A 9099      LD	R9,Y+
+    0046B 9089      LD	R8,Y+
+    0046C 9079      LD	R7,Y+
+    0046D 9069      LD	R6,Y+
+    0046E 9059      LD	R5,Y+
+    0046F 9049      LD	R4,Y+
+    00470 9039      LD	R3,Y+
+    00471 9029      LD	R2,Y+
+    00472 9019      LD	R1,Y+
+    00473 9009      LD	R0,Y+
+    00474 9518      RETI
+(0313) }
+(0314) 
+(0315) //UART0 initialize
+(0316) // desired baud rate: 9600
+(0317) // actual: baud rate:9600 (0.0%)
+(0318) // char size: 8 bit
+(0319) // parity: Disabled
+(0320) void uart0_init(void)
+(0321) {
+(0322)  UCSR0B = 0x00; //disable while setting baud rate
+_uart0_init:
+    00475 2422      CLR	R2
+    00476 9220 00C1 STS	0xC1,R2
+(0323)  UCSR0A = 0x00;
+    00478 9220 00C0 STS	0xC0,R2
+(0324)  UCSR0C = 0x06;
+    0047A E086      LDI	R24,6
+    0047B 9380 00C2 STS	0xC2,R24
+(0325)  UBRR0L = 0x47; //set baud rate lo
+    0047D E487      LDI	R24,0x47
+    0047E 9380 00C4 STS	0xC4,R24
+(0326)  UBRR0H = 0x00; //set baud rate hi
+    00480 9220 00C5 STS	0xC5,R2
+(0327)  UCSR0B = 0x98;
+    00482 E988      LDI	R24,0x98
+    00483 9380 00C1 STS	0xC1,R24
+    00485 9508      RET
+(0328) }
+(0329) 
+(0330) //#pragma interrupt_handler uart0_rx_isr:iv_USART0_RXC
+(0331) // void uart0_rx_isr(void)
+(0332) // {
+(0333)  // uart has received a character in UDR
+(0334)  // remote_data[serial_communication_channel_number] = UDR0;  
+(0335) // }
+(0336) 
+(0337) //call this routine to initialize all peripherals
+(0338) void init_devices(void)
+(0339) {
+(0340)  //stop errant interrupts until set up
+(0341)  CLI(); //disable all interrupts
+_init_devices:
+    00486 94F8      BCLR	7
+(0342)  XMCRA = 0x00; //external memory
+    00487 2422      CLR	R2
+    00488 9220 0074 STS	0x74,R2
+(0343)  XMCRB = 0x00; //external memory
+    0048A 9220 0075 STS	0x75,R2
+(0344)  port_init();
+    0048C DD5C      RCALL	_port_init
+(0345)  timer1_init();
+    0048D DD83      RCALL	_timer1_init
+(0346)  uart0_init();
+    0048E DFE6      RCALL	_uart0_init
+(0347)  
+(0348)  //uart3_init();
+(0349) 
+(0350)  MCUCR  = 0x00;
+    0048F 2422      CLR	R2
+    00490 BE25      OUT	0x35,R2
+(0351)  EICRA  = 0x00; //pin change int edge 0:3
+    00491 9220 0069 STS	0x69,R2
+(0352)  EICRB  = 0x00; //pin change int edge 4:7
+    00493 9220 006A STS	0x6A,R2
+(0353)  PCICR  = 0x00; //pin change int enable
+    00495 9220 0068 STS	0x68,R2
+(0354)  PCMSK0 = 0x00; //pin change mask
+    00497 9220 006B STS	0x6B,R2
+(0355)  PCMSK1 = 0x00; //pin change mask
+    00499 9220 006C STS	0x6C,R2
+(0356)  PCMSK2 = 0x00; //pin change mask
+    0049B 9220 006D STS	0x6D,R2
+(0357)  EIMSK  = 0x00;
+    0049D BA2D      OUT	0x1D,R2
+(0358)  TIMSK0 = 0x00; //timer0 interrupt sources
+    0049E 9220 006E STS	0x6E,R2
+(0359)  TIMSK1 = 0x0F; //timer1 interrupt sources
+    004A0 E08F      LDI	R24,0xF
+    004A1 9380 006F STS	0x6F,R24
+(0360)  TIMSK2 = 0x00; //timer2 interrupt sources
+    004A3 9220 0070 STS	0x70,R2
+(0361)  TIMSK3 = 0x00; //timer3 interrupt sources
+    004A5 9220 0071 STS	0x71,R2
+(0362)  TIMSK4 = 0x00; //timer4 interrupt sources
+    004A7 9220 0072 STS	0x72,R2
+(0363)  TIMSK5 = 0x00; //timer5 interrupt sources
+    004A9 9220 0073 STS	0x73,R2
+(0364)  
+(0365)  SEI(); //re-enable interrupts
+(0366)  //all peripherals are now initialized
+(0367) }
+FILE: C:\Users\dell\Dropbox\workspace\Hexapod_code_final\hexapod_motion.h
+(0001) 
+(0002) //#include "globals.h"
+(0003) #ifndef HEXAPOD_MOTION_H
+(0004) #define HEXAPOD_MOTION_H 0
+(0005) 
+(0006) #ifndef NO_ACTION
+(0007) #define NO_ACTION 200
+(0008) #endif
+(0009) int error_3B = 10, error_4B = 0, error_6B = 0;
+(0010) 
+(0011) void angle_value_calculation (void)
+    004AB 9478      BSET	7
+    004AC 9508      RET
+_angle_value_calculation:
+  temp                 --> R16
+  angle_value          --> R18
+    004AD 2722      CLR	R18
+    004AE 2733      CLR	R19
+(0012) {
+(0013)  unsigned int angle_value = 0;
+(0014)  unsigned int temp = 0;
+    004AF 2700      CLR	R16
+    004B0 2711      CLR	R17
+(0015)  if (degree > 180)
+    004B1 EB84      LDI	R24,0xB4
+    004B2 9020 0203 LDS	R2,degree
+    004B4 1582      CP	R24,R2
+    004B5 F410      BCC	0x04B8
+(0016)  degree = 180; // limiting the scope of the servo rotation
+    004B6 9380 0203 STS	degree,R24
+(0017)  
+(0018)  angle_value = 0xBF39 + (64 * (unsigned char) degree); //actual constant is 64.4
+    004B8 9020 0203 LDS	R2,degree
+    004BA E480      LDI	R24,0x40
+    004BB 9D82      MUL	R24,R2
+    004BC 0190      MOVW	R18,R0
+    004BD 5C27      SUBI	R18,0xC7
+    004BE 4430      SBCI	R19,0x40
+(0019)  
+(0020)  angle_lower_byte = (unsigned char) angle_value; //separating the lower byte
+    004BF 9320 0202 STS	angle_lower_byte,R18
+(0021)  
+(0022)  temp = angle_value >> 8;
+    004C1 0189      MOVW	R16,R18
+    004C2 2F01      MOV	R16,R17
+    004C3 2711      CLR	R17
+(0023)  angle_upper_byte = (unsigned char) temp; //separating the upper byte
+    004C4 9300 0201 STS	angle_upper_byte,R16
+    004C6 9508      RET
+_angle_1A:
+  angle                --> R10
+    004C7 92AA      ST	-Y,R10
+    004C8 2EA0      MOV	R10,R16
+(0024) }
+(0025) 
+(0026) void angle_1A (unsigned char angle)
+(0027) {
+(0028)  degree = angle;
+    004C9 92A0 0203 STS	degree,R10
+(0029)  angle_value_calculation();
+    004CB DFE1      RCALL	_angle_value_calculation
+(0030)  angle_upper_byte_1A = angle_upper_byte;
+    004CC 9020 0201 LDS	R2,angle_upper_byte
+    004CE 9220 0292 STS	angle_upper_byte_1A,R2
+(0031)  angle_lower_byte_1A = angle_lower_byte;
+    004D0 9020 0202 LDS	R2,angle_lower_byte
+    004D2 9220 0291 STS	angle_lower_byte_1A,R2
+    004D4 90A9      LD	R10,Y+
+    004D5 9508      RET
+_angle_1B:
+  angle                --> R10
+    004D6 92AA      ST	-Y,R10
+    004D7 2EA0      MOV	R10,R16
+(0032) }
+(0033) 
+(0034) void angle_1B (unsigned char angle)
+(0035) {
+(0036)  degree = angle;
+    004D8 92A0 0203 STS	degree,R10
+(0037)  angle_value_calculation();
+    004DA DFD2      RCALL	_angle_value_calculation
+(0038)  angle_upper_byte_1B = angle_upper_byte;
+    004DB 9020 0201 LDS	R2,angle_upper_byte
+    004DD 2433      CLR	R3
+    004DE 9230 0290 STS	angle_upper_byte_1B+1,R3
+    004E0 9220 028F STS	angle_upper_byte_1B,R2
+(0039)  angle_lower_byte_1B = angle_lower_byte;
+    004E2 9020 0202 LDS	R2,angle_lower_byte
+    004E4 2433      CLR	R3
+    004E5 9230 028E STS	angle_lower_byte_1B+1,R3
+    004E7 9220 028D STS	angle_lower_byte_1B,R2
+    004E9 90A9      LD	R10,Y+
+    004EA 9508      RET
+_angle_1C:
+  angle                --> R10
+    004EB 92AA      ST	-Y,R10
+    004EC 2EA0      MOV	R10,R16
+(0040) }
+(0041) 
+(0042) void angle_1C (unsigned char angle)
+(0043) {
+(0044)  degree = angle;
+    004ED 92A0 0203 STS	degree,R10
+(0045)  angle_value_calculation();
+    004EF DFBD      RCALL	_angle_value_calculation
+(0046)  angle_upper_byte_1C = angle_upper_byte;
+    004F0 9020 0201 LDS	R2,angle_upper_byte
+    004F2 2433      CLR	R3
+    004F3 9230 028C STS	angle_upper_byte_1C+1,R3
+    004F5 9220 028B STS	angle_upper_byte_1C,R2
+(0047)  angle_lower_byte_1C = angle_lower_byte;
+    004F7 9020 0202 LDS	R2,angle_lower_byte
+    004F9 2433      CLR	R3
+    004FA 9230 028A STS	angle_lower_byte_1C+1,R3
+    004FC 9220 0289 STS	angle_lower_byte_1C,R2
+    004FE 90A9      LD	R10,Y+
+    004FF 9508      RET
+_angle_2A:
+  angle                --> R10
+    00500 92AA      ST	-Y,R10
+    00501 2EA0      MOV	R10,R16
+(0048) }
+(0049) 
+(0050) void angle_2A (unsigned char angle)
+(0051) {
+(0052)  degree = angle;
+    00502 92A0 0203 STS	degree,R10
+(0053)  angle_value_calculation();
+    00504 DFA8      RCALL	_angle_value_calculation
+(0054)  angle_upper_byte_2A = angle_upper_byte;
+    00505 9020 0201 LDS	R2,angle_upper_byte
+    00507 9220 0288 STS	angle_upper_byte_2A,R2
+(0055)  angle_lower_byte_2A = angle_lower_byte;
+    00509 9020 0202 LDS	R2,angle_lower_byte
+    0050B 9220 0287 STS	angle_lower_byte_2A,R2
+    0050D 90A9      LD	R10,Y+
+    0050E 9508      RET
+_angle_2B:
+  angle                --> R10
+    0050F 92AA      ST	-Y,R10
+    00510 2EA0      MOV	R10,R16
+(0056) }
+(0057) 
+(0058) void angle_2B (unsigned char angle)
+(0059) {
+(0060)  degree = angle;
+    00511 92A0 0203 STS	degree,R10
+(0061)  angle_value_calculation();
+    00513 DF99      RCALL	_angle_value_calculation
+(0062)  angle_upper_byte_2B = angle_upper_byte;
+    00514 9020 0201 LDS	R2,angle_upper_byte
+    00516 2433      CLR	R3
+    00517 9230 0286 STS	angle_upper_byte_2B+1,R3
+    00519 9220 0285 STS	angle_upper_byte_2B,R2
+(0063)  angle_lower_byte_2B = angle_lower_byte;
+    0051B 9020 0202 LDS	R2,angle_lower_byte
+    0051D 2433      CLR	R3
+    0051E 9230 0284 STS	angle_lower_byte_2B+1,R3
+    00520 9220 0283 STS	angle_lower_byte_2B,R2
+    00522 90A9      LD	R10,Y+
+    00523 9508      RET
+_angle_2C:
+  angle                --> R10
+    00524 92AA      ST	-Y,R10
+    00525 2EA0      MOV	R10,R16
+(0064) }
+(0065) 
+(0066) void angle_2C (unsigned char angle)
+(0067) {
+(0068)  degree = angle;
+    00526 92A0 0203 STS	degree,R10
+(0069)  angle_value_calculation();
+    00528 DF84      RCALL	_angle_value_calculation
+(0070)  angle_upper_byte_2C = angle_upper_byte;
+    00529 9020 0201 LDS	R2,angle_upper_byte
+    0052B 2433      CLR	R3
+    0052C 9230 0282 STS	angle_upper_byte_2C+1,R3
+    0052E 9220 0281 STS	angle_upper_byte_2C,R2
+(0071)  angle_lower_byte_2C = angle_lower_byte;
+    00530 9020 0202 LDS	R2,angle_lower_byte
+    00532 2433      CLR	R3
+    00533 9230 0280 STS	angle_lower_byte_2C+1,R3
+    00535 9220 027F STS	angle_lower_byte_2C,R2
+    00537 90A9      LD	R10,Y+
+    00538 9508      RET
+_angle_3A:
+  angle                --> R10
+    00539 92AA      ST	-Y,R10
+    0053A 2EA0      MOV	R10,R16
+(0072) }
+(0073) 
+(0074) void angle_3A (unsigned char angle)
+(0075) {
+(0076)  degree = angle;
+    0053B 92A0 0203 STS	degree,R10
+(0077)  angle_value_calculation();
+    0053D DF6F      RCALL	_angle_value_calculation
+(0078)  angle_upper_byte_3A = angle_upper_byte;
+    0053E 9020 0201 LDS	R2,angle_upper_byte
+    00540 9220 027E STS	angle_upper_byte_3A,R2
+(0079)  angle_lower_byte_3A = angle_lower_byte;
+    00542 9020 0202 LDS	R2,angle_lower_byte
+    00544 9220 027D STS	angle_lower_byte_3A,R2
+    00546 90A9      LD	R10,Y+
+    00547 9508      RET
+_angle_3B:
+  angle                --> R10
+    00548 92AA      ST	-Y,R10
+    00549 2EA0      MOV	R10,R16
+(0080) }
+(0081) 
+(0082) void angle_3B (unsigned char angle)
+(0083) {
+(0084)  degree = angle + error_3B;
+    0054A 9020 0209 LDS	R2,error_3B
+    0054C 9030 020A LDS	R3,error_3B+1
+    0054E 2C4A      MOV	R4,R10
+    0054F 2455      CLR	R5
+    00550 0C42      ADD	R4,R2
+    00551 1C53      ADC	R5,R3
+    00552 9240 0203 STS	degree,R4
+(0085)  angle_value_calculation();
+    00554 DF58      RCALL	_angle_value_calculation
+(0086)  angle_upper_byte_3B = angle_upper_byte;
+    00555 9020 0201 LDS	R2,angle_upper_byte
+    00557 2433      CLR	R3
+    00558 9230 027C STS	angle_upper_byte_3B+1,R3
+    0055A 9220 027B STS	angle_upper_byte_3B,R2
+(0087)  angle_lower_byte_3B = angle_lower_byte;
+    0055C 9020 0202 LDS	R2,angle_lower_byte
+    0055E 2433      CLR	R3
+    0055F 9230 027A STS	angle_lower_byte_3B+1,R3
+    00561 9220 0279 STS	angle_lower_byte_3B,R2
+    00563 90A9      LD	R10,Y+
+    00564 9508      RET
+_angle_3C:
+  angle                --> R10
+    00565 92AA      ST	-Y,R10
+    00566 2EA0      MOV	R10,R16
+(0088) }
+(0089) 
+(0090) void angle_3C (unsigned char angle)
+(0091) {
+(0092)  degree = angle;
+    00567 92A0 0203 STS	degree,R10
+(0093)  angle_value_calculation();
+    00569 DF43      RCALL	_angle_value_calculation
+(0094)  angle_upper_byte_3C = angle_upper_byte;
+    0056A 9020 0201 LDS	R2,angle_upper_byte
+    0056C 2433      CLR	R3
+    0056D 9230 0278 STS	angle_upper_byte_3C+1,R3
+    0056F 9220 0277 STS	angle_upper_byte_3C,R2
+(0095)  angle_lower_byte_3C = angle_lower_byte;
+    00571 9020 0202 LDS	R2,angle_lower_byte
+    00573 2433      CLR	R3
+    00574 9230 0276 STS	angle_lower_byte_3C+1,R3
+    00576 9220 0275 STS	angle_lower_byte_3C,R2
+    00578 90A9      LD	R10,Y+
+    00579 9508      RET
+_angle_4A:
+  angle                --> R10
+    0057A 92AA      ST	-Y,R10
+    0057B 2EA0      MOV	R10,R16
+(0096) }
+(0097) 
+(0098) void angle_4A (unsigned char angle)
+(0099) {
+(0100)  degree = angle;
+    0057C 92A0 0203 STS	degree,R10
+(0101)  angle_value_calculation();
+    0057E DF2E      RCALL	_angle_value_calculation
+(0102)  angle_upper_byte_4A = angle_upper_byte;
+    0057F 9020 0201 LDS	R2,angle_upper_byte
+    00581 9220 0274 STS	angle_upper_byte_4A,R2
+(0103)  angle_lower_byte_4A = angle_lower_byte;
+    00583 9020 0202 LDS	R2,angle_lower_byte
+    00585 9220 0273 STS	angle_lower_byte_4A,R2
+    00587 90A9      LD	R10,Y+
+    00588 9508      RET
+_angle_4B:
+  angle                --> R10
+    00589 92AA      ST	-Y,R10
+    0058A 2EA0      MOV	R10,R16
+(0104) }
+(0105) 
+(0106) void angle_4B (unsigned char angle)
+(0107) {
+(0108)  degree = 180 - angle + error_4B;
+    0058B 2C2A      MOV	R2,R10
+    0058C 2433      CLR	R3
+    0058D EB84      LDI	R24,0xB4
+    0058E E090      LDI	R25,0
+    0058F 1982      SUB	R24,R2
+    00590 0993      SBC	R25,R3
+    00591 9020 020B LDS	R2,error_4B
+    00593 9030 020C LDS	R3,error_4B+1
+    00595 0D82      ADD	R24,R2
+    00596 1D93      ADC	R25,R3
+    00597 9380 0203 STS	degree,R24
+(0109)  angle_value_calculation();
+    00599 DF13      RCALL	_angle_value_calculation
+(0110)  angle_upper_byte_4B = angle_upper_byte;
+    0059A 9020 0201 LDS	R2,angle_upper_byte
+    0059C 2433      CLR	R3
+    0059D 9230 0272 STS	angle_upper_byte_4B+1,R3
+    0059F 9220 0271 STS	angle_upper_byte_4B,R2
+(0111)  angle_lower_byte_4B = angle_lower_byte;
+    005A1 9020 0202 LDS	R2,angle_lower_byte
+    005A3 2433      CLR	R3
+    005A4 9230 0270 STS	angle_lower_byte_4B+1,R3
+    005A6 9220 026F STS	angle_lower_byte_4B,R2
+    005A8 90A9      LD	R10,Y+
+    005A9 9508      RET
+_angle_4C:
+  angle                --> R10
+    005AA 92AA      ST	-Y,R10
+    005AB 2EA0      MOV	R10,R16
+(0112) }
+(0113) 
+(0114) void angle_4C (unsigned char angle)
+(0115) {
+(0116)  degree = 180 - angle;
+    005AC 2C2A      MOV	R2,R10
+    005AD 2433      CLR	R3
+    005AE EB84      LDI	R24,0xB4
+    005AF E090      LDI	R25,0
+    005B0 1982      SUB	R24,R2
+    005B1 0993      SBC	R25,R3
+    005B2 9380 0203 STS	degree,R24
+(0117)  angle_value_calculation();
+    005B4 DEF8      RCALL	_angle_value_calculation
+(0118)  angle_upper_byte_4C = angle_upper_byte;
+    005B5 9020 0201 LDS	R2,angle_upper_byte
+    005B7 2433      CLR	R3
+    005B8 9230 026E STS	angle_upper_byte_4C+1,R3
+    005BA 9220 026D STS	angle_upper_byte_4C,R2
+(0119)  angle_lower_byte_4C = angle_lower_byte;
+    005BC 9020 0202 LDS	R2,angle_lower_byte
+    005BE 2433      CLR	R3
+    005BF 9230 026C STS	angle_lower_byte_4C+1,R3
+    005C1 9220 026B STS	angle_lower_byte_4C,R2
+    005C3 90A9      LD	R10,Y+
+    005C4 9508      RET
+_angle_5A:
+  angle                --> R10
+    005C5 92AA      ST	-Y,R10
+    005C6 2EA0      MOV	R10,R16
+(0120) }
+(0121) 
+(0122) void angle_5A (unsigned char angle)
+(0123) {
+(0124)  degree = angle;
+    005C7 92A0 0203 STS	degree,R10
+(0125)  angle_value_calculation();
+    005C9 DEE3      RCALL	_angle_value_calculation
+(0126)  angle_upper_byte_5A = angle_upper_byte;
+    005CA 9020 0201 LDS	R2,angle_upper_byte
+    005CC 9220 026A STS	angle_upper_byte_5A,R2
+(0127)  angle_lower_byte_5A = angle_lower_byte;
+    005CE 9020 0202 LDS	R2,angle_lower_byte
+    005D0 9220 0269 STS	angle_lower_byte_5A,R2
+    005D2 90A9      LD	R10,Y+
+    005D3 9508      RET
+_angle_5B:
+  angle                --> R10
+    005D4 92AA      ST	-Y,R10
+    005D5 2EA0      MOV	R10,R16
+(0128) }
+(0129) 
+(0130) void angle_5B (unsigned char angle)
+(0131) {
+(0132)  degree =180 - angle;
+    005D6 2C2A      MOV	R2,R10
+    005D7 2433      CLR	R3
+    005D8 EB84      LDI	R24,0xB4
+    005D9 E090      LDI	R25,0
+    005DA 1982      SUB	R24,R2
+    005DB 0993      SBC	R25,R3
+    005DC 9380 0203 STS	degree,R24
+(0133)  angle_value_calculation();
+    005DE DECE      RCALL	_angle_value_calculation
+(0134)  angle_upper_byte_5B = angle_upper_byte;
+    005DF 9020 0201 LDS	R2,angle_upper_byte
+    005E1 2433      CLR	R3
+    005E2 9230 0268 STS	angle_upper_byte_5B+1,R3
+    005E4 9220 0267 STS	angle_upper_byte_5B,R2
+(0135)  angle_lower_byte_5B = angle_lower_byte;
+    005E6 9020 0202 LDS	R2,angle_lower_byte
+    005E8 2433      CLR	R3
+    005E9 9230 0266 STS	angle_lower_byte_5B+1,R3
+    005EB 9220 0265 STS	angle_lower_byte_5B,R2
+    005ED 90A9      LD	R10,Y+
+    005EE 9508      RET
+_angle_5C:
+  angle                --> R10
+    005EF 92AA      ST	-Y,R10
+    005F0 2EA0      MOV	R10,R16
+(0136) }
+(0137) 
+(0138) void angle_5C (unsigned char angle)
+(0139) {
+(0140)  degree = 180 - angle;
+    005F1 2C2A      MOV	R2,R10
+    005F2 2433      CLR	R3
+    005F3 EB84      LDI	R24,0xB4
+    005F4 E090      LDI	R25,0
+    005F5 1982      SUB	R24,R2
+    005F6 0993      SBC	R25,R3
+    005F7 9380 0203 STS	degree,R24
+(0141)  angle_value_calculation();
+    005F9 DEB3      RCALL	_angle_value_calculation
+(0142)  angle_upper_byte_5C = angle_upper_byte;
+    005FA 9020 0201 LDS	R2,angle_upper_byte
+    005FC 2433      CLR	R3
+    005FD 9230 0264 STS	angle_upper_byte_5C+1,R3
+    005FF 9220 0263 STS	angle_upper_byte_5C,R2
+(0143)  angle_lower_byte_5C = angle_lower_byte;
+    00601 9020 0202 LDS	R2,angle_lower_byte
+    00603 2433      CLR	R3
+    00604 9230 0262 STS	angle_lower_byte_5C+1,R3
+    00606 9220 0261 STS	angle_lower_byte_5C,R2
+    00608 90A9      LD	R10,Y+
+    00609 9508      RET
+_angle_6A:
+  angle                --> R10
+    0060A 92AA      ST	-Y,R10
+    0060B 2EA0      MOV	R10,R16
+(0144) }
+(0145) 
+(0146) void angle_6A (unsigned char angle)
+(0147) {
+(0148)  degree = angle;
+    0060C 92A0 0203 STS	degree,R10
+(0149)  angle_value_calculation();
+    0060E DE9E      RCALL	_angle_value_calculation
+(0150)  angle_upper_byte_6A = angle_upper_byte;
+    0060F 9020 0201 LDS	R2,angle_upper_byte
+    00611 9220 0260 STS	angle_upper_byte_6A,R2
+(0151)  angle_lower_byte_6A = angle_lower_byte;
+    00613 9020 0202 LDS	R2,angle_lower_byte
+    00615 9220 025F STS	angle_lower_byte_6A,R2
+    00617 90A9      LD	R10,Y+
+    00618 9508      RET
+_angle_6B:
+  angle                --> R10
+    00619 92AA      ST	-Y,R10
+    0061A 2EA0      MOV	R10,R16
+(0152) }
+(0153) 
+(0154) void angle_6B (unsigned char angle)
+(0155) {
+(0156)  degree = 180-angle + error_6B;
+    0061B 2C2A      MOV	R2,R10
+    0061C 2433      CLR	R3
+    0061D EB84      LDI	R24,0xB4
+    0061E E090      LDI	R25,0
+    0061F 1982      SUB	R24,R2
+    00620 0993      SBC	R25,R3
+    00621 9020 020D LDS	R2,error_6B
+    00623 9030 020E LDS	R3,error_6B+1
+    00625 0D82      ADD	R24,R2
+    00626 1D93      ADC	R25,R3
+    00627 9380 0203 STS	degree,R24
+(0157)  angle_value_calculation();
+    00629 DE83      RCALL	_angle_value_calculation
+(0158)  angle_upper_byte_6B = angle_upper_byte;
+    0062A 9020 0201 LDS	R2,angle_upper_byte
+    0062C 2433      CLR	R3
+    0062D 9230 025E STS	angle_upper_byte_6B+1,R3
+    0062F 9220 025D STS	angle_upper_byte_6B,R2
+(0159)  angle_lower_byte_6B = angle_lower_byte;
+    00631 9020 0202 LDS	R2,angle_lower_byte
+    00633 2433      CLR	R3
+    00634 9230 025C STS	angle_lower_byte_6B+1,R3
+    00636 9220 025B STS	angle_lower_byte_6B,R2
+    00638 90A9      LD	R10,Y+
+    00639 9508      RET
+_angle_6C:
+  angle                --> R10
+    0063A 92AA      ST	-Y,R10
+    0063B 2EA0      MOV	R10,R16
+(0160) }
+(0161) 
+(0162) void angle_6C (unsigned char angle)
+(0163) {
+(0164)  degree = 180 - angle;
+    0063C 2C2A      MOV	R2,R10
+    0063D 2433      CLR	R3
+    0063E EB84      LDI	R24,0xB4
+    0063F E090      LDI	R25,0
+    00640 1982      SUB	R24,R2
+    00641 0993      SBC	R25,R3
+    00642 9380 0203 STS	degree,R24
+(0165)  angle_value_calculation();
+    00644 DE68      RCALL	_angle_value_calculation
+(0166)  angle_upper_byte_6C = angle_upper_byte;
+    00645 9020 0201 LDS	R2,angle_upper_byte
+    00647 2433      CLR	R3
+    00648 9230 025A STS	angle_upper_byte_6C+1,R3
+    0064A 9220 0259 STS	angle_upper_byte_6C,R2
+(0167)  angle_lower_byte_6C = angle_lower_byte;
+    0064C 9020 0202 LDS	R2,angle_lower_byte
+    0064E 2433      CLR	R3
+    0064F 9230 0258 STS	angle_lower_byte_6C+1,R3
+    00651 9220 0257 STS	angle_lower_byte_6C,R2
+    00653 90A9      LD	R10,Y+
+    00654 9508      RET
+_angle_135:
+  C                    --> R20
+  B                    --> R22
+  A                    --> R10
+    00655 940E 0D3C CALL	push_xgsetF00C
+    00657 2F62      MOV	R22,R18
+    00658 2EA0      MOV	R10,R16
+    00659 814E      LDD	R20,Y+6
+(0168) }
+(0169) 
+(0170) void angle_135(unsigned char A, unsigned char B, unsigned char C)
+(0171) {
+(0172) 	if (A != NO_ACTION)
+    0065A 2D8A      MOV	R24,R10
+    0065B 3C88      CPI	R24,0xC8
+    0065C F031      BEQ	0x0663
+(0173) 	{
+(0174) 		angle_1A(A);
+    0065D 2F08      MOV	R16,R24
+    0065E DE68      RCALL	_angle_1A
+(0175) 		angle_3A(A);
+    0065F 2D0A      MOV	R16,R10
+    00660 DED8      RCALL	_angle_3A
+(0176) 		angle_5A(A);
+    00661 2D0A      MOV	R16,R10
+    00662 DF62      RCALL	_angle_5A
+(0177) 	}
+(0178) 	
+(0179) 	if (B != NO_ACTION)
+    00663 3C68      CPI	R22,0xC8
+    00664 F031      BEQ	0x066B
+(0180) 	{
+(0181) 		angle_1B(B);
+    00665 2F06      MOV	R16,R22
+    00666 DE6F      RCALL	_angle_1B
+(0182) 		angle_3B(B);
+    00667 2F06      MOV	R16,R22
+    00668 DEDF      RCALL	_angle_3B
+(0183) 		angle_5B(B);
+    00669 2F06      MOV	R16,R22
+    0066A DF69      RCALL	_angle_5B
+(0184) 	}
+(0185) 	
+(0186) 	if (C != NO_ACTION)
+    0066B 3C48      CPI	R20,0xC8
+    0066C F031      BEQ	0x0673
+(0187) 	{
+(0188) 		angle_1C(C);
+    0066D 2F04      MOV	R16,R20
+    0066E DE7C      RCALL	_angle_1C
+(0189) 		angle_3C(C);
+    0066F 2F04      MOV	R16,R20
+    00670 DEF4      RCALL	_angle_3C
+(0190) 		angle_5C(C);
+    00671 2F04      MOV	R16,R20
+    00672 DF7C      RCALL	_angle_5C
+(0191) 	}
+    00673 940C 0D43 JMP	pop_xgsetF00C
+_angle_246:
+  C                    --> R20
+  B                    --> R22
+  A                    --> R10
+    00675 940E 0D3C CALL	push_xgsetF00C
+    00677 2F62      MOV	R22,R18
+    00678 2EA0      MOV	R10,R16
+    00679 814E      LDD	R20,Y+6
+(0192) }
+(0193) 
+(0194) void angle_246(unsigned char A, unsigned char B, unsigned char C)
+(0195) {
+(0196) 	if (A != NO_ACTION)
+    0067A 2D8A      MOV	R24,R10
+    0067B 3C88      CPI	R24,0xC8
+    0067C F031      BEQ	0x0683
+(0197) 	{
+(0198) 		angle_2A(A);
+    0067D 2F08      MOV	R16,R24
+    0067E DE81      RCALL	_angle_2A
+(0199) 		angle_4A(A);
+    0067F 2D0A      MOV	R16,R10
+    00680 DEF9      RCALL	_angle_4A
+(0200) 		angle_6A(A);
+    00681 2D0A      MOV	R16,R10
+    00682 DF87      RCALL	_angle_6A
+(0201) 	}
+(0202) 	
+(0203) 	if (B != NO_ACTION)
+    00683 3C68      CPI	R22,0xC8
+    00684 F031      BEQ	0x068B
+(0204) 	{
+(0205) 		angle_2B(B);
+    00685 2F06      MOV	R16,R22
+    00686 DE88      RCALL	_angle_2B
+(0206) 		angle_4B(B);
+    00687 2F06      MOV	R16,R22
+    00688 DF00      RCALL	_angle_4B
+(0207) 		angle_6B(B);
+    00689 2F06      MOV	R16,R22
+    0068A DF8E      RCALL	_angle_6B
+(0208) 	}
+(0209) 	
+(0210) 	if (C != NO_ACTION)
+    0068B 3C48      CPI	R20,0xC8
+    0068C F031      BEQ	0x0693
+(0211) 	{
+(0212) 		angle_2C(C);
+    0068D 2F04      MOV	R16,R20
+    0068E DE95      RCALL	_angle_2C
+(0213) 		angle_4C(C);
+    0068F 2F04      MOV	R16,R20
+    00690 DF19      RCALL	_angle_4C
+(0214) 		angle_6C(C);
+    00691 2F04      MOV	R16,R20
+    00692 DFA7      RCALL	_angle_6C
+(0215) 	}
+    00693 940C 0D43 JMP	pop_xgsetF00C
+_angle_all:
+  C                    --> R14
+  B                    --> R12
+  A                    --> R10
+    00695 940E 0D21 CALL	push_xgset00FC
+    00697 2EC2      MOV	R12,R18
+    00698 2EA0      MOV	R10,R16
+    00699 9721      SBIW	R28,1
+    0069A 80EF      LDD	R14,Y+7
+(0216) }
+(0217) 
+(0218) void angle_all(unsigned char A, unsigned char B, unsigned char C)
+(0219) {
+(0220) 	angle_135(A, B, C);
+    0069B 82E8      ST	Y,R14
+    0069C 2D2C      MOV	R18,R12
+    0069D 2D0A      MOV	R16,R10
+    0069E DFB6      RCALL	_angle_135
+(0221) 	angle_246(A, B, C);
+    0069F 82E8      ST	Y,R14
+    006A0 2D2C      MOV	R18,R12
+    006A1 2D0A      MOV	R16,R10
+    006A2 DFD2      RCALL	_angle_246
+    006A3 9621      ADIW	R28,1
+    006A4 940C 0D16 JMP	pop_xgset00FC
+(0222) }
+(0223) 
+(0224) void servo_calibration (void)
+(0225) {
+(0226) angle_1A(90); angle_1B(90); angle_1C(0); angle_2A(90); angle_2B(90); angle_2C(0);
+_servo_calibration:
+    006A6 E50A      LDI	R16,0x5A
+    006A7 DE1F      RCALL	_angle_1A
+    006A8 E50A      LDI	R16,0x5A
+    006A9 DE2C      RCALL	_angle_1B
+    006AA 2700      CLR	R16
+    006AB DE3F      RCALL	_angle_1C
+    006AC E50A      LDI	R16,0x5A
+    006AD DE52      RCALL	_angle_2A
+    006AE E50A      LDI	R16,0x5A
+    006AF DE5F      RCALL	_angle_2B
+    006B0 2700      CLR	R16
+    006B1 DE72      RCALL	_angle_2C
+(0227) //1,2,3C angle0 - vertical?
+(0228) //4 5 6 angle180 - vertical?
+(0229) angle_3A(90); angle_3B(90); angle_3C(0); angle_4A(90); angle_4B(90); angle_4C(0);
+    006B2 E50A      LDI	R16,0x5A
+    006B3 DE85      RCALL	_angle_3A
+    006B4 E50A      LDI	R16,0x5A
+    006B5 DE92      RCALL	_angle_3B
+    006B6 2700      CLR	R16
+    006B7 DEAD      RCALL	_angle_3C
+    006B8 E50A      LDI	R16,0x5A
+    006B9 DEC0      RCALL	_angle_4A
+    006BA E50A      LDI	R16,0x5A
+    006BB DECD      RCALL	_angle_4B
+    006BC 2700      CLR	R16
+    006BD DEEC      RCALL	_angle_4C
+(0230) angle_5A(90); angle_5B(90); angle_5C(0); angle_6A(90); angle_6B(90); angle_6C(0);
+(0231) //angle_1A(90); angle_1B(90); angle_1C(90); angle_2A(90); angle_2B(90); angle_2C(90);
+(0232) //angle_3A(90); angle_3B(90); angle_3C(90); angle_4A(90); angle_4B(90); angle_4C(90);
+(0233) //angle_5A(90); angle_5B(90); angle_5C(90); angle_6A(90); angle_6B(90); angle_6C(90);
+(0234) }
+(0235) 
+(0236) #endif
+FILE: C:\Users\dell\Dropbox\workspace\Hexapod_code_final\main.c
+(0001) //ICC-AVR application builder : 11/4/2009 1:05:10 PM
+(0002) // Target : M2560
+(0003) // Crystal: 11.059Mhz
+(0004) 
+(0005) 
+(0006) 
+(0007) /*
+(0008) Pin name	Port		Anding (make 0)		Oring (make 1)
+(0009) SP LEFT	PL1		1111 1101	0xFD		0000 0010	0x02
+(0010) 
+(0011) 1A		PD5		1101 1111	0xDF		0010 0000	0x20
+(0012) 1B		PL2		1111 1011	0xFB		0000 0100	0x04
+(0013) 1C		PG1		1111 1101	0xFD		0000 0010	0x02
+(0014) 2A		PL6		1011 1111	0xBF		0100 0000	0x40
+(0015) 2B		PD4		1110 1111	0xEF		0001 0000	0x10
+(0016) 2C		PL7		0111 1111	0x7F		1000 0000	0x80
+(0017) 3A		PH6		1011 1111	0xBF		0100 0000	0x40
+(0018) 3B		PH4		1110 1111	0xEF		0001 0000	0x10
+(0019) 3C		PH5		1101 1111	0xDF		0010 0000	0x20
+(0020) SP RIGHT	PJ7		0111 1111	0x7F		1000 0000	0x80
+(0021) 4A		PG0		1111 1110	0xFE		0000 0001	0x01
+(0022) 4B		PD7		0111 1111	0x7F		1000 0000	0x80
+(0023) 4C		PD6		1011 1111	0xBF		0100 0000	0x40
+(0024) 5A		PJ5		1101 1111	0xDF		0010 0000	0x20
+(0025) 5B		PJ6		1011 1111	0xBF		0100 0000	0x40
+(0026) 5C		PJ4		1110 1111	0xEF		0001 0000	0x10
+(0027) 6A		PJ3		1111 0111	0XF7		0000 1000	0x08
+(0028) 6B		PJ1		1111 1101	0xFD		0000 0010	0x02
+(0029) 6C		PJ2		1111 1011	0xFB		0000 0100	0x04
+(0030) 
+(0031) Remote control communication protocoal
+(0032) transmitted command		received data
+(0033) 1						right joystick x axis 8 bit analog position;	center:0x24; left: 0x3B; right: 0x04
+(0034) 2						right joystick y axis 8 bit analog position;	center:0x24; up: 0x3B; down: 0x04
+(0035) 3						left joystick x axis 8 bit analog position;		center:0x3A; left: 0x23; right: 0x04
+(0036) 4						left joystick y axis 8 bit analog position;		center:0x1F; up: 0x34; down: 0x04
+(0037) 5						right joystick button
+(0038) 6						left joystick button
+(0039) 7						digital switches left 1,2 and right 1,2
+(0040) 						bit7: Right 2; bit6: right 1; bit4: left 1; bit3: left 2
+(0041) 
+(0042) Received data will be stored in the array unsigned char remote_data [8]; from the location 1 to 7 in the same order as the command.
+(0043) */
+(0044) 
+(0045) #include <iom2560v.h>
+(0046) #include <macros.h>
+(0047) 
+(0048) //#include "globals.h"
+(0049) #include "helpers.h"
+(0050) #include "init.h"
+(0051) #include "hexapod_motion.h"
+(0052) #include "dance_moves.h"
+(0053) 
+(0054) unsigned int i=0;
+(0055) 
+(0056) #define SIZE 50
+(0057) unsigned char recv_buffer[SIZE];
+(0058) unsigned int read_index, write_index;
+(0059) 
+(0060) unsigned char currentMove = 0, previousCmd = 0;
+(0061) 
+(0062) void servo_on (void)
+    006BE E50A      LDI	R16,0x5A
+    006BF DF05      RCALL	_angle_5A
+    006C0 E50A      LDI	R16,0x5A
+    006C1 DF12      RCALL	_angle_5B
+    006C2 2700      CLR	R16
+    006C3 DF2B      RCALL	_angle_5C
+    006C4 E50A      LDI	R16,0x5A
+    006C5 DF44      RCALL	_angle_6A
+    006C6 E50A      LDI	R16,0x5A
+    006C7 DF51      RCALL	_angle_6B
+    006C8 2700      CLR	R16
+    006C9 CF70      RJMP	_angle_6C
+_servo_on:
+    006CA 9A28      SBI	0x05,0
+    006CB 9508      RET
+(0063) { PORTB = PORTB | 0x01; }
+(0064) 
+(0065) void servo_off (void)
+(0066) { PORTB = PORTB & 0xFE; }
+_servo_off:
+    006CC B185      IN	R24,0x05
+    006CD 7F8E      ANDI	R24,0xFE
+    006CE B985      OUT	0x05,R24
+    006CF 9508      RET
+_uart0_rx_isr:
+  data                 --> R16
+    006D0 922A      ST	-Y,R2
+    006D1 923A      ST	-Y,R3
+    006D2 930A      ST	-Y,R16
+    006D3 938A      ST	-Y,R24
+    006D4 939A      ST	-Y,R25
+    006D5 93AA      ST	-Y,R26
+    006D6 93EA      ST	-Y,R30
+    006D7 93FA      ST	-Y,R31
+    006D8 B62F      IN	R2,0x3F
+    006D9 922A      ST	-Y,R2
+(0067)   
+(0068) // void stand(void){
+(0069)   // angle_1A(STAND_A); angle_1B(STAND_B); angle_1C(STAND_C); angle_2A(STAND_A); angle_2B(STAND_B); angle_2C(STAND_C);
+(0070) // 1,2,3C angle0 - vertical?
+(0071) // 4 5 6 angle180 - vertical?
+(0072) // angle_3A(STAND_A); angle_3B(STAND_B); angle_3C(STAND_C); angle_4A(STAND_A); angle_4B(STAND_B); angle_4C(STAND_C);
+(0073) // angle_5A(STAND_A); angle_5B(STAND_B); angle_5C(STAND_C); angle_6A(STAND_A); angle_6B(STAND_B); angle_6C(STAND_C);
+(0074)   // }
+(0075) /* 
+(0076) unsigned char leg_up = 0;
+(0077) void step(void)
+(0078) {
+(0079) 	motion_busy = 1; 
+(0080) 	
+(0081) 	if (leg_up == 0)
+(0082) 	{
+(0083) 		angle_1B(0);
+(0084) 		leg_up = 1;
+(0085) 	}
+(0086) 	else
+(0087) 	{
+(0088) 		angle_1B(40);
+(0089) 		leg_up = 0;
+(0090) 	}
+(0091) 	
+(0092) 	motion_busy = 0;
+(0093) }
+(0094) 
+(0095) void step2(void)
+(0096) {
+(0097) 	motion_busy = 1; 
+(0098) 	angle_1B(0);
+(0099) 	delay_1s();
+(0100) 	delay_1s();
+(0101) 	delay_1s();
+(0102) 	angle_1B(40);
+(0103) 	angle_2B(0);
+(0104) 	delay_1s();
+(0105) 	delay_1s();
+(0106) 	delay_1s();
+(0107) 	motion_busy = 0;
+(0108) }
+(0109) 
+(0110) void step3(void)
+(0111) {
+(0112) 	motion_busy = 1; 
+(0113) 	
+(0114) 	if (leg_up == 0)
+(0115) 	{
+(0116) 		leg_up = 1;
+(0117) 		angle_1B(0);
+(0118) 		angle_6B(0);
+(0119) 		
+(0120) 		angle_1C(40);
+(0121) 		angle_6C(40);
+(0122) 		
+(0123) 		angle_2B(70);
+(0124) 		angle_3B(70);
+(0125) 		angle_4B(70);
+(0126) 		angle_5B(70);
+(0127) 	}
+(0128) 	else
+(0129) 	{
+(0130) 		leg_up = 0;
+(0131) 		angle_1B(40);
+(0132) 		angle_6B(40);
+(0133) 		
+(0134) 		angle_1C(0);
+(0135) 		angle_6C(0);
+(0136) 		
+(0137) 		angle_2B(90);
+(0138) 		angle_3B(90);
+(0139) 		angle_4B(90);
+(0140) 		angle_5B(90);
+(0141) 	}
+(0142) 	
+(0143) 	motion_busy = 0;
+(0144) }
+(0145) 
+(0146) void step_down(void)
+(0147) {
+(0148) 	unsigned char pa = 30, pc = 0;;
+(0149) 	angle_1B(pa);
+(0150) 	angle_2B(pa);
+(0151) 	angle_3B(pa);
+(0152) 	angle_4B(pa);
+(0153) 	angle_5B(pa);
+(0154) 	angle_6B(pa);
+(0155) 	
+(0156) 	angle_1C(pc);
+(0157) 	angle_2C(pc);
+(0158) 	angle_3C(pc);
+(0159) 	angle_4C(pc);
+(0160) 	angle_5C(pc);
+(0161) 	angle_6C(pc);
+(0162) 	delay_250ms();
+(0163) }
+(0164) 
+(0165) void slow_step_down(void)
+(0166) {
+(0167) 	unsigned char i = 0;
+(0168) 	unsigned char pa = 30, pc = 0;
+(0169) 	
+(0170) 	for( i=1; i<16; i++)
+(0171) 	{
+(0172) 		pa = STAND_B - 2 * i;
+(0173) 		pc = STAND_C - 1 * i;
+(0174) 		if (i == 15)
+(0175) 			pc = 0;
+(0176) 		
+(0177) 		angle_1B(pa);
+(0178) 		angle_2B(pa);
+(0179) 		angle_3B(pa);
+(0180) 		angle_4B(pa);
+(0181) 		angle_5B(pa);
+(0182) 		angle_6B(pa);
+(0183) 	
+(0184) 		angle_1C(pc);
+(0185) 		angle_2C(pc);
+(0186) 		angle_3C(pc);
+(0187) 		angle_4C(pc);
+(0188) 		angle_5C(pc);
+(0189) 		angle_6C(pc);
+(0190) 		
+(0191) 		delay_50ms();
+(0192) 	}
+(0193) }
+(0194) 
+(0195) void step_up(void)
+(0196) {
+(0197) 	unsigned char pa = STAND_B, pc = STAND_C;;
+(0198) 	angle_1B(pa);
+(0199) 	angle_2B(pa);
+(0200) 	angle_3B(pa);
+(0201) 	angle_4B(pa);
+(0202) 	angle_5B(pa);
+(0203) 	angle_6B(pa);
+(0204) 	
+(0205) 	angle_1C(pc);
+(0206) 	angle_2C(pc);
+(0207) 	angle_3C(pc);
+(0208) 	angle_4C(pc);
+(0209) 	angle_5C(pc);
+(0210) 	angle_6C(pc);
+(0211) 	delay_250ms();
+(0212) }
+(0213) 
+(0214) void step_bounce()
+(0215) {
+(0216) 	step_down();
+(0217) 	// delay_250ms();
+(0218) 	step_up();
+(0219) 	// delay_1s();
+(0220) 	
+(0221) }
+(0222) 
+(0223) void step16(void)
+(0224) {
+(0225) 	motion_busy = 1; 
+(0226) 	
+(0227) 	if (leg_up == 0)
+(0228) 	{
+(0229) 		leg_up = 1;
+(0230) 		angle_1B(0);
+(0231) 		angle_6B(0);
+(0232) 		angle_1C(100);
+(0233) 		angle_6C(100);
+(0234) 		
+(0235) 		angle_2B(40);
+(0236) 		angle_3B(40);
+(0237) 		angle_4B(40);
+(0238) 		angle_5B(40);
+(0239) 		
+(0240) 		angle_2C(0);
+(0241) 		angle_3C(0);
+(0242) 		angle_4C(0);
+(0243) 		angle_5C(0);
+(0244) 	}
+(0245) 	else
+(0246) 	{
+(0247) 		leg_up = 0;
+(0248) 		stand();
+(0249) 		// angle_1B(STAND_B);
+(0250) 		// angle_6B(STAND_B);
+(0251) 		
+(0252) 		// angle_1C(STAND_C);
+(0253) 		// angle_6C(STAND_C);
+(0254) 		
+(0255) 		// angle_2B(STAND_B);
+(0256) 		// angle_3B(STAND_B);
+(0257) 		// angle_4B(STAND_B);
+(0258) 		// angle_5B(STAND_B);
+(0259) 	}
+(0260) 	
+(0261) 	motion_busy = 0;
+(0262) }
+(0263) 
+(0264) void step25(void)
+(0265) {
+(0266) 	motion_busy = 1; 
+(0267) 	
+(0268) 	if (leg_up == 0)
+(0269) 	{
+(0270) 		leg_up = 1;
+(0271) 		angle_2B(0);
+(0272) 		angle_5B(0);
+(0273) 		angle_2C(100);
+(0274) 		angle_5C(100);
+(0275) 		
+(0276) 		angle_1B(40);
+(0277) 		angle_3B(40);
+(0278) 		angle_4B(40);
+(0279) 		angle_6B(40);
+(0280) 		
+(0281) 		angle_1C(0);
+(0282) 		angle_3C(0);
+(0283) 		angle_4C(0);
+(0284) 		angle_6C(0);
+(0285) 	}
+(0286) 	else
+(0287) 	{
+(0288) 		leg_up = 0;
+(0289) 		stand();
+(0290) 		// angle_2B(STAND_B);
+(0291) 		// angle_5B(STAND_B);
+(0292) 		
+(0293) 		// angle_2C(STAND_C);
+(0294) 		// angle_5C(STAND_C);
+(0295) 		
+(0296) 		// angle_1B(STAND_B);
+(0297) 		// angle_3B(STAND_B);
+(0298) 		// angle_4B(STAND_B);
+(0299) 		// angle_6B(STAND_B);
+(0300) 	}
+(0301) 	
+(0302) 	motion_busy = 0;
+(0303) }
+(0304) 
+(0305) void step34(void)
+(0306) {
+(0307) 	motion_busy = 1; 
+(0308) 	
+(0309) 	if (leg_up == 0)
+(0310) 	{
+(0311) 		leg_up = 1;
+(0312) 		angle_3B(0);
+(0313) 		angle_4B(0);
+(0314) 		angle_3C(100);
+(0315) 		angle_4C(100);
+(0316) 		
+(0317) 		angle_2B(40);
+(0318) 		angle_1B(40);
+(0319) 		angle_6B(40);
+(0320) 		angle_5B(40);
+(0321) 		
+(0322) 		angle_2C(0);
+(0323) 		angle_1C(0);
+(0324) 		angle_6C(0);
+(0325) 		angle_5C(0);
+(0326) 	}
+(0327) 	else
+(0328) 	{
+(0329) 		leg_up = 0;
+(0330) 		stand();
+(0331) 		// angle_4B(STAND_B);
+(0332) 		// angle_3C(STAND_C);
+(0333) 		// angle_3B(STAND_B);
+(0334) 		
+(0335) 		// angle_4C(STAND_C);
+(0336) 		
+(0337) 		// angle_2B(STAND_B);
+(0338) 		// angle_1B(STAND_B);
+(0339) 		// angle_6B(STAND_B);
+(0340) 		// angle_5B(STAND_B);
+(0341) 	}
+(0342) 	
+(0343) 	motion_busy = 0;
+(0344) }
+(0345) 
+(0346) void legs246_up_left()
+(0347) {
+(0348) 	unsigned char i=0;
+(0349) 	//angle_246(30, 10, 140);
+(0350) 	for(i=1; i<21; i++)
+(0351) 	{
+(0352) 		angle_246(STAND_A - 3*i, 30 - i, 7*i);
+(0353) 		delay_50ms();
+(0354) 	}
+(0355) }
+(0356) 
+(0357) void danceMove_HandsAir(void)
+(0358) {
+(0359) 	motion_busy = 1;
+(0360) 	stand();
+(0361) 	delay_1s();
+(0362) 	
+(0363) 	
+(0364) 	step_bounce();
+(0365) 	step_bounce();
+(0366) 	
+(0367) 	delay_1s();
+(0368) 	step16();
+(0369) 	delay_250ms();
+(0370) 	delay_250ms();
+(0371) 	step16();
+(0372) 	delay_250ms();
+(0373) 	delay_250ms();
+(0374) 	
+(0375) 	step25();
+(0376) 	delay_250ms();
+(0377) 	delay_250ms();
+(0378) 	step25();
+(0379) 	delay_250ms();
+(0380) 	delay_250ms();
+(0381) 	
+(0382) 	step34();
+(0383) 	delay_250ms();
+(0384) 	delay_250ms();
+(0385) 	step34();
+(0386) 	delay_250ms();
+(0387) 	delay_250ms();
+(0388) 	
+(0389) 	step_bounce();
+(0390) 	step_bounce();
+(0391) 	motion_busy = 0;
+(0392) }
+(0393) 
+(0394) void basic_move(void)
+(0395) {
+(0396) 
+(0397) 	 motion_busy = 1; 
+(0398) 	  stand();
+(0399) 	 delay_1s();
+(0400) 	 //lift 1
+(0401) 	 angle_1B(40); angle_1C(90);
+(0402) 	 delay_1s();
+(0403) 	 //lift 2
+(0404) 	 angle_2B(40); angle_2C(90);
+(0405) 	 delay_1s();
+(0406) 	 //rest 1
+(0407) 	 angle_1B(70); angle_1C(20);
+(0408) 	 delay_1s();
+(0409) 	 //lift3
+(0410) 	 angle_3B(40); angle_3C(90);
+(0411) 	 delay_1s();
+(0412) 	 //rest2
+(0413) 	 angle_2B(70); angle_2C(20);
+(0414) 	 delay_1s();
+(0415) 	 //lift6
+(0416) 	 angle_6B(40); angle_6C(90);
+(0417) 	 delay_1s();
+(0418) 	 //rest3
+(0419) 	 angle_3B(70); angle_3C(20);
+(0420) 	 delay_1s();
+(0421) 	 //lift5
+(0422) 	 angle_5B(40); angle_5C(90);
+(0423) 	 delay_1s();
+(0424) 	 //rest6
+(0425) 	 angle_6B(70); angle_6C(20);
+(0426) 	 delay_1s();
+(0427) 	 //lift4
+(0428) 	 angle_4B(40); angle_4C(90);
+(0429) 	 delay_1s();
+(0430) 	 //rest5
+(0431) 	 angle_5B(70); angle_5C(20);
+(0432) 	 delay_1s();
+(0433) 	 //rest4
+(0434) 	 angle_4B(70); angle_4C(20);
+(0435) 	 delay_1s();
+(0436) 	 
+(0437) 	 stand();
+(0438) 	 delay_1s();
+(0439) 	 /* for (i = 0;i<10;i++){
+(0440) 	 angle_1B(140); angle_1C(90);
+(0441) 	 delay_250ms();
+(0442) 	 angle_1B(0); angle_1C(0);
+(0443) 	 delay_250ms();
+(0444) 	 }
+(0445) 	  *//* //legs 2 and 4 move forward
+(0446) 	 angle_2B(45); angle_2C(45); angle_4B(135); angle_4C(135); //front pair BC servo up 45
+(0447) 	 delay_250ms();
+(0448) 	 angle_2A(45); angle_4A(135); //front pair move forward while legs are up
+(0449) 	 delay_250ms();
+(0450) 	 angle_2B(90); angle_2C(90); angle_4B(90); angle_4C(90); // put down legs
+(0451) 	 delay_250ms();
+(0452) 	 
+(0453) 	 //legs 1 and 6 move forward
+(0454) 	 
+(0455) 	 angle_1B(45); angle_1C(45); angle_6B(135); angle_6C(135); //middel pair BC servo up 45
+(0456) 	 delay_250ms();
+(0457) 	 angle_1A(45); angle_6A(135); //middel pair move back while legs are up
+(0458) 	 delay_250ms();
+(0459) 	 angle_1B(90); angle_1C(90); angle_6B(90); angle_6C(90); // put down legs
+(0460) 	 delay_250ms();
+(0461) 	 
+(0462) 	 //legs 3 and 5 move forward
+(0463) 	 angle_3B(45); angle_3C(45); angle_5B(135); angle_5C(135); //middel pair BC servo up 45
+(0464) 	 delay_250ms();
+(0465) 	 angle_3A(45); angle_5A(135); //middel pair move forward while legs are up
+(0466) 	 delay_250ms();
+(0467) 	 angle_3B(90); angle_3C(90); angle_5B(90); angle_5C(90); // put down legs
+(0468) 	 delay_250ms(); 
+(0469) 	 
+(0470) 	 servo_calibration(); //push towards forward
+(0471) 	 motion_busy = 0; 
+(0472) }
+(0473) 	  
+(0474) void rotate(){
+(0475) 	unsigned char pa = 30, pb = 150, i = 0;
+(0476) 
+(0477) 	motion_busy = 1; 
+(0478) 	stand();
+(0479) 	
+(0480) 	for ( i = 0; i < 5; i ++)
+(0481) 	{
+(0482) 		angle_1A(pa);
+(0483) 		angle_2A(pa);
+(0484) 		angle_3A(pa);
+(0485) 		angle_4A(pa);
+(0486) 		angle_5A(pa);
+(0487) 		angle_6A(pa);
+(0488) 		
+(0489) 		delay_250ms();
+(0490) 		delay_250ms();
+(0491) 		
+(0492) 		angle_1A(pb);
+(0493) 		angle_2A(pb);
+(0494) 		angle_3A(pb);
+(0495) 		angle_4A(pb);
+(0496) 		angle_5A(pb);
+(0497) 		angle_6A(pb);
+(0498) 		
+(0499) 		
+(0500) 		delay_250ms();
+(0501) 		delay_250ms();
+(0502) 	}
+(0503) 	
+(0504) 	stand();
+(0505) 	delay_1s();
+(0506) 	motion_busy = 0;
+(0507) 	
+(0508) }
+(0509) 
+(0510) void finale(void)
+(0511) {
+(0512) 	unsigned char b = 180;
+(0513) 	motion_busy = 1;
+(0514) 	
+(0515) 	stand();
+(0516) 	delay_1s();
+(0517) 	
+(0518) 	// back legs to the back
+(0519) 	angle_6B(30);
+(0520) 	angle_3B(30);
+(0521) 	delay_250ms();
+(0522) 	angle_6A(50);
+(0523) 	angle_3A(130);
+(0524) 	delay_1s();
+(0525) 	angle_6B(90);
+(0526) 	angle_3B(60);
+(0527) 	delay_1s();
+(0528) 	
+(0529) 	// angle_2B(30);
+(0530) 	// angle_5B(30);
+(0531) 	// delay_250ms();
+(0532) 	// angle_2A(30);
+(0533) 	// angle_5A(150);
+(0534) 	// delay_1s();
+(0535) 	// angle_2B(60);
+(0536) 	// angle_5B(60);
+(0537) 	// delay_1s();
+(0538) 		
+(0539) 	angle_1B(b);
+(0540) 	angle_2B(b);
+(0541) 	angle_3B(b);
+(0542) 	angle_4B(b);
+(0543) 	angle_5B(b);
+(0544) 	angle_6B(b);
+(0545) 	buzzer_on();
+(0546) 	delay_1s();
+(0547) 	buzzer_off();
+(0548) 	
+(0549) 	angle_6C(40);
+(0550) 	delay_1s();
+(0551) 	angle_6C(50);
+(0552) 	delay_1s();
+(0553) 	angle_6C(60);
+(0554) 	delay_1s();
+(0555) 	angle_6C(70);
+(0556) 	delay_1s();
+(0557) 	angle_6C(80);
+(0558) 	delay_1s();
+(0559) 	angle_6C(90);
+(0560) 	delay_1s();
+(0561) 	// delay_1s();
+(0562) 
+(0563) 	
+(0564) 	// angle_1B(0);
+(0565) 	// angle_4B(0);
+(0566) 	// delay_250ms();
+(0567) 		
+(0568) 	
+(0569) 	motion_busy = 0;
+(0570) }
+(0571) 
+(0572) void slowTripod(void)
+(0573) {
+(0574) 	unsigned char i = 0;
+(0575) 	motion_busy = 1;
+(0576) 	stand();
+(0577) 	delay_1s();
+(0578) 	
+(0579) 	slow_step_down();
+(0580) 	
+(0581) 	legs246_up_left();
+(0582) 	
+(0583) 	for (i=1; i < 21; i++)
+(0584) 	{
+(0585) 		angle_135(NO_ACTION , 30 + 4*i, 3*i);
+(0586) 		angle_246(30 + 6*i, NO_ACTION, NO_ACTION);
+(0587) 		delay_50ms();
+(0588) 	}
+(0589) 	//delay_1s();
+(0590) 	
+(0591) 	for (i=1; i < 21; i++)
+(0592) 	{
+(0593) 		angle_135(NO_ACTION , 110 - 4*i, 60 - 3*i);
+(0594) 		angle_246(150 - 6*i, NO_ACTION, NO_ACTION);
+(0595) 		delay_50ms();
+(0596) 	}
+(0597) 	//delay_1s();
+(0598) 	for (i=1; i < 21; i++)
+(0599) 	{
+(0600) 		angle_135(NO_ACTION , 30 + 4*i, 3*i);
+(0601) 		angle_246(30 + 6*i, NO_ACTION, NO_ACTION);
+(0602) 		delay_50ms();
+(0603) 	}
+(0604) 	//delay_1s();
+(0605) 	
+(0606) 	for (i=1; i < 21; i++)
+(0607) 	{
+(0608) 		angle_135(NO_ACTION , 110 - 4*i, 60 - 3*i);
+(0609) 		angle_246(150 - 6*i, NO_ACTION, NO_ACTION);
+(0610) 		delay_50ms();
+(0611) 	}
+(0612) 	//delay_1s();
+(0613) 	
+(0614) 	for(i=1; i<21; i++)
+(0615) 	{
+(0616) 		angle_246(30 + 3*i, 10 + i, 140 - 7*i);
+(0617) 		delay_50ms();
+(0618) 	}
+(0619) 	
+(0620) 	for(i=1; i<21; i++)
+(0621) 	{
+(0622) 		if (i < 11)
+(0623) 		{
+(0624) 			angle_135(NO_ACTION, 30+i, i);
+(0625) 			angle_246(NO_ACTION, 30+i, i);
+(0626) 		}
+(0627) 		else
+(0628) 		{
+(0629) 			angle_135(NO_ACTION, 50+i, i);
+(0630) 			angle_246(NO_ACTION, 50+i, i);
+(0631) 		}
+(0632) 		delay_50ms();
+(0633) 	}
+(0634) 	
+(0635) 	stand();
+(0636) 	delay_1s();
+(0637) 	
+(0638) 	motion_busy = 0;
+(0639) }
+(0640) */
+(0641) 
+(0642) #pragma interrupt_handler uart0_rx_isr:iv_USART0_RXC
+(0643) void uart0_rx_isr(void)
+(0644) {
+(0645)  // uart has received a character in UDR
+(0646) 	unsigned char data = UDR0;
+    006DA 9100 00C6 LDS	R16,0xC6
+(0647) 	
+(0648) 	recv_buffer[write_index] = data;
+    006DC E18D      LDI	R24,0x1D
+    006DD E092      LDI	R25,2
+    006DE 91E0 0219 LDS	R30,write_index
+    006E0 91F0 021A LDS	R31,write_index+1
+    006E2 0FE8      ADD	R30,R24
+    006E3 1FF9      ADC	R31,R25
+    006E4 8300      ST	Z,R16
+(0649) 	write_index++;
+    006E5 9180 0219 LDS	R24,write_index
+    006E7 9190 021A LDS	R25,write_index+1
+    006E9 9601      ADIW	R24,1
+    006EA 9390 021A STS	write_index+1,R25
+    006EC 9380 0219 STS	write_index,R24
+(0650) 	
+(0651) 	if (write_index == SIZE)
+    006EE 3382      CPI	R24,0x32
+    006EF E0E0      LDI	R30,0
+    006F0 079E      CPC	R25,R30
+    006F1 F431      BNE	0x06F8
+(0652) 		write_index = 0;
+    006F2 2422      CLR	R2
+    006F3 2433      CLR	R3
+    006F4 9230 021A STS	write_index+1,R3
+    006F6 9220 0219 STS	write_index,R2
+    006F8 9029      LD	R2,Y+
+    006F9 BE2F      OUT	0x3F,R2
+    006FA 91F9      LD	R31,Y+
+    006FB 91E9      LD	R30,Y+
+    006FC 91A9      LD	R26,Y+
+    006FD 9199      LD	R25,Y+
+    006FE 9189      LD	R24,Y+
+    006FF 9109      LD	R16,Y+
+    00700 9039      LD	R3,Y+
+    00701 9029      LD	R2,Y+
+    00702 9518      RETI
+_processCommand:
+  cmd                  --> R20
+    00703 934A      ST	-Y,R20
+    00704 2F40      MOV	R20,R16
+(0653) 	
+(0654)  	// buzzer_on();
+(0655) 	// delay_250ms();
+(0656) 	// delay_250ms();
+(0657) 	// buzzer_off();
+(0658) 	
+(0659) }
+(0660) 
+(0661) void processCommand(unsigned char cmd)
+(0662) {
+(0663) 	// if (cmd == 'a') 
+(0664) 	// {
+(0665) 		// basic_move();
+(0666) 	// }	
+(0667) 	// else if (cmd == 'b') 
+(0668) 	// {
+(0669) 		// rotate();
+(0670) 	// }
+(0671) 	// else if (cmd == 'c') 
+(0672) 	// {
+(0673) 		// slowTripod();
+(0674) 	// }
+(0675) 	// else if (cmd == 'd') 
+(0676) 	// {
+(0677) 		// danceMove_HandsAir();
+(0678) 	// }
+(0679) 	// else if (cmd == 'e') 
+(0680) 	// {
+(0681) 	
+(0682) 	if (cmd == 'z') 
+    00705 374A      CPI	R20,0x7A
+    00706 F419      BNE	0x070A
+(0683) 	{
+(0684) 		cancelMove();
+    00707 940E 0CE5 CALL	_cancelMove
+(0685) 	}	
+    00709 C035      RJMP	0x073F
+(0686) 	else if (cmd == 'y') 
+    0070A 3749      CPI	R20,0x79
+    0070B F429      BNE	0x0711
+(0687) 	{
+(0688) 		performDanceMove(currentMove);
+    0070C 9100 0211 LDS	R16,currentMove
+    0070E 940E 0CB7 CALL	_performDanceMove
+(0689) 	}
+    00710 C02E      RJMP	0x073F
+(0690) 	else if (cmd == 'x')
+    00711 3748      CPI	R20,0x78
+    00712 F419      BNE	0x0716
+(0691) 	{ // Debug
+(0692) 		step16();
+    00713 940E 0848 CALL	_step16
+(0693) 	}
+    00715 C029      RJMP	0x073F
+(0694) 	else if (cmd >= 'a' && cmd <= 'f')
+    00716 3641      CPI	R20,0x61
+    00717 F070      BCS	0x0726
+    00718 E686      LDI	R24,0x66
+    00719 1784      CP	R24,R20
+    0071A F058      BCS	0x0726
+(0695) 	{
+(0696) 		currentMove = cmd;
+    0071B 9340 0211 STS	currentMove,R20
+(0697) 		setStage(0);
+    0071D 2700      CLR	R16
+    0071E 2711      CLR	R17
+    0071F 940E 0782 CALL	_setStage
+(0698) 		performDanceMove(currentMove);
+    00721 9100 0211 LDS	R16,currentMove
+    00723 940E 0CB7 CALL	_performDanceMove
+(0699) 	}
+    00725 C019      RJMP	0x073F
+(0700) 	else if (cmd >= 'g' && cmd <= 'g'){
+    00726 3647      CPI	R20,0x67
+    00727 F050      BCS	0x0732
+    00728 E687      LDI	R24,0x67
+    00729 1784      CP	R24,R20
+    0072A F038      BCS	0x0732
+(0701) 		setStage(0);
+    0072B 2700      CLR	R16
+    0072C 2711      CLR	R17
+    0072D 940E 0782 CALL	_setStage
+(0702) 		previousCmd = cmd;
+    0072F 9340 0212 STS	previousCmd,R20
+(0703) 	}
+    00731 C00D      RJMP	0x073F
+(0704) 	else
+(0705) 	{
+(0706) 		currentMove = previousCmd;
+    00732 9020 0212 LDS	R2,previousCmd
+    00734 9220 0211 STS	currentMove,R2
+(0707) 		performDanceMoveTime(currentMove, cmd);
+    00736 2F24      MOV	R18,R20
+    00737 2733      CLR	R19
+    00738 2D02      MOV	R16,R2
+    00739 2711      CLR	R17
+    0073A 940E 0CD8 CALL	_performDanceMoveTime
+(0708) 		previousCmd = 0;
+    0073C 2422      CLR	R2
+    0073D 9220 0212 STS	previousCmd,R2
+(0709) 	}
+    0073F 9149      LD	R20,Y+
+    00740 9508      RET
+(0710) 	
+(0711) }
+(0712) 
+(0713) void main(void)
+(0714) {
+(0715) 
+(0716)  unsigned char cmd;
+(0717)   init_devices();
+_main:
+  cmd                  --> R10
+    00741 DD44      RCALL	_init_devices
+(0718)  //uart0_init();
+(0719)  buzzer_on(); delay_1s(); buzzer_off();
+    00742 D95F      RCALL	_buzzer_on
+    00743 D9CA      RCALL	_delay_1s
+    00744 D95F      RCALL	_buzzer_off
+(0720)  servo_calibration(); //must be called as the first instruction
+    00745 DF60      RCALL	_servo_calibration
+(0721)  servo_on();//turning on the servo supply
+    00746 DF83      RCALL	_servo_on
+(0722)  stand();
+    00747 940E 0785 CALL	_stand
+(0723)  delay_1s();
+    00749 D9C4      RCALL	_delay_1s
+(0724)  delay_1s();
+    0074A D9C3      RCALL	_delay_1s
+(0725)  delay_1s();
+    0074B D9C2      RCALL	_delay_1s
+(0726)  buzzer_on(); delay_1s(); buzzer_off();
+    0074C D955      RCALL	_buzzer_on
+    0074D D9C0      RCALL	_delay_1s
+    0074E D955      RCALL	_buzzer_off
+(0727)  
+(0728)  read_index = 0;
+    0074F 2422      CLR	R2
+    00750 2433      CLR	R3
+    00751 9230 021C STS	read_index+1,R3
+    00753 9220 021B STS	read_index,R2
+(0729)  write_index = 0;
+    00755 9230 021A STS	write_index+1,R3
+    00757 9220 0219 STS	write_index,R2
+    00759 C023      RJMP	0x077D
+(0730)  
+(0731)  // delay_1s(); delay_1s();
+(0732)  
+(0733)  //calculate finale time
+(0734)  // processCommand('h');
+(0735)  // delay_1s(); delay_1s();
+(0736)  // buzzer_on(); delay_1s(); buzzer_off();
+(0737)  
+(0738)  
+(0739)  while(1)
+(0740)  {
+(0741) 	if (read_index != write_index)
+    0075A 9020 0219 LDS	R2,write_index
+    0075C 9030 021A LDS	R3,write_index+1
+    0075E 9040 021B LDS	R4,read_index
+    00760 9050 021C LDS	R5,read_index+1
+    00762 1442      CP	R4,R2
+    00763 0453      CPC	R5,R3
+    00764 F0C1      BEQ	0x077D
+(0742) 	{
+(0743) 		cmd = recv_buffer[read_index];
+    00765 E18D      LDI	R24,0x1D
+    00766 E092      LDI	R25,2
+    00767 01F2      MOVW	R30,R4
+    00768 0FE8      ADD	R30,R24
+    00769 1FF9      ADC	R31,R25
+    0076A 80A0      LD	R10,Z
+(0744) 		read_index++;
+    0076B 01C2      MOVW	R24,R4
+    0076C 9601      ADIW	R24,1
+    0076D 9390 021C STS	read_index+1,R25
+    0076F 9380 021B STS	read_index,R24
+(0745) 		if (read_index == SIZE) read_index = 0;
+    00771 3382      CPI	R24,0x32
+    00772 E0E0      LDI	R30,0
+    00773 079E      CPC	R25,R30
+    00774 F431      BNE	0x077B
+    00775 2422      CLR	R2
+    00776 2433      CLR	R3
+    00777 9230 021C STS	read_index+1,R3
+    00779 9220 021B STS	read_index,R2
+(0746) 		processCommand(cmd);
+(0747) 	
+(0748) 	}
+(0749) 	
+(0750)  }
+(0751)  
+(0752)  
+(0753)  
+(0754)  
+(0755)  // step3();
+(0756)  // delay_1s();
+(0757)  // step3();
+(0758)  // delay_1s();
+(0759)  // delay_1s();
+(0760)  
+(0761)  // servo_calibration();
+(0762)  
+(0763)  // rotate();
+(0764)  // delay_1s();
+(0765)  
+(0766)  //danceMove_HandsAir();
+(0767)  
+(0768)  //slowTripod();
+(0769)  //stand();
+(0770)  
+(0771)  //finale();
+(0772) // buzzer_on(); delay_1s(); buzzer_off();
+(0773)  // // insert your functional code here...
+(0774)  // servo_calibration(); //must be called as the first instruction
+(0775)  // servo_on();//turning on the servo supply
+(0776)  // delay_1s();
+(0777)  // delay_1s();
+(0778)  // delay_1s();
+(0779)  // buzzer_on(); delay_1s(); buzzer_off();
+(0780)  // stand();
+(0781)  // delay_1s();
+(0782)  // delay_1s();
+(0783)  // delay_1s();
+(0784)  // // basic_move();
+(0785)  // step();
+(0786)  // stand();
+(0787)  // /*forward();
+(0788)  // while(motion_busy == 1);
+(0789)  // forward();
+(0790)  // while(motion_busy == 1);
+(0791)  // forward();
+(0792)  // while(motion_busy == 1);
+(0793)  
+(0794)  // buzzer_on(); delay_1s(); buzzer_off();
+(0795)  // back();
+(0796)  // while(motion_busy == 1);
+(0797)  // back();
+(0798)  // while(motion_busy == 1);
+(0799)  // back();
+(0800)  
+(0801)  // buzzer_on(); delay_1s(); buzzer_off();
+(0802)  // while(motion_busy == 1);
+(0803)  // robot_rotate_anticlockwise_7_5(); 
+(0804)  // while(motion_busy == 1);
+(0805)  // robot_rotate_anticlockwise_7_5(); 
+(0806)  // while(motion_busy == 1);
+(0807)  // robot_rotate_anticlockwise_7_5(); 
+(0808)  // while(motion_busy == 1);
+(0809)  // robot_rotate_clockwise_7_5();
+(0810)  // while(motion_busy == 1);
+(0811)  // robot_rotate_clockwise_7_5();
+(0812)  // while(motion_busy == 1);
+(0813)  // robot_rotate_clockwise_7_5();
+(0814)  // while(motion_busy == 1); 
+(0815)  
+(0816)  
+(0817)    // */
+(0818) }
+FILE: C:\Users\dell\Dropbox\workspace\Hexapod_code_final\dance_moves.c
+(0001) #include <iom2560v.h>
+(0002) #include <macros.h>
+(0003) #include "globalFunctions.h"
+(0004) #include "dance_moves.h"
+(0005) 
+(0006) 
+(0007) #ifndef NO_ACTION
+(0008) #define NO_ACTION 200
+(0009) #endif
+(0010) 
+(0011) unsigned char toggle = 0, motion_busy = 0;
+(0012) unsigned char STAND_A = 90, STAND_B = 60, STAND_C = 20;
+(0013) unsigned char stage = 0;
+(0014) 
+(0015) unsigned char getStage(void)
+    0077B 2D0A      MOV	R16,R10
+    0077C DF86      RCALL	_processCommand
+    0077D CFDC      RJMP	0x075A
+    0077E 9508      RET
+_getStage:
+    0077F 9100 0218 LDS	R16,stage
+    00781 9508      RET
+(0016) {
+(0017) 	return stage;
+(0018) }
+(0019) 
+(0020) void setStage(unsigned char newStage)
+(0021) {
+(0022) 	stage = newStage;
+_setStage:
+  newStage             --> R16
+    00782 9300 0218 STS	stage,R16
+    00784 9508      RET
+(0023) }
+(0024) 
+(0025) void stand(void)
+(0026) {
+(0027) 	angle_1A(STAND_A); angle_1B(STAND_B); angle_1C(STAND_C); angle_2A(STAND_A); angle_2B(STAND_B); angle_2C(STAND_C);
+_stand:
+    00785 9100 0215 LDS	R16,STAND_A
+    00787 2711      CLR	R17
+    00788 940E 04C7 CALL	_angle_1A
+    0078A 9100 0216 LDS	R16,STAND_B
+    0078C 2711      CLR	R17
+    0078D 940E 04D6 CALL	_angle_1B
+    0078F 9100 0217 LDS	R16,STAND_C
+    00791 2711      CLR	R17
+    00792 940E 04EB CALL	_angle_1C
+    00794 9100 0215 LDS	R16,STAND_A
+    00796 2711      CLR	R17
+    00797 940E 0500 CALL	_angle_2A
+    00799 9100 0216 LDS	R16,STAND_B
+    0079B 2711      CLR	R17
+    0079C 940E 050F CALL	_angle_2B
+    0079E 9100 0217 LDS	R16,STAND_C
+    007A0 2711      CLR	R17
+    007A1 940E 0524 CALL	_angle_2C
+(0028) 	//1,2,3C angle0 - vertical?
+(0029) 	//4 5 6 angle180 - vertical?
+(0030) 	angle_3A(STAND_A); angle_3B(STAND_B); angle_3C(STAND_C); angle_4A(STAND_A); angle_4B(STAND_B); angle_4C(STAND_C);
+    007A3 9100 0215 LDS	R16,STAND_A
+    007A5 2711      CLR	R17
+    007A6 940E 0539 CALL	_angle_3A
+    007A8 9100 0216 LDS	R16,STAND_B
+    007AA 2711      CLR	R17
+    007AB 940E 0548 CALL	_angle_3B
+    007AD 9100 0217 LDS	R16,STAND_C
+    007AF 2711      CLR	R17
+    007B0 940E 0565 CALL	_angle_3C
+    007B2 9100 0215 LDS	R16,STAND_A
+    007B4 2711      CLR	R17
+    007B5 940E 057A CALL	_angle_4A
+    007B7 9100 0216 LDS	R16,STAND_B
+    007B9 2711      CLR	R17
+    007BA 940E 0589 CALL	_angle_4B
+    007BC 9100 0217 LDS	R16,STAND_C
+    007BE 2711      CLR	R17
+    007BF 940E 05AA CALL	_angle_4C
+(0031) 	angle_5A(STAND_A); angle_5B(STAND_B); angle_5C(STAND_C); angle_6A(STAND_A); angle_6B(STAND_B); angle_6C(STAND_C);
+    007C1 9100 0215 LDS	R16,STAND_A
+    007C3 2711      CLR	R17
+    007C4 940E 05C5 CALL	_angle_5A
+    007C6 9100 0216 LDS	R16,STAND_B
+    007C8 2711      CLR	R17
+    007C9 940E 05D4 CALL	_angle_5B
+    007CB 9100 0217 LDS	R16,STAND_C
+    007CD 2711      CLR	R17
+    007CE 940E 05EF CALL	_angle_5C
+    007D0 9100 0215 LDS	R16,STAND_A
+    007D2 2711      CLR	R17
+    007D3 940E 060A CALL	_angle_6A
+    007D5 9100 0216 LDS	R16,STAND_B
+    007D7 2711      CLR	R17
+    007D8 940E 0619 CALL	_angle_6B
+    007DA 9100 0217 LDS	R16,STAND_C
+    007DC 2711      CLR	R17
+    007DD 940C 063A JMP	_angle_6C
+_step_up:
+  pc                   --> R22
+  pb                   --> R20
+    007DF 934A      ST	-Y,R20
+    007E0 936A      ST	-Y,R22
+    007E1 9722      SBIW	R28,2
+(0032) }
+(0033) 
+(0034) void step_up(void)
+(0035) {
+(0036) 	unsigned char pb =150, pc = 120;
+    007E2 E946      LDI	R20,0x96
+    007E3 E768      LDI	R22,0x78
+(0037) 	angle_all(NO_ACTION,pb,pc);
+    007E4 2E26      MOV	R2,R22
+    007E5 2433      CLR	R3
+    007E6 8239      STD	Y+1,R3
+    007E7 8228      ST	Y,R2
+    007E8 2F24      MOV	R18,R20
+    007E9 2733      CLR	R19
+    007EA EC08      LDI	R16,0xC8
+    007EB E010      LDI	R17,0
+    007EC 940E 0695 CALL	_angle_all
+    007EE 9622      ADIW	R28,2
+    007EF 9169      LD	R22,Y+
+    007F0 9149      LD	R20,Y+
+    007F1 9508      RET
+_step_up_slow:
+  pc                   --> R22
+  pb                   --> R20
+    007F2 934A      ST	-Y,R20
+    007F3 936A      ST	-Y,R22
+    007F4 9722      SBIW	R28,2
+(0038) }
+(0039) 
+(0040) void step_up_slow(void)
+(0041) {
+(0042) 	unsigned char pb = 150, pc = 120;
+    007F5 E946      LDI	R20,0x96
+    007F6 E768      LDI	R22,0x78
+(0043) 	angle_all(NO_ACTION,pb,pc);
+    007F7 2E26      MOV	R2,R22
+    007F8 2433      CLR	R3
+    007F9 8239      STD	Y+1,R3
+    007FA 8228      ST	Y,R2
+    007FB 2F24      MOV	R18,R20
+    007FC 2733      CLR	R19
+    007FD EC08      LDI	R16,0xC8
+    007FE E010      LDI	R17,0
+    007FF 940E 0695 CALL	_angle_all
+    00801 9622      ADIW	R28,2
+    00802 9169      LD	R22,Y+
+    00803 9149      LD	R20,Y+
+    00804 9508      RET
+_step_up_zhigzhig:
+  j                    --> R20
+  i                    --> R22
+  s                    --> R20
+    00805 940E 0D32 CALL	push_xgsetF000
+    00807 2F40      MOV	R20,R16
+    00808 9722      SBIW	R28,2
+(0044) }
+(0045) 
+(0046) void step_up_zhigzhig(unsigned char s)
+(0047) {
+(0048) 	unsigned char i = s - 4;
+    00809 2F64      MOV	R22,R20
+    0080A 5064      SUBI	R22,4
+(0049) 	int j = 1;
+    0080B E041      LDI	R20,1
+    0080C E050      LDI	R21,0
+(0050) 	if (toggle == 0)
+    0080D 9020 0213 LDS	R2,toggle
+    0080F 2022      TST	R2
+    00810 F421      BNE	0x0815
+(0051) 	{
+(0052) 		toggle = 1;
+    00811 E081      LDI	R24,1
+    00812 9380 0213 STS	toggle,R24
+(0053) 		j = 1;
+(0054) 	}
+    00814 C009      RJMP	0x081E
+(0055) 	else if (toggle == 1)
+    00815 9180 0213 LDS	R24,toggle
+    00817 3081      CPI	R24,1
+    00818 F429      BNE	0x081E
+(0056) 	{
+(0057) 		toggle = 0;
+    00819 2422      CLR	R2
+    0081A 9220 0213 STS	toggle,R2
+(0058) 		j = -1;
+    0081C EF4F      LDI	R20,0xFF
+    0081D EF5F      LDI	R21,0xFF
+(0059) 	}
+(0060) 	
+(0061) 	angle_all(90+30*j,30+12*i,12*i);
+    0081E E08C      LDI	R24,0xC
+    0081F 9F86      MUL	R24,R22
+    00820 8219      STD	Y+1,R1
+    00821 8208      ST	Y,R0
+    00822 0190      MOVW	R18,R0
+    00823 5E22      SUBI	R18,0xE2
+    00824 4F3F      SBCI	R19,0xFF
+    00825 E10E      LDI	R16,0x1E
+    00826 E010      LDI	R17,0
+    00827 932F      PUSH	R18
+    00828 933F      PUSH	R19
+    00829 019A      MOVW	R18,R20
+    0082A 940E 0D06 CALL	empy16s
+    0082C 913F      POP	R19
+    0082D 912F      POP	R18
+    0082E 5A06      SUBI	R16,0xA6
+    0082F 4F1F      SBCI	R17,0xFF
+    00830 940E 0695 CALL	_angle_all
+    00832 9622      ADIW	R28,2
+    00833 940C 0D37 JMP	pop_xgsetF000
+_step_down:
+  pc                   --> R10
+  pb                   --> R20
+    00835 92AA      ST	-Y,R10
+    00836 934A      ST	-Y,R20
+    00837 9722      SBIW	R28,2
+(0062) }
+(0063) 
+(0064) 
+(0065) void step_down(void)
+(0066) {
+(0067) 	unsigned char pb = 30, pc = 0;
+    00838 E14E      LDI	R20,0x1E
+    00839 24AA      CLR	R10
+(0068) 	angle_all(NO_ACTION,pb,pc);
+    0083A 2C2A      MOV	R2,R10
+    0083B 2433      CLR	R3
+    0083C 8239      STD	Y+1,R3
+    0083D 8228      ST	Y,R2
+    0083E 2F24      MOV	R18,R20
+    0083F 2733      CLR	R19
+    00840 EC08      LDI	R16,0xC8
+    00841 E010      LDI	R17,0
+    00842 940E 0695 CALL	_angle_all
+    00844 9622      ADIW	R28,2
+    00845 9149      LD	R20,Y+
+    00846 90A9      LD	R10,Y+
+    00847 9508      RET
+(0069) }
+(0070) void step16(void)
+(0071) {
+(0072) 	if (toggle == 0)
+_step16:
+    00848 9020 0213 LDS	R2,toggle
+    0084A 2022      TST	R2
+    0084B F5A1      BNE	0x0880
+(0073) 	{
+(0074) 		toggle = 1;
+    0084C E081      LDI	R24,1
+    0084D 9380 0213 STS	toggle,R24
+(0075) 		angle_1B(0);
+    0084F 2700      CLR	R16
+    00850 2711      CLR	R17
+    00851 940E 04D6 CALL	_angle_1B
+(0076) 		angle_6B(0);
+    00853 2700      CLR	R16
+    00854 2711      CLR	R17
+    00855 940E 0619 CALL	_angle_6B
+(0077) 		angle_1C(100);
+    00857 E604      LDI	R16,0x64
+    00858 E010      LDI	R17,0
+    00859 940E 04EB CALL	_angle_1C
+(0078) 		angle_6C(100);
+    0085B E604      LDI	R16,0x64
+    0085C E010      LDI	R17,0
+    0085D 940E 063A CALL	_angle_6C
+(0079) 		
+(0080) 		angle_2B(40);
+    0085F E208      LDI	R16,0x28
+    00860 E010      LDI	R17,0
+    00861 940E 050F CALL	_angle_2B
+(0081) 		angle_3B(40);
+    00863 E208      LDI	R16,0x28
+    00864 E010      LDI	R17,0
+    00865 940E 0548 CALL	_angle_3B
+(0082) 		angle_4B(40);
+    00867 E208      LDI	R16,0x28
+    00868 E010      LDI	R17,0
+    00869 940E 0589 CALL	_angle_4B
+(0083) 		angle_5B(40);
+    0086B E208      LDI	R16,0x28
+    0086C E010      LDI	R17,0
+    0086D 940E 05D4 CALL	_angle_5B
+(0084) 		
+(0085) 		angle_2C(0);
+    0086F 2700      CLR	R16
+    00870 2711      CLR	R17
+    00871 940E 0524 CALL	_angle_2C
+(0086) 		angle_3C(0);
+    00873 2700      CLR	R16
+    00874 2711      CLR	R17
+    00875 940E 0565 CALL	_angle_3C
+(0087) 		angle_4C(0);
+    00877 2700      CLR	R16
+    00878 2711      CLR	R17
+    00879 940E 05AA CALL	_angle_4C
+(0088) 		angle_5C(0);
+    0087B 2700      CLR	R16
+    0087C 2711      CLR	R17
+    0087D 940E 05EF CALL	_angle_5C
+(0089) 	}
+    0087F C004      RJMP	0x0884
+(0090) 	else
+(0091) 	{
+(0092) 		toggle = 0;
+    00880 2422      CLR	R2
+    00881 9220 0213 STS	toggle,R2
+(0093) 		stand();
+    00883 DF01      RCALL	_stand
+(0094) 		// angle_1B(STAND_B);
+(0095) 		// angle_6B(STAND_B);
+(0096) 		
+(0097) 		// angle_1C(STAND_C);
+(0098) 		// angle_6C(STAND_C);
+(0099) 		
+(0100) 		// angle_2B(STAND_B);
+(0101) 		// angle_3B(STAND_B);
+(0102) 		// angle_4B(STAND_B);
+(0103) 		// angle_5B(STAND_B);
+(0104) 	}
+    00884 9508      RET
+(0105) }
+(0106) 
+(0107) void step25(void)
+(0108) {
+(0109) 	if (toggle == 0)
+_step25:
+    00885 9020 0213 LDS	R2,toggle
+    00887 2022      TST	R2
+    00888 F5A1      BNE	0x08BD
+(0110) 	{
+(0111) 		toggle = 1;
+    00889 E081      LDI	R24,1
+    0088A 9380 0213 STS	toggle,R24
+(0112) 		angle_2B(0);
+    0088C 2700      CLR	R16
+    0088D 2711      CLR	R17
+    0088E 940E 050F CALL	_angle_2B
+(0113) 		angle_5B(0);
+    00890 2700      CLR	R16
+    00891 2711      CLR	R17
+    00892 940E 05D4 CALL	_angle_5B
+(0114) 		angle_2C(100);
+    00894 E604      LDI	R16,0x64
+    00895 E010      LDI	R17,0
+    00896 940E 0524 CALL	_angle_2C
+(0115) 		angle_5C(100);
+    00898 E604      LDI	R16,0x64
+    00899 E010      LDI	R17,0
+    0089A 940E 05EF CALL	_angle_5C
+(0116) 		
+(0117) 		angle_1B(40);
+    0089C E208      LDI	R16,0x28
+    0089D E010      LDI	R17,0
+    0089E 940E 04D6 CALL	_angle_1B
+(0118) 		angle_3B(40);
+    008A0 E208      LDI	R16,0x28
+    008A1 E010      LDI	R17,0
+    008A2 940E 0548 CALL	_angle_3B
+(0119) 		angle_4B(40);
+    008A4 E208      LDI	R16,0x28
+    008A5 E010      LDI	R17,0
+    008A6 940E 0589 CALL	_angle_4B
+(0120) 		angle_6B(40);
+    008A8 E208      LDI	R16,0x28
+    008A9 E010      LDI	R17,0
+    008AA 940E 0619 CALL	_angle_6B
+(0121) 		
+(0122) 		angle_1C(0);
+    008AC 2700      CLR	R16
+    008AD 2711      CLR	R17
+    008AE 940E 04EB CALL	_angle_1C
+(0123) 		angle_3C(0);
+    008B0 2700      CLR	R16
+    008B1 2711      CLR	R17
+    008B2 940E 0565 CALL	_angle_3C
+(0124) 		angle_4C(0);
+    008B4 2700      CLR	R16
+    008B5 2711      CLR	R17
+    008B6 940E 05AA CALL	_angle_4C
+(0125) 		angle_6C(0);
+    008B8 2700      CLR	R16
+    008B9 2711      CLR	R17
+    008BA 940E 063A CALL	_angle_6C
+(0126) 	}
+    008BC C004      RJMP	0x08C1
+(0127) 	else
+(0128) 	{
+(0129) 		toggle = 0;
+    008BD 2422      CLR	R2
+    008BE 9220 0213 STS	toggle,R2
+(0130) 		stand();
+    008C0 DEC4      RCALL	_stand
+(0131) 		// angle_2B(STAND_B);
+(0132) 		// angle_5B(STAND_B);
+(0133) 		
+(0134) 		// angle_2C(STAND_C);
+(0135) 		// angle_5C(STAND_C);
+(0136) 		
+(0137) 		// angle_1B(STAND_B);
+(0138) 		// angle_3B(STAND_B);
+(0139) 		// angle_4B(STAND_B);
+(0140) 		// angle_6B(STAND_B);
+(0141) 	}
+    008C1 9508      RET
+(0142) }
+(0143) 
+(0144) void step34(void)
+(0145) {
+(0146) 	if (toggle == 0)
+_step34:
+    008C2 9020 0213 LDS	R2,toggle
+    008C4 2022      TST	R2
+    008C5 F5A1      BNE	0x08FA
+(0147) 	{
+(0148) 		toggle = 1;
+    008C6 E081      LDI	R24,1
+    008C7 9380 0213 STS	toggle,R24
+(0149) 		angle_3B(0);
+    008C9 2700      CLR	R16
+    008CA 2711      CLR	R17
+    008CB 940E 0548 CALL	_angle_3B
+(0150) 		angle_4B(0);
+    008CD 2700      CLR	R16
+    008CE 2711      CLR	R17
+    008CF 940E 0589 CALL	_angle_4B
+(0151) 		angle_3C(100);
+    008D1 E604      LDI	R16,0x64
+    008D2 E010      LDI	R17,0
+    008D3 940E 0565 CALL	_angle_3C
+(0152) 		angle_4C(100);
+    008D5 E604      LDI	R16,0x64
+    008D6 E010      LDI	R17,0
+    008D7 940E 05AA CALL	_angle_4C
+(0153) 		
+(0154) 		angle_2B(40);
+    008D9 E208      LDI	R16,0x28
+    008DA E010      LDI	R17,0
+    008DB 940E 050F CALL	_angle_2B
+(0155) 		angle_1B(40);
+    008DD E208      LDI	R16,0x28
+    008DE E010      LDI	R17,0
+    008DF 940E 04D6 CALL	_angle_1B
+(0156) 		angle_6B(40);
+    008E1 E208      LDI	R16,0x28
+    008E2 E010      LDI	R17,0
+    008E3 940E 0619 CALL	_angle_6B
+(0157) 		angle_5B(40);
+    008E5 E208      LDI	R16,0x28
+    008E6 E010      LDI	R17,0
+    008E7 940E 05D4 CALL	_angle_5B
+(0158) 		
+(0159) 		angle_2C(0);
+    008E9 2700      CLR	R16
+    008EA 2711      CLR	R17
+    008EB 940E 0524 CALL	_angle_2C
+(0160) 		angle_1C(0);
+    008ED 2700      CLR	R16
+    008EE 2711      CLR	R17
+    008EF 940E 04EB CALL	_angle_1C
+(0161) 		angle_6C(0);
+    008F1 2700      CLR	R16
+    008F2 2711      CLR	R17
+    008F3 940E 063A CALL	_angle_6C
+(0162) 		angle_5C(0);
+    008F5 2700      CLR	R16
+    008F6 2711      CLR	R17
+    008F7 940E 05EF CALL	_angle_5C
+(0163) 	}
+    008F9 C004      RJMP	0x08FE
+(0164) 	else
+(0165) 	{
+(0166) 		toggle = 0;
+    008FA 2422      CLR	R2
+    008FB 9220 0213 STS	toggle,R2
+(0167) 		stand();
+    008FD DE87      RCALL	_stand
+(0168) 		// angle_4B(STAND_B);
+(0169) 		// angle_3C(STAND_C);
+(0170) 		// angle_3B(STAND_B);
+(0171) 		
+(0172) 		// angle_4C(STAND_C);
+(0173) 		
+(0174) 		// angle_2B(STAND_B);
+(0175) 		// angle_1B(STAND_B);
+(0176) 		// angle_6B(STAND_B);
+(0177) 		// angle_5B(STAND_B);
+(0178) 	}
+    008FE 9508      RET
+_danceMove_HANDS_AIR:
+  stage                --> R20
+    008FF 934A      ST	-Y,R20
+(0179) }
+(0180) 
+(0181) void danceMove_HANDS_AIR(void)
+(0182) {
+(0183) 	unsigned char stage = getStage();
+    00900 DE7E      RCALL	_getStage
+    00901 2F40      MOV	R20,R16
+(0184) 
+(0185) 	motion_busy = 1;
+    00902 E081      LDI	R24,1
+    00903 9380 0214 STS	motion_busy,R24
+(0186) 	
+(0187) 	if (stage == 0)
+    00905 2300      TST	R16
+    00906 F411      BNE	0x0909
+(0188) 	{
+(0189) 		stand();
+    00907 DE7D      RCALL	_stand
+(0190) 	}
+    00908 C01F      RJMP	0x0928
+(0191) 	else if (stage == 1)
+    00909 3041      CPI	R20,1
+    0090A F411      BNE	0x090D
+(0192) 	{
+(0193) 		step16();
+    0090B DF3C      RCALL	_step16
+(0194) 	}
+    0090C C01B      RJMP	0x0928
+(0195) 	else if (stage == 2)
+    0090D 3042      CPI	R20,2
+    0090E F411      BNE	0x0911
+(0196) 	{
+(0197) 		step16();
+    0090F DF38      RCALL	_step16
+(0198) 	}
+    00910 C017      RJMP	0x0928
+(0199) 	else if (stage == 3)
+    00911 3043      CPI	R20,3
+    00912 F411      BNE	0x0915
+(0200) 	{
+(0201) 		step25();
+    00913 DF71      RCALL	_step25
+(0202) 	}
+    00914 C013      RJMP	0x0928
+(0203) 	else if (stage == 4)
+    00915 3044      CPI	R20,4
+    00916 F411      BNE	0x0919
+(0204) 	{
+(0205) 		step25();
+    00917 DF6D      RCALL	_step25
+(0206) 	}
+    00918 C00F      RJMP	0x0928
+(0207) 	else if (stage == 5)
+    00919 3045      CPI	R20,5
+    0091A F411      BNE	0x091D
+(0208) 	{
+(0209) 		step34();
+    0091B DFA6      RCALL	_step34
+(0210) 	}
+    0091C C00B      RJMP	0x0928
+(0211) 	else if (stage == 6)
+    0091D 3046      CPI	R20,6
+    0091E F411      BNE	0x0921
+(0212) 	{
+(0213) 		step34();
+    0091F DFA2      RCALL	_step34
+(0214) 	}
+    00920 C007      RJMP	0x0928
+(0215) 	else if (stage == 7)
+    00921 3047      CPI	R20,7
+    00922 F411      BNE	0x0925
+(0216) 	{
+(0217) 		step_down();
+    00923 DF11      RCALL	_step_down
+(0218) 	}
+    00924 C003      RJMP	0x0928
+(0219) 	else if (stage == 8)
+    00925 3048      CPI	R20,0x8
+    00926 F409      BNE	0x0928
+(0220) 	{
+(0221) 		stand();
+    00927 DE5D      RCALL	_stand
+(0222) 	}
+(0223) 	delay_50ms();
+    00928 940E 00D2 CALL	_delay_50ms
+(0224) 	if (stage == 8)
+    0092A 3048      CPI	R20,0x8
+    0092B F419      BNE	0x092F
+(0225) 		setStage(1);
+    0092C E001      LDI	R16,1
+    0092D DE54      RCALL	_setStage
+    0092E C003      RJMP	0x0932
+(0226) 	else
+(0227) 		setStage(stage + 1);
+    0092F 2F04      MOV	R16,R20
+    00930 5F0F      SUBI	R16,0xFF
+    00931 DE50      RCALL	_setStage
+(0228) 	
+(0229) 	motion_busy = 0;
+    00932 2422      CLR	R2
+    00933 9220 0214 STS	motion_busy,R2
+    00935 9149      LD	R20,Y+
+    00936 9508      RET
+_slow_step_down:
+  pa                   --> R22
+  pc                   --> R12
+  i                    --> R20
+  time                 --> R10
+    00937 940E 0D58 CALL	push_xgsetF03C
+    00939 0158      MOVW	R10,R16
+    0093A 9722      SBIW	R28,2
+(0230) }
+(0231) void slow_step_down(unsigned int time)
+(0232) {
+(0233) 	unsigned char i = 0;
+(0234) 	unsigned char pa = 30, pc = 0;
+    0093B E16E      LDI	R22,0x1E
+    0093C 24CC      CLR	R12
+(0235) 	
+(0236) 	for( i=1; i<16; i++)
+    0093D E041      LDI	R20,1
+    0093E C01B      RJMP	0x095A
+(0237) 	{
+(0238) 		pa = STAND_B - 2 * i;
+    0093F 2E24      MOV	R2,R20
+    00940 0C22      LSL	R2
+    00941 9160 0216 LDS	R22,STAND_B
+    00943 1962      SUB	R22,R2
+(0239) 		pc = STAND_C - 1 * i;
+    00944 E081      LDI	R24,1
+    00945 9F84      MUL	R24,R20
+    00946 90C0 0217 LDS	R12,STAND_C
+    00948 18C0      SUB	R12,R0
+(0240) 		if (i == 15){
+    00949 304F      CPI	R20,0xF
+    0094A F409      BNE	0x094C
+(0241) 			pc = 0;
+    0094B 24CC      CLR	R12
+(0242) 		}
+(0243) 		angle_all(NO_ACTION,pa,pc);
+    0094C 2C2C      MOV	R2,R12
+    0094D 2433      CLR	R3
+    0094E 8239      STD	Y+1,R3
+    0094F 8228      ST	Y,R2
+    00950 2F26      MOV	R18,R22
+    00951 2733      CLR	R19
+    00952 EC08      LDI	R16,0xC8
+    00953 E010      LDI	R17,0
+    00954 940E 0695 CALL	_angle_all
+(0244) 		delay_xms(time);
+    00956 0185      MOVW	R16,R10
+    00957 940E 00B7 CALL	_delay_xms
+    00959 9543      INC	R20
+    0095A 3140      CPI	R20,0x10
+    0095B F318      BCS	0x093F
+    0095C 9622      ADIW	R28,2
+    0095D 940C 0D61 JMP	pop_xgsetF03C
+_legs246_up_left:
+  i                    --> R20
+  time                 --> R10
+    0095F 940E 0D28 CALL	push_xgset300C
+    00961 0158      MOVW	R10,R16
+    00962 9722      SBIW	R28,2
+(0245) 	}
+(0246) }
+(0247) void legs246_up_left(unsigned int time)
+(0248) {
+(0249) 	unsigned char i=0;
+(0250) 	//angle_246(30, 10, 140);
+(0251) 	for(i=1; i<21; i++)
+    00963 E041      LDI	R20,1
+    00964 C017      RJMP	0x097C
+(0252) 	{
+(0253) 		angle_246(STAND_A - 3*i, 30 - i, 7*i);
+    00965 E087      LDI	R24,7
+    00966 9F84      MUL	R24,R20
+    00967 8219      STD	Y+1,R1
+    00968 8208      ST	Y,R0
+    00969 2E24      MOV	R2,R20
+    0096A 2433      CLR	R3
+    0096B E12E      LDI	R18,0x1E
+    0096C E030      LDI	R19,0
+    0096D 1922      SUB	R18,R2
+    0096E 0933      SBC	R19,R3
+    0096F E083      LDI	R24,3
+    00970 9F84      MUL	R24,R20
+    00971 9100 0215 LDS	R16,STAND_A
+    00973 2711      CLR	R17
+    00974 1900      SUB	R16,R0
+    00975 0911      SBC	R17,R1
+    00976 940E 0675 CALL	_angle_246
+(0254) 		delay_xms(time);
+    00978 0185      MOVW	R16,R10
+    00979 940E 00B7 CALL	_delay_xms
+    0097B 9543      INC	R20
+    0097C 3145      CPI	R20,0x15
+    0097D F338      BCS	0x0965
+    0097E 9622      ADIW	R28,2
+    0097F 940C 0D2D JMP	pop_xgset300C
+_danceMove_SlowTripod:
+  j                    --> R12
+  stage                --> R12
+  time                 --> R10
+  i                    --> R20
+  t                    --> R10
+    00981 940E 0D4A CALL	push_xgset303C
+    00983 2EA0      MOV	R10,R16
+    00984 9722      SBIW	R28,2
+(0255) 	}
+(0256) }
+(0257) 
+(0258) unsigned char time_temp;
+(0259) 
+(0260) void danceMove_SlowTripod(unsigned char t){
+(0261) 	unsigned char i = 0;
+(0262) 	unsigned char stage = getStage();
+    00985 DDF9      RCALL	_getStage
+(0263) 	unsigned int j = 0;
+    00986 24CC      CLR	R12
+    00987 24DD      CLR	R13
+(0264) 	unsigned int time = t;
+    00988 24BB      CLR	R11
+(0265) 	
+(0266) 	i=0;
+(0267) 	motion_busy = 1;
+    00989 E081      LDI	R24,1
+    0098A 9380 0214 STS	motion_busy,R24
+(0268) 	stand();
+    0098C DDF8      RCALL	_stand
+(0269) 	slow_step_down(time);	
+    0098D 0185      MOVW	R16,R10
+    0098E DFA8      RCALL	_slow_step_down
+(0270) 	legs246_up_left(time);
+    0098F 0185      MOVW	R16,R10
+    00990 DFCE      RCALL	_legs246_up_left
+(0271) 	
+(0272) 	for (i=1; i < 21; i++)
+    00991 E041      LDI	R20,1
+    00992 C021      RJMP	0x09B4
+(0273) 	{
+(0274) 		angle_135(NO_ACTION , 30 + 4*i, 3*i);
+    00993 E083      LDI	R24,3
+    00994 9F84      MUL	R24,R20
+    00995 8219      STD	Y+1,R1
+    00996 8208      ST	Y,R0
+    00997 2F24      MOV	R18,R20
+    00998 2733      CLR	R19
+    00999 0F22      LSL	R18
+    0099A 1F33      ROL	R19
+    0099B 0F22      LSL	R18
+    0099C 1F33      ROL	R19
+    0099D 5E22      SUBI	R18,0xE2
+    0099E 4F3F      SBCI	R19,0xFF
+    0099F EC08      LDI	R16,0xC8
+    009A0 E010      LDI	R17,0
+    009A1 940E 0655 CALL	_angle_135
+(0275) 		angle_246(30 + 6*i, NO_ACTION, NO_ACTION);
+    009A3 EC88      LDI	R24,0xC8
+    009A4 E090      LDI	R25,0
+    009A5 8399      STD	Y+1,R25
+    009A6 8388      ST	Y,R24
+    009A7 EC28      LDI	R18,0xC8
+    009A8 E030      LDI	R19,0
+    009A9 E086      LDI	R24,6
+    009AA 9F84      MUL	R24,R20
+    009AB 0180      MOVW	R16,R0
+    009AC 5E02      SUBI	R16,0xE2
+    009AD 4F1F      SBCI	R17,0xFF
+    009AE 940E 0675 CALL	_angle_246
+(0276) 		delay_xms(time);
+    009B0 0185      MOVW	R16,R10
+    009B1 940E 00B7 CALL	_delay_xms
+    009B3 9543      INC	R20
+    009B4 3145      CPI	R20,0x15
+    009B5 F2E8      BCS	0x0993
+(0277) 	}
+(0278) 	//delay_1s();
+(0279) 	
+(0280) 	for (i=1; i < 21; i++)
+    009B6 E041      LDI	R20,1
+    009B7 C029      RJMP	0x09E1
+(0281) 	{
+(0282) 		angle_135(NO_ACTION , 110 - 4*i, 60 - 3*i);
+    009B8 E083      LDI	R24,3
+    009B9 9F84      MUL	R24,R20
+    009BA E38C      LDI	R24,0x3C
+    009BB E090      LDI	R25,0
+    009BC 011C      MOVW	R2,R24
+    009BD 1820      SUB	R2,R0
+    009BE 0831      SBC	R3,R1
+    009BF 8239      STD	Y+1,R3
+    009C0 8228      ST	Y,R2
+    009C1 2E24      MOV	R2,R20
+    009C2 2433      CLR	R3
+    009C3 0C22      LSL	R2
+    009C4 1C33      ROL	R3
+    009C5 0C22      LSL	R2
+    009C6 1C33      ROL	R3
+    009C7 E62E      LDI	R18,0x6E
+    009C8 E030      LDI	R19,0
+    009C9 1922      SUB	R18,R2
+    009CA 0933      SBC	R19,R3
+    009CB EC08      LDI	R16,0xC8
+    009CC E010      LDI	R17,0
+    009CD 940E 0655 CALL	_angle_135
+(0283) 		angle_246(150 - 6*i, NO_ACTION, NO_ACTION);
+    009CF EC88      LDI	R24,0xC8
+    009D0 E090      LDI	R25,0
+    009D1 8399      STD	Y+1,R25
+    009D2 8388      ST	Y,R24
+    009D3 EC28      LDI	R18,0xC8
+    009D4 E030      LDI	R19,0
+    009D5 E086      LDI	R24,6
+    009D6 9F84      MUL	R24,R20
+    009D7 E906      LDI	R16,0x96
+    009D8 E010      LDI	R17,0
+    009D9 1900      SUB	R16,R0
+    009DA 0911      SBC	R17,R1
+    009DB 940E 0675 CALL	_angle_246
+(0284) 		delay_xms(time);
+    009DD 0185      MOVW	R16,R10
+    009DE 940E 00B7 CALL	_delay_xms
+    009E0 9543      INC	R20
+    009E1 3145      CPI	R20,0x15
+    009E2 F2A8      BCS	0x09B8
+(0285) 	}
+(0286) 	//delay_1s();
+(0287) 	for (i=1; i < 21; i++)
+    009E3 E041      LDI	R20,1
+    009E4 C021      RJMP	0x0A06
+(0288) 	{
+(0289) 		angle_135(NO_ACTION , 30 + 4*i, 3*i);
+    009E5 E083      LDI	R24,3
+    009E6 9F84      MUL	R24,R20
+    009E7 8219      STD	Y+1,R1
+    009E8 8208      ST	Y,R0
+    009E9 2F24      MOV	R18,R20
+    009EA 2733      CLR	R19
+    009EB 0F22      LSL	R18
+    009EC 1F33      ROL	R19
+    009ED 0F22      LSL	R18
+    009EE 1F33      ROL	R19
+    009EF 5E22      SUBI	R18,0xE2
+    009F0 4F3F      SBCI	R19,0xFF
+    009F1 EC08      LDI	R16,0xC8
+    009F2 E010      LDI	R17,0
+    009F3 940E 0655 CALL	_angle_135
+(0290) 		angle_246(30 + 6*i, NO_ACTION, NO_ACTION);
+    009F5 EC88      LDI	R24,0xC8
+    009F6 E090      LDI	R25,0
+    009F7 8399      STD	Y+1,R25
+    009F8 8388      ST	Y,R24
+    009F9 EC28      LDI	R18,0xC8
+    009FA E030      LDI	R19,0
+    009FB E086      LDI	R24,6
+    009FC 9F84      MUL	R24,R20
+    009FD 0180      MOVW	R16,R0
+    009FE 5E02      SUBI	R16,0xE2
+    009FF 4F1F      SBCI	R17,0xFF
+    00A00 940E 0675 CALL	_angle_246
+(0291) 		delay_xms(time);
+    00A02 0185      MOVW	R16,R10
+    00A03 940E 00B7 CALL	_delay_xms
+    00A05 9543      INC	R20
+    00A06 3145      CPI	R20,0x15
+    00A07 F2E8      BCS	0x09E5
+(0292) 	}
+(0293) 	//delay_1s();
+(0294) 	
+(0295) 	for (i=1; i < 21; i++)
+    00A08 E041      LDI	R20,1
+    00A09 C029      RJMP	0x0A33
+(0296) 	{
+(0297) 		angle_135(NO_ACTION , 110 - 4*i, 60 - 3*i);
+    00A0A E083      LDI	R24,3
+    00A0B 9F84      MUL	R24,R20
+    00A0C E38C      LDI	R24,0x3C
+    00A0D E090      LDI	R25,0
+    00A0E 011C      MOVW	R2,R24
+    00A0F 1820      SUB	R2,R0
+    00A10 0831      SBC	R3,R1
+    00A11 8239      STD	Y+1,R3
+    00A12 8228      ST	Y,R2
+    00A13 2E24      MOV	R2,R20
+    00A14 2433      CLR	R3
+    00A15 0C22      LSL	R2
+    00A16 1C33      ROL	R3
+    00A17 0C22      LSL	R2
+    00A18 1C33      ROL	R3
+    00A19 E62E      LDI	R18,0x6E
+    00A1A E030      LDI	R19,0
+    00A1B 1922      SUB	R18,R2
+    00A1C 0933      SBC	R19,R3
+    00A1D EC08      LDI	R16,0xC8
+    00A1E E010      LDI	R17,0
+    00A1F 940E 0655 CALL	_angle_135
+(0298) 		angle_246(150 - 6*i, NO_ACTION, NO_ACTION);
+    00A21 EC88      LDI	R24,0xC8
+    00A22 E090      LDI	R25,0
+    00A23 8399      STD	Y+1,R25
+    00A24 8388      ST	Y,R24
+    00A25 EC28      LDI	R18,0xC8
+    00A26 E030      LDI	R19,0
+    00A27 E086      LDI	R24,6
+    00A28 9F84      MUL	R24,R20
+    00A29 E906      LDI	R16,0x96
+    00A2A E010      LDI	R17,0
+    00A2B 1900      SUB	R16,R0
+    00A2C 0911      SBC	R17,R1
+    00A2D 940E 0675 CALL	_angle_246
+(0299) 		delay_xms(time);
+    00A2F 0185      MOVW	R16,R10
+    00A30 940E 00B7 CALL	_delay_xms
+    00A32 9543      INC	R20
+    00A33 3145      CPI	R20,0x15
+    00A34 F2A8      BCS	0x0A0A
+(0300) 	}
+(0301) 	
+(0302) 	
+(0303) 	for(i=1; i<21; i++)
+    00A35 E041      LDI	R20,1
+    00A36 C018      RJMP	0x0A4F
+(0304) 	{
+(0305) 		angle_246(30 + 3*i, 10 + i, 140 - 7*i);
+    00A37 E087      LDI	R24,7
+    00A38 9F84      MUL	R24,R20
+    00A39 E88C      LDI	R24,0x8C
+    00A3A E090      LDI	R25,0
+    00A3B 011C      MOVW	R2,R24
+    00A3C 1820      SUB	R2,R0
+    00A3D 0831      SBC	R3,R1
+    00A3E 8239      STD	Y+1,R3
+    00A3F 8228      ST	Y,R2
+    00A40 2F24      MOV	R18,R20
+    00A41 2733      CLR	R19
+    00A42 5F26      SUBI	R18,0xF6
+    00A43 4F3F      SBCI	R19,0xFF
+    00A44 E083      LDI	R24,3
+    00A45 9F84      MUL	R24,R20
+    00A46 0180      MOVW	R16,R0
+    00A47 5E02      SUBI	R16,0xE2
+    00A48 4F1F      SBCI	R17,0xFF
+    00A49 940E 0675 CALL	_angle_246
+(0306) 		delay_xms(time);
+    00A4B 0185      MOVW	R16,R10
+    00A4C 940E 00B7 CALL	_delay_xms
+    00A4E 9543      INC	R20
+    00A4F 3145      CPI	R20,0x15
+    00A50 F330      BCS	0x0A37
+(0307) 	}
+(0308) 	
+(0309) 	for(i=1; i<21; i++)
+    00A51 E041      LDI	R20,1
+    00A52 C03B      RJMP	0x0A8E
+(0310) 	{
+(0311) 		if (i < 11)
+    00A53 304B      CPI	R20,0xB
+    00A54 F4E8      BCC	0x0A72
+(0312) 		{
+(0313) 			angle_135(NO_ACTION, 30+2*i, i);
+    00A55 2E24      MOV	R2,R20
+    00A56 2433      CLR	R3
+    00A57 8239      STD	Y+1,R3
+    00A58 8228      ST	Y,R2
+    00A59 2D22      MOV	R18,R2
+    00A5A 2733      CLR	R19
+    00A5B 0F22      LSL	R18
+    00A5C 1F33      ROL	R19
+    00A5D 5E22      SUBI	R18,0xE2
+    00A5E 4F3F      SBCI	R19,0xFF
+    00A5F EC08      LDI	R16,0xC8
+    00A60 E010      LDI	R17,0
+    00A61 940E 0655 CALL	_angle_135
+(0314) 			angle_246(NO_ACTION, 30+2*i, i);
+    00A63 2E24      MOV	R2,R20
+    00A64 2433      CLR	R3
+    00A65 8239      STD	Y+1,R3
+    00A66 8228      ST	Y,R2
+    00A67 2D22      MOV	R18,R2
+    00A68 2733      CLR	R19
+    00A69 0F22      LSL	R18
+    00A6A 1F33      ROL	R19
+    00A6B 5E22      SUBI	R18,0xE2
+    00A6C 4F3F      SBCI	R19,0xFF
+    00A6D EC08      LDI	R16,0xC8
+    00A6E E010      LDI	R17,0
+    00A6F 940E 0675 CALL	_angle_246
+(0315) 		}
+    00A71 C018      RJMP	0x0A8A
+(0316) 		else
+(0317) 		{
+(0318) 			angle_135(NO_ACTION, 50+i, i);
+    00A72 2E24      MOV	R2,R20
+    00A73 2433      CLR	R3
+    00A74 8239      STD	Y+1,R3
+    00A75 8228      ST	Y,R2
+    00A76 2D22      MOV	R18,R2
+    00A77 2733      CLR	R19
+    00A78 5C2E      SUBI	R18,0xCE
+    00A79 4F3F      SBCI	R19,0xFF
+    00A7A EC08      LDI	R16,0xC8
+    00A7B E010      LDI	R17,0
+    00A7C 940E 0655 CALL	_angle_135
+(0319) 			angle_246(NO_ACTION, 50+i, i);
+    00A7E 2E24      MOV	R2,R20
+    00A7F 2433      CLR	R3
+    00A80 8239      STD	Y+1,R3
+    00A81 8228      ST	Y,R2
+    00A82 2D22      MOV	R18,R2
+    00A83 2733      CLR	R19
+    00A84 5C2E      SUBI	R18,0xCE
+    00A85 4F3F      SBCI	R19,0xFF
+    00A86 EC08      LDI	R16,0xC8
+    00A87 E010      LDI	R17,0
+    00A88 940E 0675 CALL	_angle_246
+(0320) 		}
+(0321) 		delay_xms(time);
+    00A8A 0185      MOVW	R16,R10
+    00A8B 940E 00B7 CALL	_delay_xms
+    00A8D 9543      INC	R20
+    00A8E 3145      CPI	R20,0x15
+    00A8F F218      BCS	0x0A53
+(0322) 	}
+(0323) 	
+(0324) 	stand();
+    00A90 DCF4      RCALL	_stand
+(0325) 	motion_busy = 0;
+    00A91 2422      CLR	R2
+    00A92 9220 0214 STS	motion_busy,R2
+    00A94 9622      ADIW	R28,2
+    00A95 940C 0D51 JMP	pop_xgset303C
+_danceMove_RobotVibrate:
+  j                    --> R12
+  stage                --> R10
+  angle_C              --> R10
+  angle_B              --> R22
+  i                    --> R20
+    00A97 940E 0D58 CALL	push_xgsetF03C
+    00A99 9722      SBIW	R28,2
+(0326) 	
+(0327) 
+(0328) }
+(0329) 
+(0330) void danceMove_RobotVibrate(void)
+(0331) {
+(0332) 	unsigned char stage = getStage();
+    00A9A DCE4      RCALL	_getStage
+(0333) 	unsigned int i = 0;
+(0334) 	unsigned char angle_B = 30;
+    00A9B E16E      LDI	R22,0x1E
+(0335) 	unsigned char angle_C = 0;
+    00A9C 24AA      CLR	R10
+(0336) 
+(0337) 	int j = 1;
+    00A9D E081      LDI	R24,1
+    00A9E E090      LDI	R25,0
+    00A9F 016C      MOVW	R12,R24
+(0338) 
+(0339) 	motion_busy = 1;
+    00AA0 9380 0214 STS	motion_busy,R24
+(0340) 	stand();
+    00AA2 DCE2      RCALL	_stand
+(0341) 	
+(0342) 	
+(0343) 	step_down();
+    00AA3 DD91      RCALL	_step_down
+(0344) 
+(0345) 	delay_250ms();
+    00AA4 940E 00F0 CALL	_delay_250ms
+(0346) 	step_up_slow();
+    00AA6 DD4B      RCALL	_step_up_slow
+(0347) 		delay_250ms();
+    00AA7 940E 00F0 CALL	_delay_250ms
+(0348) 	step_down();
+    00AA9 DD8B      RCALL	_step_down
+(0349) 	delay_250ms();
+    00AAA 940E 00F0 CALL	_delay_250ms
+(0350) 	for (i=0;i<=5;i++){
+    00AAC 2744      CLR	R20
+    00AAD 2755      CLR	R21
+    00AAE C02E      RJMP	0x0ADD
+(0351) 		angle_B = 30 + 3*(5-i);
+    00AAF E025      LDI	R18,5
+    00AB0 E030      LDI	R19,0
+    00AB1 1B24      SUB	R18,R20
+    00AB2 0B35      SBC	R19,R21
+    00AB3 E003      LDI	R16,3
+    00AB4 E010      LDI	R17,0
+    00AB5 940E 0D06 CALL	empy16s
+    00AB7 01B8      MOVW	R22,R16
+    00AB8 5E62      SUBI	R22,0xE2
+    00AB9 4F7F      SBCI	R23,0xFF
+(0352) 		angle_C = 2*(5-i);
+    00ABA E085      LDI	R24,5
+    00ABB E090      LDI	R25,0
+    00ABC 015C      MOVW	R10,R24
+    00ABD 1AA4      SUB	R10,R20
+    00ABE 0AB5      SBC	R11,R21
+    00ABF 0CAA      LSL	R10
+    00AC0 1CBB      ROL	R11
+(0353) 		angle_all(NO_ACTION,angle_B,angle_C);
+    00AC1 2C2A      MOV	R2,R10
+    00AC2 2433      CLR	R3
+    00AC3 8239      STD	Y+1,R3
+    00AC4 8228      ST	Y,R2
+    00AC5 2F26      MOV	R18,R22
+    00AC6 2733      CLR	R19
+    00AC7 EC08      LDI	R16,0xC8
+    00AC8 E010      LDI	R17,0
+    00AC9 940E 0695 CALL	_angle_all
+(0354) 	
+(0355) 		delay_100ms();
+    00ACB 940E 00E1 CALL	_delay_100ms
+(0356) 	
+(0357) 		angle_B = 30;
+    00ACD E16E      LDI	R22,0x1E
+(0358) 		angle_C = 0;
+    00ACE 24AA      CLR	R10
+(0359) 		angle_all(NO_ACTION,angle_B,angle_C);
+    00ACF 2C2A      MOV	R2,R10
+    00AD0 2433      CLR	R3
+    00AD1 8239      STD	Y+1,R3
+    00AD2 8228      ST	Y,R2
+    00AD3 2F26      MOV	R18,R22
+    00AD4 2733      CLR	R19
+    00AD5 EC08      LDI	R16,0xC8
+    00AD6 E010      LDI	R17,0
+    00AD7 940E 0695 CALL	_angle_all
+(0360) 	
+(0361) 		delay_100ms();
+    00AD9 940E 00E1 CALL	_delay_100ms
+    00ADB 5F4F      SUBI	R20,0xFF
+    00ADC 4F5F      SBCI	R21,0xFF
+    00ADD E085      LDI	R24,5
+    00ADE E090      LDI	R25,0
+    00ADF 1784      CP	R24,R20
+    00AE0 0795      CPC	R25,R21
+    00AE1 F668      BCC	0x0AAF
+(0362) 	
+(0363) 	}
+(0364) 
+(0365) 	
+(0366) 	
+(0367) 	
+(0368) 	
+(0369) 	
+(0370) 	
+(0371) 	delay_250ms();
+    00AE2 940E 00F0 CALL	_delay_250ms
+(0372) 	stand();
+    00AE4 DCA0      RCALL	_stand
+(0373) 	motion_busy = 0;
+    00AE5 2422      CLR	R2
+    00AE6 9220 0214 STS	motion_busy,R2
+    00AE8 9622      ADIW	R28,2
+    00AE9 940C 0D61 JMP	pop_xgsetF03C
+_danceMove_circularRaise:
+  stage                --> R20
+    00AEB 934A      ST	-Y,R20
+(0374) }
+(0375) 
+(0376) void danceMove_circularRaise(void)
+(0377) {
+(0378) 	 unsigned char stage = getStage();
+    00AEC DC92      RCALL	_getStage
+    00AED 2F40      MOV	R20,R16
+(0379) 
+(0380) 	motion_busy = 1;
+    00AEE E081      LDI	R24,1
+    00AEF 9380 0214 STS	motion_busy,R24
+(0381) 	if ( stage == 0 ){
+    00AF1 2300      TST	R16
+    00AF2 F411      BNE	0x0AF5
+(0382) 	stand();
+    00AF3 DC91      RCALL	_stand
+(0383) 	}
+    00AF4 C037      RJMP	0x0B2C
+(0384) 	else if (stage == 1 ){
+    00AF5 3041      CPI	R20,1
+    00AF6 F429      BNE	0x0AFC
+(0385) 	angle_1B(30);
+    00AF7 E10E      LDI	R16,0x1E
+    00AF8 E010      LDI	R17,0
+    00AF9 940E 04D6 CALL	_angle_1B
+(0386) 	}
+    00AFB C030      RJMP	0x0B2C
+(0387) 	else if (stage == 2 ){
+    00AFC 3042      CPI	R20,2
+    00AFD F429      BNE	0x0B03
+(0388) 	angle_1B(60);
+    00AFE E30C      LDI	R16,0x3C
+    00AFF E010      LDI	R17,0
+    00B00 940E 04D6 CALL	_angle_1B
+(0389) 	}
+    00B02 C029      RJMP	0x0B2C
+(0390) 	// 2
+(0391) 	else if (stage == 3 ){
+    00B03 3043      CPI	R20,3
+    00B04 F429      BNE	0x0B0A
+(0392) 	angle_2B(30);
+    00B05 E10E      LDI	R16,0x1E
+    00B06 E010      LDI	R17,0
+    00B07 940E 050F CALL	_angle_2B
+(0393) 	}
+    00B09 C022      RJMP	0x0B2C
+(0394) 	else if (stage == 4 ){
+    00B0A 3044      CPI	R20,4
+    00B0B F429      BNE	0x0B11
+(0395) 	angle_2B(60);
+    00B0C E30C      LDI	R16,0x3C
+    00B0D E010      LDI	R17,0
+    00B0E 940E 050F CALL	_angle_2B
+(0396) 	}
+    00B10 C01B      RJMP	0x0B2C
+(0397) 	
+(0398) 	//3
+(0399) 	else if (stage == 5 ){
+    00B11 3045      CPI	R20,5
+    00B12 F429      BNE	0x0B18
+(0400) 	angle_3B(30);
+    00B13 E10E      LDI	R16,0x1E
+    00B14 E010      LDI	R17,0
+    00B15 940E 0548 CALL	_angle_3B
+(0401) 	}
+    00B17 C014      RJMP	0x0B2C
+(0402) 	else if (stage == 6 ){
+    00B18 3046      CPI	R20,6
+    00B19 F429      BNE	0x0B1F
+(0403) 	angle_3B(60);
+    00B1A E30C      LDI	R16,0x3C
+    00B1B E010      LDI	R17,0
+    00B1C 940E 0548 CALL	_angle_3B
+(0404) 	}
+    00B1E C00D      RJMP	0x0B2C
+(0405) 	//6
+(0406) 	else if (stage == 7 ){
+    00B1F 3047      CPI	R20,7
+    00B20 F429      BNE	0x0B26
+(0407) 	angle_6B(30);
+    00B21 E10E      LDI	R16,0x1E
+    00B22 E010      LDI	R17,0
+    00B23 940E 0619 CALL	_angle_6B
+(0408) 	}
+    00B25 C006      RJMP	0x0B2C
+(0409) 	else if (stage == 8){
+    00B26 3048      CPI	R20,0x8
+    00B27 F421      BNE	0x0B2C
+(0410) 	angle_6B(60);
+    00B28 E30C      LDI	R16,0x3C
+    00B29 E010      LDI	R17,0
+    00B2A 940E 0619 CALL	_angle_6B
+(0411) 	}
+(0412) 	if (stage == 8)
+    00B2C 3048      CPI	R20,0x8
+    00B2D F419      BNE	0x0B31
+(0413) 		setStage(1);
+    00B2E E001      LDI	R16,1
+    00B2F DC52      RCALL	_setStage
+    00B30 C003      RJMP	0x0B34
+(0414) 	else
+(0415) 		setStage(stage + 1);
+    00B31 2F04      MOV	R16,R20
+    00B32 5F0F      SUBI	R16,0xFF
+    00B33 DC4E      RCALL	_setStage
+(0416) 		motion_busy = 0;
+    00B34 2422      CLR	R2
+    00B35 9220 0214 STS	motion_busy,R2
+    00B37 9149      LD	R20,Y+
+    00B38 9508      RET
+_danceMove_zhigzhigRise:
+  angle_C              --> R12
+  angle_B              --> R10
+  i                    --> R22
+  stage                --> R20
+    00B39 940E 0D58 CALL	push_xgsetF03C
+    00B3B 9722      SBIW	R28,2
+(0417) }
+(0418) 
+(0419) void danceMove_zhigzhigRise(void)
+(0420) {
+(0421) 	unsigned int i = 0;
+    00B3C 2766      CLR	R22
+    00B3D 2777      CLR	R23
+(0422) 	unsigned char angle_B = 30;
+    00B3E E18E      LDI	R24,0x1E
+    00B3F 2EA8      MOV	R10,R24
+(0423) 	unsigned char angle_C = 0;
+    00B40 24CC      CLR	R12
+(0424) 	unsigned char stage = getStage();
+    00B41 DC3D      RCALL	_getStage
+    00B42 2F40      MOV	R20,R16
+(0425) 
+(0426) 	motion_busy = 1;
+    00B43 E081      LDI	R24,1
+    00B44 9380 0214 STS	motion_busy,R24
+(0427) 	
+(0428) 	if (stage == 0)
+    00B46 2300      TST	R16
+    00B47 F429      BNE	0x0B4D
+(0429) 	{
+(0430) 		stand();
+    00B48 DC3C      RCALL	_stand
+(0431) 		toggle = 0;
+    00B49 2422      CLR	R2
+    00B4A 9220 0213 STS	toggle,R2
+(0432) 	}
+    00B4C C067      RJMP	0x0BB4
+(0433) 	else if (stage == 1){
+    00B4D 3041      CPI	R20,1
+    00B4E F411      BNE	0x0B51
+(0434) 	step_down();
+    00B4F DCE5      RCALL	_step_down
+(0435) 	}
+    00B50 C063      RJMP	0x0BB4
+(0436) 	else if (stage == 2 || stage == 3) {
+    00B51 3042      CPI	R20,2
+    00B52 F011      BEQ	0x0B55
+    00B53 3043      CPI	R20,3
+    00B54 F409      BNE	0x0B56
+(0437) 	}
+    00B55 C05E      RJMP	0x0BB4
+(0438) 	
+(0439) 	else if (stage >=4 && stage <= 14){
+    00B56 3044      CPI	R20,4
+    00B57 F030      BCS	0x0B5E
+    00B58 E08E      LDI	R24,0xE
+    00B59 1784      CP	R24,R20
+    00B5A F018      BCS	0x0B5E
+(0440) 	step_up_zhigzhig(stage);
+    00B5B 2F04      MOV	R16,R20
+    00B5C DCA8      RCALL	_step_up_zhigzhig
+(0441) 	}
+    00B5D C056      RJMP	0x0BB4
+(0442) 	else if (stage > 14 && stage <= 18){
+    00B5E E08E      LDI	R24,0xE
+    00B5F 1784      CP	R24,R20
+    00B60 F420      BCC	0x0B65
+    00B61 E182      LDI	R24,0x12
+    00B62 1784      CP	R24,R20
+    00B63 F008      BCS	0x0B65
+(0443) 		
+(0444) 	}
+    00B64 C04F      RJMP	0x0BB4
+(0445) 	else if (stage == 19){
+    00B65 3143      CPI	R20,0x13
+    00B66 F009      BEQ	0x0B68
+    00B67 C03D      RJMP	0x0BA5
+(0446) 		step_down();
+    00B68 DCCC      RCALL	_step_down
+(0447) 		delay_100ms();
+    00B69 940E 00E1 CALL	_delay_100ms
+(0448) 		for (i=0;i<=5;i++){
+    00B6B 2766      CLR	R22
+    00B6C 2777      CLR	R23
+    00B6D C031      RJMP	0x0B9F
+(0449) 	
+(0450) 		angle_B = 30 + 6*(5-i);
+    00B6E E025      LDI	R18,5
+    00B6F E030      LDI	R19,0
+    00B70 1B26      SUB	R18,R22
+    00B71 0B37      SBC	R19,R23
+    00B72 E006      LDI	R16,6
+    00B73 E010      LDI	R17,0
+    00B74 940E 0D06 CALL	empy16s
+    00B76 01C8      MOVW	R24,R16
+    00B77 964E      ADIW	R24,0x1E
+    00B78 2EA8      MOV	R10,R24
+(0451) 		angle_C = 4*(5-i);
+    00B79 E085      LDI	R24,5
+    00B7A E090      LDI	R25,0
+    00B7B 016C      MOVW	R12,R24
+    00B7C 1AC6      SUB	R12,R22
+    00B7D 0AD7      SBC	R13,R23
+    00B7E 0CCC      LSL	R12
+    00B7F 1CDD      ROL	R13
+    00B80 0CCC      LSL	R12
+    00B81 1CDD      ROL	R13
+(0452) 		angle_all(NO_ACTION,angle_B,angle_C);
+    00B82 2C2C      MOV	R2,R12
+    00B83 2433      CLR	R3
+    00B84 8239      STD	Y+1,R3
+    00B85 8228      ST	Y,R2
+    00B86 2D2A      MOV	R18,R10
+    00B87 2733      CLR	R19
+    00B88 EC08      LDI	R16,0xC8
+    00B89 E010      LDI	R17,0
+    00B8A 940E 0695 CALL	_angle_all
+(0453) 		
+(0454) 		delay_100ms();
+    00B8C 940E 00E1 CALL	_delay_100ms
+(0455) 		
+(0456) 		angle_B = 30;
+    00B8E E18E      LDI	R24,0x1E
+    00B8F 2EA8      MOV	R10,R24
+(0457) 		angle_C = 0;
+    00B90 24CC      CLR	R12
+(0458) 		angle_all(NO_ACTION,angle_B,angle_C);
+    00B91 2C2C      MOV	R2,R12
+    00B92 2433      CLR	R3
+    00B93 8239      STD	Y+1,R3
+    00B94 8228      ST	Y,R2
+    00B95 2F28      MOV	R18,R24
+    00B96 2733      CLR	R19
+    00B97 EC08      LDI	R16,0xC8
+    00B98 E010      LDI	R17,0
+    00B99 940E 0695 CALL	_angle_all
+(0459) 		
+(0460) 		delay_100ms();
+    00B9B 940E 00E1 CALL	_delay_100ms
+    00B9D 5F6F      SUBI	R22,0xFF
+    00B9E 4F7F      SBCI	R23,0xFF
+    00B9F E085      LDI	R24,5
+    00BA0 E090      LDI	R25,0
+    00BA1 1786      CP	R24,R22
+    00BA2 0797      CPC	R25,R23
+    00BA3 F650      BCC	0x0B6E
+(0461) 		}
+(0462) 	}
+    00BA4 C00F      RJMP	0x0BB4
+(0463) 	else if (stage >= 20 && stage < 26){
+    00BA5 3144      CPI	R20,0x14
+    00BA6 F018      BCS	0x0BAA
+    00BA7 314A      CPI	R20,0x1A
+    00BA8 F408      BCC	0x0BAA
+(0464) 	
+(0465) 	}
+    00BA9 C00A      RJMP	0x0BB4
+(0466) 	else if (stage == 26 ){
+    00BAA 314A      CPI	R20,0x1A
+    00BAB F411      BNE	0x0BAE
+(0467) 	stand();
+    00BAC DBD8      RCALL	_stand
+(0468) 	}
+    00BAD C006      RJMP	0x0BB4
+(0469) 	else if (stage ==27){
+    00BAE 314B      CPI	R20,0x1B
+    00BAF F409      BNE	0x0BB1
+(0470) 	}
+    00BB0 C003      RJMP	0x0BB4
+(0471) 	else if (stage == 28) {
+    00BB1 314C      CPI	R20,0x1C
+    00BB2 F409      BNE	0x0BB4
+(0472) 		finale();
+    00BB3 D08E      RCALL	_finale
+(0473) 	}
+(0474) 	
+(0475) 	if (stage == 29){
+    00BB4 314D      CPI	R20,0x1D
+    00BB5 F409      BNE	0x0BB7
+(0476) 		
+(0477) 	}
+    00BB6 C003      RJMP	0x0BBA
+(0478) 	else{
+(0479) 		setStage(stage + 1);
+    00BB7 2F04      MOV	R16,R20
+    00BB8 5F0F      SUBI	R16,0xFF
+    00BB9 DBC8      RCALL	_setStage
+(0480) 	}
+(0481) 	
+(0482) 	
+(0483) 	motion_busy = 0;
+    00BBA 2422      CLR	R2
+    00BBB 9220 0214 STS	motion_busy,R2
+    00BBD 9622      ADIW	R28,2
+    00BBE 940C 0D61 JMP	pop_xgsetF03C
+_danceMove_ZHIGZHIG:
+  stage                --> R20
+    00BC0 934A      ST	-Y,R20
+    00BC1 9722      SBIW	R28,2
+(0484) }
+(0485) 
+(0486) 
+(0487) 
+(0488) 
+(0489) void danceMove_ZHIGZHIG(void)
+(0490) {
+(0491) 	unsigned char stage = getStage();
+    00BC2 DBBC      RCALL	_getStage
+    00BC3 2F40      MOV	R20,R16
+(0492) 
+(0493) 	motion_busy = 1;
+    00BC4 E081      LDI	R24,1
+    00BC5 9380 0214 STS	motion_busy,R24
+(0494) 	
+(0495) 	if (stage == 0)
+    00BC7 2300      TST	R16
+    00BC8 F441      BNE	0x0BD1
+(0496) 	{
+(0497) 		stand();
+    00BC9 DBBB      RCALL	_stand
+(0498) 		toggle = 0;
+    00BCA 2422      CLR	R2
+    00BCB 9220 0213 STS	toggle,R2
+(0499) 		setStage(stage + 1);
+    00BCD 2F04      MOV	R16,R20
+    00BCE 5F0F      SUBI	R16,0xFF
+    00BCF DBB2      RCALL	_setStage
+(0500) 	}
+    00BD0 C023      RJMP	0x0BF4
+(0501) 	else if (toggle == 0)
+    00BD1 9020 0213 LDS	R2,toggle
+    00BD3 2022      TST	R2
+    00BD4 F471      BNE	0x0BE3
+(0502) 	{
+(0503) 		toggle = 1;
+    00BD5 E081      LDI	R24,1
+    00BD6 9380 0213 STS	toggle,R24
+(0504) 		angle_all(20, NO_ACTION, NO_ACTION);
+    00BD8 EC88      LDI	R24,0xC8
+    00BD9 E090      LDI	R25,0
+    00BDA 8399      STD	Y+1,R25
+    00BDB 8388      ST	Y,R24
+    00BDC EC28      LDI	R18,0xC8
+    00BDD E030      LDI	R19,0
+    00BDE E104      LDI	R16,0x14
+    00BDF E010      LDI	R17,0
+    00BE0 940E 0695 CALL	_angle_all
+(0505) 	}
+    00BE2 C011      RJMP	0x0BF4
+(0506) 	else if (toggle == 1)
+    00BE3 9180 0213 LDS	R24,toggle
+    00BE5 3081      CPI	R24,1
+    00BE6 F469      BNE	0x0BF4
+(0507) 	{
+(0508) 		toggle = 0;
+    00BE7 2422      CLR	R2
+    00BE8 9220 0213 STS	toggle,R2
+(0509) 		angle_all(160, NO_ACTION, NO_ACTION);
+    00BEA EC88      LDI	R24,0xC8
+    00BEB E090      LDI	R25,0
+    00BEC 8399      STD	Y+1,R25
+    00BED 8388      ST	Y,R24
+    00BEE EC28      LDI	R18,0xC8
+    00BEF E030      LDI	R19,0
+    00BF0 EA00      LDI	R16,0xA0
+    00BF1 E010      LDI	R17,0
+    00BF2 940E 0695 CALL	_angle_all
+(0510) 	}
+(0511) 	
+(0512) 	motion_busy = 0;
+    00BF4 2422      CLR	R2
+    00BF5 9220 0214 STS	motion_busy,R2
+    00BF7 9622      ADIW	R28,2
+    00BF8 9149      LD	R20,Y+
+    00BF9 9508      RET
+_danceMove_KICK:
+  stage                --> R20
+    00BFA 934A      ST	-Y,R20
+(0513) }
+(0514) 
+(0515) void danceMove_KICK(void)
+(0516) {
+(0517) 	unsigned char stage = getStage();
+    00BFB DB83      RCALL	_getStage
+    00BFC 2F40      MOV	R20,R16
+(0518) 
+(0519) 	motion_busy = 1;
+    00BFD E081      LDI	R24,1
+    00BFE 9380 0214 STS	motion_busy,R24
+(0520) 	
+(0521) 	if (stage == 0)
+    00C00 2300      TST	R16
+    00C01 F441      BNE	0x0C0A
+(0522) 	{
+(0523) 		stand();
+    00C02 DB82      RCALL	_stand
+(0524) 		toggle = 0;
+    00C03 2422      CLR	R2
+    00C04 9220 0213 STS	toggle,R2
+(0525) 		setStage(stage + 1);
+    00C06 2F04      MOV	R16,R20
+    00C07 5F0F      SUBI	R16,0xFF
+    00C08 DB79      RCALL	_setStage
+(0526) 	}
+    00C09 C033      RJMP	0x0C3D
+(0527) 	else if (toggle == 0)
+    00C0A 9020 0213 LDS	R2,toggle
+    00C0C 2022      TST	R2
+    00C0D F4A1      BNE	0x0C22
+(0528) 	{
+(0529) 		toggle = 1;
+    00C0E E081      LDI	R24,1
+    00C0F 9380 0213 STS	toggle,R24
+(0530) 		
+(0531) 		angle_1B(30);
+    00C11 E10E      LDI	R16,0x1E
+    00C12 E010      LDI	R17,0
+    00C13 940E 04D6 CALL	_angle_1B
+(0532) 		angle_6B(30);
+    00C15 E10E      LDI	R16,0x1E
+    00C16 E010      LDI	R17,0
+    00C17 940E 0619 CALL	_angle_6B
+(0533) 		angle_1C(60);
+    00C19 E30C      LDI	R16,0x3C
+    00C1A E010      LDI	R17,0
+    00C1B 940E 04EB CALL	_angle_1C
+(0534) 		angle_6C(60);
+    00C1D E30C      LDI	R16,0x3C
+    00C1E E010      LDI	R17,0
+    00C1F 940E 063A CALL	_angle_6C
+(0535) 		
+(0536) 	}
+    00C21 C01B      RJMP	0x0C3D
+(0537) 	else if (toggle == 1)
+    00C22 9180 0213 LDS	R24,toggle
+    00C24 3081      CPI	R24,1
+    00C25 F4B9      BNE	0x0C3D
+(0538) 	{
+(0539) 		toggle = 0;
+    00C26 2422      CLR	R2
+    00C27 9220 0213 STS	toggle,R2
+(0540) 		angle_1B(STAND_B);
+    00C29 9100 0216 LDS	R16,STAND_B
+    00C2B 2711      CLR	R17
+    00C2C 940E 04D6 CALL	_angle_1B
+(0541) 		angle_6B(STAND_B);
+    00C2E 9100 0216 LDS	R16,STAND_B
+    00C30 2711      CLR	R17
+    00C31 940E 0619 CALL	_angle_6B
+(0542) 		angle_1C(STAND_C);
+    00C33 9100 0217 LDS	R16,STAND_C
+    00C35 2711      CLR	R17
+    00C36 940E 04EB CALL	_angle_1C
+(0543) 		angle_6C(STAND_C);
+    00C38 9100 0217 LDS	R16,STAND_C
+    00C3A 2711      CLR	R17
+    00C3B 940E 063A CALL	_angle_6C
+(0544) 		
+(0545) 
+(0546) 	}
+(0547) 	
+(0548) 	motion_busy = 0;
+    00C3D 2422      CLR	R2
+    00C3E 9220 0214 STS	motion_busy,R2
+    00C40 9149      LD	R20,Y+
+    00C41 9508      RET
+_finale:
+  angle_C              --> R22
+  angle_B              --> R22
+  i                    --> R20
+    00C42 934A      ST	-Y,R20
+    00C43 936A      ST	-Y,R22
+(0549) }
+(0550) 
+(0551) void finale(void)
+(0552) {	unsigned char i = 0;
+(0553) 	unsigned char angle_B = 150;
+(0554) 	unsigned char angle_C = 120;
+    00C44 E768      LDI	R22,0x78
+(0555) 	motion_busy = 1;
+    00C45 E081      LDI	R24,1
+    00C46 9380 0214 STS	motion_busy,R24
+(0556) 	
+(0557) 	stand();
+    00C48 DB3C      RCALL	_stand
+(0558) 	delay_1s();
+    00C49 940E 010E CALL	_delay_1s
+(0559) 	
+(0560) 	// back legs to the back
+(0561) 	angle_6B(30);
+    00C4B E10E      LDI	R16,0x1E
+    00C4C E010      LDI	R17,0
+    00C4D 940E 0619 CALL	_angle_6B
+(0562) 	angle_3B(30);
+    00C4F E10E      LDI	R16,0x1E
+    00C50 E010      LDI	R17,0
+    00C51 940E 0548 CALL	_angle_3B
+(0563) 	delay_250ms();
+    00C53 940E 00F0 CALL	_delay_250ms
+(0564) 	angle_6A(50);
+    00C55 E302      LDI	R16,0x32
+    00C56 E010      LDI	R17,0
+    00C57 940E 060A CALL	_angle_6A
+(0565) 	angle_3A(130);
+    00C59 E802      LDI	R16,0x82
+    00C5A E010      LDI	R17,0
+    00C5B 940E 0539 CALL	_angle_3A
+(0566) 	delay_250ms();
+    00C5D 940E 00F0 CALL	_delay_250ms
+(0567) 	angle_6B(60);
+    00C5F E30C      LDI	R16,0x3C
+    00C60 E010      LDI	R17,0
+    00C61 940E 0619 CALL	_angle_6B
+(0568) 	angle_3B(60);
+    00C63 E30C      LDI	R16,0x3C
+    00C64 E010      LDI	R17,0
+    00C65 940E 0548 CALL	_angle_3B
+(0569) 	delay_250ms();
+    00C67 940E 00F0 CALL	_delay_250ms
+(0570) 	
+(0571) 	// angle_2B(30);
+(0572) 	// angle_5B(30);
+(0573) 	// delay_250ms();
+(0574) 	// angle_2A(30);
+(0575) 	// angle_5A(150);
+(0576) 	// delay_1s();
+(0577) 	// angle_2B(60);
+(0578) 	// angle_5B(60);
+(0579) 	// delay_1s();
+(0580) 		
+(0581) 
+(0582) 	step_up();
+    00C69 DB75      RCALL	_step_up
+(0583) 	delay_250ms();
+    00C6A 940E 00F0 CALL	_delay_250ms
+(0584) 	angle_2A(30);
+    00C6C E10E      LDI	R16,0x1E
+    00C6D E010      LDI	R17,0
+    00C6E 940E 0500 CALL	_angle_2A
+(0585) 	angle_5A(150);
+    00C70 E906      LDI	R16,0x96
+    00C71 E010      LDI	R17,0
+    00C72 940E 05C5 CALL	_angle_5A
+(0586) 	
+(0587) 	
+(0588) 	delay_250ms();
+    00C74 940E 00F0 CALL	_delay_250ms
+(0589) 	
+(0590) 	
+(0591) 	
+(0592) 	angle_1B(0);
+    00C76 2700      CLR	R16
+    00C77 2711      CLR	R17
+    00C78 940E 04D6 CALL	_angle_1B
+(0593) 	angle_4B(0);
+    00C7A 2700      CLR	R16
+    00C7B 2711      CLR	R17
+    00C7C 940E 0589 CALL	_angle_4B
+(0594) 	angle_3C(0);
+    00C7E 2700      CLR	R16
+    00C7F 2711      CLR	R17
+    00C80 940E 0565 CALL	_angle_3C
+(0595) 	angle_6C(0);
+    00C82 2700      CLR	R16
+    00C83 2711      CLR	R17
+    00C84 940E 063A CALL	_angle_6C
+(0596) 	
+(0597) 	delay_250ms();
+    00C86 940E 00F0 CALL	_delay_250ms
+(0598) 	
+(0599) 	for (i=1;i<5;i++){
+    00C88 E041      LDI	R20,1
+    00C89 C025      RJMP	0x0CAF
+(0600) 	angle_1C(160);
+    00C8A EA00      LDI	R16,0xA0
+    00C8B E010      LDI	R17,0
+    00C8C 940E 04EB CALL	_angle_1C
+(0601) 	angle_4C(160);
+    00C8E EA00      LDI	R16,0xA0
+    00C8F E010      LDI	R17,0
+    00C90 940E 05AA CALL	_angle_4C
+(0602) 	angle_2B(170);
+    00C92 EA0A      LDI	R16,0xAA
+    00C93 E010      LDI	R17,0
+    00C94 940E 050F CALL	_angle_2B
+(0603) 	angle_5B(170);
+    00C96 EA0A      LDI	R16,0xAA
+    00C97 E010      LDI	R17,0
+    00C98 940E 05D4 CALL	_angle_5B
+(0604) 	
+(0605) 	delay_250ms();
+    00C9A 940E 00F0 CALL	_delay_250ms
+(0606) 	angle_1C(120);
+    00C9C E708      LDI	R16,0x78
+    00C9D E010      LDI	R17,0
+    00C9E 940E 04EB CALL	_angle_1C
+(0607) 	angle_4C(120);
+    00CA0 E708      LDI	R16,0x78
+    00CA1 E010      LDI	R17,0
+    00CA2 940E 05AA CALL	_angle_4C
+(0608) 	angle_2B(150);
+    00CA4 E906      LDI	R16,0x96
+    00CA5 E010      LDI	R17,0
+    00CA6 940E 050F CALL	_angle_2B
+(0609) 	angle_2B(150);
+    00CA8 E906      LDI	R16,0x96
+    00CA9 E010      LDI	R17,0
+    00CAA 940E 050F CALL	_angle_2B
+(0610) 	
+(0611) 	delay_250ms();
+    00CAC 940E 00F0 CALL	_delay_250ms
+    00CAE 9543      INC	R20
+    00CAF 3045      CPI	R20,5
+    00CB0 F2C8      BCS	0x0C8A
+(0612) 	
+(0613) 	}
+(0614) 	
+(0615) 
+(0616) 	
+(0617) 	motion_busy = 0;
+    00CB1 2422      CLR	R2
+    00CB2 9220 0214 STS	motion_busy,R2
+    00CB4 9169      LD	R22,Y+
+    00CB5 9149      LD	R20,Y+
+    00CB6 9508      RET
+_performDanceMove:
+  moveId               --> R20
+    00CB7 934A      ST	-Y,R20
+    00CB8 2F40      MOV	R20,R16
+(0618) }
+(0619) 
+(0620) void performDanceMove(unsigned char moveId)
+(0621) {
+(0622) 	if (moveId == 'a')
+    00CB9 3641      CPI	R20,0x61
+    00CBA F411      BNE	0x0CBD
+(0623) 	{
+(0624) 		danceMove_KICK();
+    00CBB DF3E      RCALL	_danceMove_KICK
+(0625) 	}
+    00CBC C019      RJMP	0x0CD6
+(0626) 	else if (moveId == 'b')
+    00CBD 3642      CPI	R20,0x62
+    00CBE F411      BNE	0x0CC1
+(0627) 	{
+(0628) 		danceMove_KICK();
+    00CBF DF3A      RCALL	_danceMove_KICK
+(0629) 	}
+    00CC0 C015      RJMP	0x0CD6
+(0630) 	else if (moveId == 'c'){
+    00CC1 3643      CPI	R20,0x63
+    00CC2 F411      BNE	0x0CC5
+(0631) 		danceMove_ZHIGZHIG();
+    00CC3 DEFC      RCALL	_danceMove_ZHIGZHIG
+(0632) 	}
+    00CC4 C011      RJMP	0x0CD6
+(0633) 	else if (moveId == 'd'){
+    00CC5 3644      CPI	R20,0x64
+    00CC6 F411      BNE	0x0CC9
+(0634) 		danceMove_circularRaise();
+    00CC7 DE23      RCALL	_danceMove_circularRaise
+(0635) 	}
+    00CC8 C00D      RJMP	0x0CD6
+(0636) 	else if (moveId == 'e'){
+    00CC9 3645      CPI	R20,0x65
+    00CCA F411      BNE	0x0CCD
+(0637) 		danceMove_HANDS_AIR();
+    00CCB DC33      RCALL	_danceMove_HANDS_AIR
+(0638) 	}
+    00CCC C009      RJMP	0x0CD6
+(0639) 	else if (moveId == 'f'){
+    00CCD 3646      CPI	R20,0x66
+    00CCE F411      BNE	0x0CD1
+(0640) 		danceMove_zhigzhigRise();
+    00CCF DE69      RCALL	_danceMove_zhigzhigRise
+(0641) 	}
+    00CD0 C005      RJMP	0x0CD6
+(0642) 	else if (moveId == 'g') {
+    00CD1 3647      CPI	R20,0x67
+    00CD2 F419      BNE	0x0CD6
+(0643) 		danceMove_SlowTripod(time_temp);
+    00CD3 9100 0293 LDS	R16,time_temp
+    00CD5 DCAB      RCALL	_danceMove_SlowTripod
+(0644) 	}
+    00CD6 9149      LD	R20,Y+
+    00CD7 9508      RET
+_performDanceMoveTime:
+  time                 --> R10
+  moveId               --> R20
+    00CD8 92AA      ST	-Y,R10
+    00CD9 934A      ST	-Y,R20
+    00CDA 2EA2      MOV	R10,R18
+    00CDB 2F40      MOV	R20,R16
+(0645) 	
+(0646) 	 
+(0647) }
+(0648) 
+(0649) void performDanceMoveTime(unsigned char moveId,unsigned char time){
+(0650)  if (moveId == 'g'){
+    00CDC 3647      CPI	R20,0x67
+    00CDD F421      BNE	0x0CE2
+(0651) 	time_temp = time;
+    00CDE 92A0 0293 STS	time_temp,R10
+(0652) 	danceMove_SlowTripod(time);
+    00CE0 2D0A      MOV	R16,R10
+    00CE1 DC9F      RCALL	_danceMove_SlowTripod
+(0653) 	}
+    00CE2 9149      LD	R20,Y+
+    00CE3 90A9      LD	R10,Y+
+    00CE4 9508      RET
+(0654) 
+(0655) }
+(0656) 
+(0657) void cancelMove(void)
+(0658) {
+(0659) 	stand();
+_cancelMove:
+    00CE5 DA9F      RCALL	_stand
+(0660) 	delay_250ms();
+    00CE6 940E 00F0 CALL	_delay_250ms
+(0661) 	setStage(0);
+(0662) }
+FILE: <library>
+    00CE8 2700      CLR	R16
+    00CE9 CA98      RJMP	_setStage
+mod16u:
+    00CEA 9468      BSET	6
+    00CEB C001      RJMP	xdiv16u
+div16u:
+    00CEC 94E8      BCLR	6
+xdiv16u:
+    00CED 92EA      ST	-Y,R14
+    00CEE 92FA      ST	-Y,R15
+    00CEF 938A      ST	-Y,R24
+    00CF0 24EE      CLR	R14
+    00CF1 24FF      CLR	R15
+    00CF2 E180      LDI	R24,0x10
+    00CF3 0F00      LSL	R16
+    00CF4 1F11      ROL	R17
+    00CF5 1CEE      ROL	R14
+    00CF6 1CFF      ROL	R15
+    00CF7 16E2      CP	R14,R18
+    00CF8 06F3      CPC	R15,R19
+    00CF9 F018      BCS	0x0CFD
+    00CFA 1AE2      SUB	R14,R18
+    00CFB 0AF3      SBC	R15,R19
+    00CFC 9503      INC	R16
+    00CFD 958A      DEC	R24
+    00CFE F7A1      BNE	0x0CF3
+    00CFF F416      BRTC	0x0D02
+    00D00 2D0E      MOV	R16,R14
+    00D01 2D1F      MOV	R17,R15
+    00D02 9189      LD	R24,Y+
+    00D03 90F9      LD	R15,Y+
+    00D04 90E9      LD	R14,Y+
+    00D05 9508      RET
+empy16s:
+    00D06 920A      ST	-Y,R0
+    00D07 921A      ST	-Y,R1
+    00D08 938A      ST	-Y,R24
+    00D09 939A      ST	-Y,R25
+    00D0A 9F02      MUL	R16,R18
+    00D0B 01C0      MOVW	R24,R0
+    00D0C 9F12      MUL	R17,R18
+    00D0D 0D90      ADD	R25,R0
+    00D0E 9F03      MUL	R16,R19
+    00D0F 0D90      ADD	R25,R0
+    00D10 018C      MOVW	R16,R24
+    00D11 9199      LD	R25,Y+
+    00D12 9189      LD	R24,Y+
+    00D13 9019      LD	R1,Y+
+    00D14 9009      LD	R0,Y+
+    00D15 9508      RET
+pop_xgset00FC:
+    00D16 90A9      LD	R10,Y+
+    00D17 90B9      LD	R11,Y+
+    00D18 90C9      LD	R12,Y+
+    00D19 90D9      LD	R13,Y+
+    00D1A 90E9      LD	R14,Y+
+    00D1B 90F9      LD	R15,Y+
+    00D1C 9508      RET
+push_xgsetF0FC:
+    00D1D 937A      ST	-Y,R23
+    00D1E 936A      ST	-Y,R22
+push_xgset30FC:
+    00D1F 935A      ST	-Y,R21
+    00D20 934A      ST	-Y,R20
+push_xgset00FC:
+    00D21 92FA      ST	-Y,R15
+    00D22 92EA      ST	-Y,R14
+push_xgset003C:
+    00D23 92DA      ST	-Y,R13
+    00D24 92CA      ST	-Y,R12
+    00D25 92BA      ST	-Y,R11
+    00D26 92AA      ST	-Y,R10
+    00D27 9508      RET
+push_xgset300C:
+    00D28 935A      ST	-Y,R21
+    00D29 934A      ST	-Y,R20
+    00D2A 92BA      ST	-Y,R11
+    00D2B 92AA      ST	-Y,R10
+    00D2C 9508      RET
+pop_xgset300C:
+    00D2D 90A9      LD	R10,Y+
+    00D2E 90B9      LD	R11,Y+
+    00D2F 9149      LD	R20,Y+
+    00D30 9159      LD	R21,Y+
+    00D31 9508      RET
+push_xgsetF000:
+    00D32 937A      ST	-Y,R23
+    00D33 936A      ST	-Y,R22
+    00D34 935A      ST	-Y,R21
+    00D35 934A      ST	-Y,R20
+    00D36 9508      RET
+pop_xgsetF000:
+    00D37 9149      LD	R20,Y+
+    00D38 9159      LD	R21,Y+
+    00D39 9169      LD	R22,Y+
+    00D3A 9179      LD	R23,Y+
+    00D3B 9508      RET
+push_xgsetF00C:
+    00D3C 937A      ST	-Y,R23
+    00D3D 936A      ST	-Y,R22
+    00D3E 935A      ST	-Y,R21
+    00D3F 934A      ST	-Y,R20
+    00D40 92BA      ST	-Y,R11
+    00D41 92AA      ST	-Y,R10
+    00D42 9508      RET
+pop_xgsetF00C:
+    00D43 90A9      LD	R10,Y+
+    00D44 90B9      LD	R11,Y+
+    00D45 9149      LD	R20,Y+
+    00D46 9159      LD	R21,Y+
+    00D47 9169      LD	R22,Y+
+    00D48 9179      LD	R23,Y+
+    00D49 9508      RET
+push_xgset303C:
+    00D4A 935A      ST	-Y,R21
+    00D4B 934A      ST	-Y,R20
+    00D4C 92DA      ST	-Y,R13
+    00D4D 92CA      ST	-Y,R12
+    00D4E 92BA      ST	-Y,R11
+    00D4F 92AA      ST	-Y,R10
+    00D50 9508      RET
+pop_xgset303C:
+    00D51 90A9      LD	R10,Y+
+    00D52 90B9      LD	R11,Y+
+    00D53 90C9      LD	R12,Y+
+    00D54 90D9      LD	R13,Y+
+    00D55 9149      LD	R20,Y+
+    00D56 9159      LD	R21,Y+
+    00D57 9508      RET
+push_xgsetF03C:
+    00D58 937A      ST	-Y,R23
+    00D59 936A      ST	-Y,R22
+    00D5A 935A      ST	-Y,R21
+    00D5B 934A      ST	-Y,R20
+    00D5C 92DA      ST	-Y,R13
+    00D5D 92CA      ST	-Y,R12
+    00D5E 92BA      ST	-Y,R11
+    00D5F 92AA      ST	-Y,R10
+    00D60 9508      RET
+pop_xgsetF03C:
+    00D61 90A9      LD	R10,Y+
+    00D62 90B9      LD	R11,Y+
+    00D63 90C9      LD	R12,Y+
+    00D64 90D9      LD	R13,Y+
+    00D65 9149      LD	R20,Y+
+    00D66 9159      LD	R21,Y+
+    00D67 9169      LD	R22,Y+
+    00D68 9179      LD	R23,Y+
+    00D69 9508      RET

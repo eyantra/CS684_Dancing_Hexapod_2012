@@ -1,0 +1,2850 @@
+                        .module dance_moves.c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile dance_moves.c
+                        .area data(ram, con, rel)
+ 0000                   .dbfile dance_moves.c
+ 0000           _toggle::
+ 0000                   .blkb 1
+                        .area idata
+ 0000 00                .byte 0
+                        .area data(ram, con, rel)
+ 0001                   .dbfile dance_moves.c
+ 0001                   .dbfile C:\Users\dell\Dropbox\workspace\Hexapod_code_final\dance_moves.c
+ 0001                   .dbsym e toggle _toggle c
+ 0001           _motion_busy::
+ 0001                   .blkb 1
+                        .area idata
+ 0001 00                .byte 0
+                        .area data(ram, con, rel)
+ 0002                   .dbfile C:\Users\dell\Dropbox\workspace\Hexapod_code_final\dance_moves.c
+ 0002                   .dbsym e motion_busy _motion_busy c
+ 0002           _STAND_A::
+ 0002                   .blkb 1
+                        .area idata
+ 0002 5A                .byte 90
+                        .area data(ram, con, rel)
+ 0003                   .dbfile C:\Users\dell\Dropbox\workspace\Hexapod_code_final\dance_moves.c
+ 0003                   .dbsym e STAND_A _STAND_A c
+ 0003           _STAND_B::
+ 0003                   .blkb 1
+                        .area idata
+ 0003 3C                .byte 60
+                        .area data(ram, con, rel)
+ 0004                   .dbfile C:\Users\dell\Dropbox\workspace\Hexapod_code_final\dance_moves.c
+ 0004                   .dbsym e STAND_B _STAND_B c
+ 0004           _STAND_C::
+ 0004                   .blkb 1
+                        .area idata
+ 0004 14                .byte 20
+                        .area data(ram, con, rel)
+ 0005                   .dbfile C:\Users\dell\Dropbox\workspace\Hexapod_code_final\dance_moves.c
+ 0005                   .dbsym e STAND_C _STAND_C c
+ 0005           _stage::
+ 0005                   .blkb 1
+                        .area idata
+ 0005 00                .byte 0
+                        .area data(ram, con, rel)
+ 0006                   .dbfile C:\Users\dell\Dropbox\workspace\Hexapod_code_final\dance_moves.c
+ 0006                   .dbsym e stage _stage c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile C:\Users\dell\Dropbox\workspace\Hexapod_code_final\dance_moves.c
+ 0000                   .dbfunc e getStage _getStage fc
+                        .even
+ 0000           _getStage::
+ 0000                   .dbline -1
+ 0000                   .dbline 16
+ 0000           ; #include <iom2560v.h>
+ 0000           ; #include <macros.h>
+ 0000           ; #include "globalFunctions.h"
+ 0000           ; #include "dance_moves.h"
+ 0000           ; 
+ 0000           ; 
+ 0000           ; #ifndef NO_ACTION
+ 0000           ; #define NO_ACTION 200
+ 0000           ; #endif
+ 0000           ; 
+ 0000           ; unsigned char toggle = 0, motion_busy = 0;
+ 0000           ; unsigned char STAND_A = 90, STAND_B = 60, STAND_C = 20;
+ 0000           ; unsigned char stage = 0;
+ 0000           ; 
+ 0000           ; unsigned char getStage(void)
+ 0000           ; {
+ 0000                   .dbline 17
+ 0000           ;       return stage;
+ 0000 00910500          lds R16,_stage
+ 0004                   .dbline -2
+ 0004           L1:
+ 0004                   .dbline 0 ; func end
+ 0004 0895              ret
+ 0006                   .dbend
+ 0006                   .dbfunc e setStage _setStage fV
+ 0006           ;       newStage -> R16
+                        .even
+ 0006           _setStage::
+ 0006                   .dbline -1
+ 0006                   .dbline 21
+ 0006           ; }
+ 0006           ; 
+ 0006           ; void setStage(unsigned char newStage)
+ 0006           ; {
+ 0006                   .dbline 22
+ 0006           ;       stage = newStage;
+ 0006 00930500          sts _stage,R16
+ 000A                   .dbline -2
+ 000A           L2:
+ 000A                   .dbline 0 ; func end
+ 000A 0895              ret
+ 000C                   .dbsym r newStage 16 c
+ 000C                   .dbend
+ 000C                   .dbfunc e stand _stand fV
+                        .even
+ 000C           _stand::
+ 000C                   .dbline -1
+ 000C                   .dbline 26
+ 000C           ; }
+ 000C           ; 
+ 000C           ; void stand(void)
+ 000C           ; {
+ 000C                   .dbline 27
+ 000C           ;       angle_1A(STAND_A); angle_1B(STAND_B); angle_1C(STAND_C); angle_2A(STAND_A); angle_2B(STAND_B); angle_2C(STAND_C);
+ 000C 00910200          lds R16,_STAND_A
+ 0010 1127              clr R17
+ 0012 0E940000          xcall _angle_1A
+ 0016                   .dbline 27
+ 0016 00910300          lds R16,_STAND_B
+ 001A 1127              clr R17
+ 001C 0E940000          xcall _angle_1B
+ 0020                   .dbline 27
+ 0020 00910400          lds R16,_STAND_C
+ 0024 1127              clr R17
+ 0026 0E940000          xcall _angle_1C
+ 002A                   .dbline 27
+ 002A 00910200          lds R16,_STAND_A
+ 002E 1127              clr R17
+ 0030 0E940000          xcall _angle_2A
+ 0034                   .dbline 27
+ 0034 00910300          lds R16,_STAND_B
+ 0038 1127              clr R17
+ 003A 0E940000          xcall _angle_2B
+ 003E                   .dbline 27
+ 003E 00910400          lds R16,_STAND_C
+ 0042 1127              clr R17
+ 0044 0E940000          xcall _angle_2C
+ 0048                   .dbline 30
+ 0048           ;       //1,2,3C angle0 - vertical?
+ 0048           ;       //4 5 6 angle180 - vertical?
+ 0048           ;       angle_3A(STAND_A); angle_3B(STAND_B); angle_3C(STAND_C); angle_4A(STAND_A); angle_4B(STAND_B); angle_4C(STAND_C);
+ 0048 00910200          lds R16,_STAND_A
+ 004C 1127              clr R17
+ 004E 0E940000          xcall _angle_3A
+ 0052                   .dbline 30
+ 0052 00910300          lds R16,_STAND_B
+ 0056 1127              clr R17
+ 0058 0E940000          xcall _angle_3B
+ 005C                   .dbline 30
+ 005C 00910400          lds R16,_STAND_C
+ 0060 1127              clr R17
+ 0062 0E940000          xcall _angle_3C
+ 0066                   .dbline 30
+ 0066 00910200          lds R16,_STAND_A
+ 006A 1127              clr R17
+ 006C 0E940000          xcall _angle_4A
+ 0070                   .dbline 30
+ 0070 00910300          lds R16,_STAND_B
+ 0074 1127              clr R17
+ 0076 0E940000          xcall _angle_4B
+ 007A                   .dbline 30
+ 007A 00910400          lds R16,_STAND_C
+ 007E 1127              clr R17
+ 0080 0E940000          xcall _angle_4C
+ 0084                   .dbline 31
+ 0084           ;       angle_5A(STAND_A); angle_5B(STAND_B); angle_5C(STAND_C); angle_6A(STAND_A); angle_6B(STAND_B); angle_6C(STAND_C);
+ 0084 00910200          lds R16,_STAND_A
+ 0088 1127              clr R17
+ 008A 0E940000          xcall _angle_5A
+ 008E                   .dbline 31
+ 008E 00910300          lds R16,_STAND_B
+ 0092 1127              clr R17
+ 0094 0E940000          xcall _angle_5B
+ 0098                   .dbline 31
+ 0098 00910400          lds R16,_STAND_C
+ 009C 1127              clr R17
+ 009E 0E940000          xcall _angle_5C
+ 00A2                   .dbline 31
+ 00A2 00910200          lds R16,_STAND_A
+ 00A6 1127              clr R17
+ 00A8 0E940000          xcall _angle_6A
+ 00AC                   .dbline 31
+ 00AC 00910300          lds R16,_STAND_B
+ 00B0 1127              clr R17
+ 00B2 0E940000          xcall _angle_6B
+ 00B6                   .dbline 31
+ 00B6 00910400          lds R16,_STAND_C
+ 00BA 1127              clr R17
+ 00BC                   .dbline -2
+ 00BC           L3:
+ 00BC                   .dbline 0 ; func end
+ 00BC 0C940000          xjmp _angle_6C
+ 00C0                   .dbend
+ 00C0                   .dbfunc e step_up _step_up fV
+ 00C0           ;             pc -> R22
+ 00C0           ;             pb -> R20
+                        .even
+ 00C0           _step_up::
+ 00C0 4A93              st -y,R20
+ 00C2 6A93              st -y,R22
+ 00C4 2297              sbiw R28,2
+ 00C6                   .dbline -1
+ 00C6                   .dbline 35
+ 00C6           ; }
+ 00C6           ; 
+ 00C6           ; void step_up(void)
+ 00C6           ; {
+ 00C6                   .dbline 36
+ 00C6           ;       unsigned char pb =150, pc = 120;
+ 00C6 46E9              ldi R20,150
+ 00C8                   .dbline 36
+ 00C8 68E7              ldi R22,120
+ 00CA                   .dbline 37
+ 00CA           ;       angle_all(NO_ACTION,pb,pc);
+ 00CA 262E              mov R2,R22
+ 00CC 3324              clr R3
+ 00CE 3982              std y+1,R3
+ 00D0 2882              std y+0,R2
+ 00D2 242F              mov R18,R20
+ 00D4 3327              clr R19
+ 00D6 08EC              ldi R16,200
+ 00D8 10E0              ldi R17,0
+ 00DA 0E940000          xcall _angle_all
+ 00DE                   .dbline -2
+ 00DE           L4:
+ 00DE                   .dbline 0 ; func end
+ 00DE 2296              adiw R28,2
+ 00E0 6991              ld R22,y+
+ 00E2 4991              ld R20,y+
+ 00E4 0895              ret
+ 00E6                   .dbsym r pc 22 c
+ 00E6                   .dbsym r pb 20 c
+ 00E6                   .dbend
+ 00E6                   .dbfunc e step_up_slow _step_up_slow fV
+ 00E6           ;             pc -> R22
+ 00E6           ;             pb -> R20
+                        .even
+ 00E6           _step_up_slow::
+ 00E6 4A93              st -y,R20
+ 00E8 6A93              st -y,R22
+ 00EA 2297              sbiw R28,2
+ 00EC                   .dbline -1
+ 00EC                   .dbline 41
+ 00EC           ; }
+ 00EC           ; 
+ 00EC           ; void step_up_slow(void)
+ 00EC           ; {
+ 00EC                   .dbline 42
+ 00EC           ;       unsigned char pb = 150, pc = 120;
+ 00EC 46E9              ldi R20,150
+ 00EE                   .dbline 42
+ 00EE 68E7              ldi R22,120
+ 00F0                   .dbline 43
+ 00F0           ;       angle_all(NO_ACTION,pb,pc);
+ 00F0 262E              mov R2,R22
+ 00F2 3324              clr R3
+ 00F4 3982              std y+1,R3
+ 00F6 2882              std y+0,R2
+ 00F8 242F              mov R18,R20
+ 00FA 3327              clr R19
+ 00FC 08EC              ldi R16,200
+ 00FE 10E0              ldi R17,0
+ 0100 0E940000          xcall _angle_all
+ 0104                   .dbline -2
+ 0104           L5:
+ 0104                   .dbline 0 ; func end
+ 0104 2296              adiw R28,2
+ 0106 6991              ld R22,y+
+ 0108 4991              ld R20,y+
+ 010A 0895              ret
+ 010C                   .dbsym r pc 22 c
+ 010C                   .dbsym r pb 20 c
+ 010C                   .dbend
+ 010C                   .dbfunc e step_up_zhigzhig _step_up_zhigzhig fV
+ 010C           ;              j -> R20,R21
+ 010C           ;              i -> R22
+ 010C           ;              s -> R20
+                        .even
+ 010C           _step_up_zhigzhig::
+ 010C 0E940000          xcall push_xgsetF000
+ 0110 402F              mov R20,R16
+ 0112 2297              sbiw R28,2
+ 0114                   .dbline -1
+ 0114                   .dbline 47
+ 0114           ; }
+ 0114           ; 
+ 0114           ; void step_up_zhigzhig(unsigned char s)
+ 0114           ; {
+ 0114                   .dbline 48
+ 0114           ;       unsigned char i = s - 4;
+ 0114 642F              mov R22,R20
+ 0116 6450              subi R22,4
+ 0118                   .dbline 49
+ 0118           ;       int j = 1;
+ 0118 41E0              ldi R20,1
+ 011A 50E0              ldi R21,0
+ 011C                   .dbline 50
+ 011C           ;       if (toggle == 0)
+ 011C 20900000          lds R2,_toggle
+ 0120 2220              tst R2
+ 0122 21F4              brne L7
+ 0124           X0:
+ 0124                   .dbline 51
+ 0124           ;       {
+ 0124                   .dbline 52
+ 0124           ;               toggle = 1;
+ 0124 81E0              ldi R24,1
+ 0126 80930000          sts _toggle,R24
+ 012A                   .dbline 53
+ 012A           ;               j = 1;
+ 012A                   .dbline 54
+ 012A           ;       }
+ 012A 09C0              xjmp L8
+ 012C           L7:
+ 012C                   .dbline 55
+ 012C           ;       else if (toggle == 1)
+ 012C 80910000          lds R24,_toggle
+ 0130 8130              cpi R24,1
+ 0132 29F4              brne L9
+ 0134           X1:
+ 0134                   .dbline 56
+ 0134           ;       {
+ 0134                   .dbline 57
+ 0134           ;               toggle = 0;
+ 0134 2224              clr R2
+ 0136 20920000          sts _toggle,R2
+ 013A                   .dbline 58
+ 013A           ;               j = -1;
+ 013A 4FEF              ldi R20,-1
+ 013C 5FEF              ldi R21,-1
+ 013E                   .dbline 59
+ 013E           ;       }
+ 013E           L9:
+ 013E           L8:
+ 013E                   .dbline 61
+ 013E           ;       
+ 013E           ;       angle_all(90+30*j,30+12*i,12*i);
+ 013E 8CE0              ldi R24,12
+ 0140 869F              mul R24,R22
+ 0142 1982              std y+1,R1
+ 0144 0882              std y+0,R0
+ 0146 9001              movw R18,R0
+ 0148 225E              subi R18,226  ; offset = 30
+ 014A 3F4F              sbci R19,255
+ 014C 0EE1              ldi R16,30
+ 014E 10E0              ldi R17,0
+ 0150 2F93              push R18
+ 0152 3F93              push R19
+ 0154 9A01              movw R18,R20
+ 0156 0E940000          xcall empy16s
+ 015A 3F91              pop R19
+ 015C 2F91              pop R18
+ 015E 065A              subi R16,166  ; offset = 90
+ 0160 1F4F              sbci R17,255
+ 0162 0E940000          xcall _angle_all
+ 0166                   .dbline -2
+ 0166           L6:
+ 0166                   .dbline 0 ; func end
+ 0166 2296              adiw R28,2
+ 0168 0C940000          xjmp pop_xgsetF000
+ 016C                   .dbsym r j 20 I
+ 016C                   .dbsym r i 22 c
+ 016C                   .dbsym r s 20 c
+ 016C                   .dbend
+ 016C                   .dbfunc e step_down _step_down fV
+ 016C           ;             pc -> R10
+ 016C           ;             pb -> R20
+                        .even
+ 016C           _step_down::
+ 016C AA92              st -y,R10
+ 016E 4A93              st -y,R20
+ 0170 2297              sbiw R28,2
+ 0172                   .dbline -1
+ 0172                   .dbline 66
+ 0172           ; }
+ 0172           ; 
+ 0172           ; 
+ 0172           ; void step_down(void)
+ 0172           ; {
+ 0172                   .dbline 67
+ 0172           ;       unsigned char pb = 30, pc = 0;
+ 0172 4EE1              ldi R20,30
+ 0174                   .dbline 67
+ 0174 AA24              clr R10
+ 0176                   .dbline 68
+ 0176           ;       angle_all(NO_ACTION,pb,pc);
+ 0176 2A2C              mov R2,R10
+ 0178 3324              clr R3
+ 017A 3982              std y+1,R3
+ 017C 2882              std y+0,R2
+ 017E 242F              mov R18,R20
+ 0180 3327              clr R19
+ 0182 08EC              ldi R16,200
+ 0184 10E0              ldi R17,0
+ 0186 0E940000          xcall _angle_all
+ 018A                   .dbline -2
+ 018A           L11:
+ 018A                   .dbline 0 ; func end
+ 018A 2296              adiw R28,2
+ 018C 4991              ld R20,y+
+ 018E A990              ld R10,y+
+ 0190 0895              ret
+ 0192                   .dbsym r pc 10 c
+ 0192                   .dbsym r pb 20 c
+ 0192                   .dbend
+ 0192                   .dbfunc e step16 _step16 fV
+                        .even
+ 0192           _step16::
+ 0192                   .dbline -1
+ 0192                   .dbline 71
+ 0192           ; }
+ 0192           ; void step16(void)
+ 0192           ; {
+ 0192                   .dbline 72
+ 0192           ;       if (toggle == 0)
+ 0192 20900000          lds R2,_toggle
+ 0196 2220              tst R2
+ 0198 A1F5              brne L13
+ 019A           X2:
+ 019A                   .dbline 73
+ 019A           ;       {
+ 019A                   .dbline 74
+ 019A           ;               toggle = 1;
+ 019A 81E0              ldi R24,1
+ 019C 80930000          sts _toggle,R24
+ 01A0                   .dbline 75
+ 01A0           ;               angle_1B(0);
+ 01A0 0027              clr R16
+ 01A2 1127              clr R17
+ 01A4 0E940000          xcall _angle_1B
+ 01A8                   .dbline 76
+ 01A8           ;               angle_6B(0);
+ 01A8 0027              clr R16
+ 01AA 1127              clr R17
+ 01AC 0E940000          xcall _angle_6B
+ 01B0                   .dbline 77
+ 01B0           ;               angle_1C(100);
+ 01B0 04E6              ldi R16,100
+ 01B2 10E0              ldi R17,0
+ 01B4 0E940000          xcall _angle_1C
+ 01B8                   .dbline 78
+ 01B8           ;               angle_6C(100);
+ 01B8 04E6              ldi R16,100
+ 01BA 10E0              ldi R17,0
+ 01BC 0E940000          xcall _angle_6C
+ 01C0                   .dbline 80
+ 01C0           ;               
+ 01C0           ;               angle_2B(40);
+ 01C0 08E2              ldi R16,40
+ 01C2 10E0              ldi R17,0
+ 01C4 0E940000          xcall _angle_2B
+ 01C8                   .dbline 81
+ 01C8           ;               angle_3B(40);
+ 01C8 08E2              ldi R16,40
+ 01CA 10E0              ldi R17,0
+ 01CC 0E940000          xcall _angle_3B
+ 01D0                   .dbline 82
+ 01D0           ;               angle_4B(40);
+ 01D0 08E2              ldi R16,40
+ 01D2 10E0              ldi R17,0
+ 01D4 0E940000          xcall _angle_4B
+ 01D8                   .dbline 83
+ 01D8           ;               angle_5B(40);
+ 01D8 08E2              ldi R16,40
+ 01DA 10E0              ldi R17,0
+ 01DC 0E940000          xcall _angle_5B
+ 01E0                   .dbline 85
+ 01E0           ;               
+ 01E0           ;               angle_2C(0);
+ 01E0 0027              clr R16
+ 01E2 1127              clr R17
+ 01E4 0E940000          xcall _angle_2C
+ 01E8                   .dbline 86
+ 01E8           ;               angle_3C(0);
+ 01E8 0027              clr R16
+ 01EA 1127              clr R17
+ 01EC 0E940000          xcall _angle_3C
+ 01F0                   .dbline 87
+ 01F0           ;               angle_4C(0);
+ 01F0 0027              clr R16
+ 01F2 1127              clr R17
+ 01F4 0E940000          xcall _angle_4C
+ 01F8                   .dbline 88
+ 01F8           ;               angle_5C(0);
+ 01F8 0027              clr R16
+ 01FA 1127              clr R17
+ 01FC 0E940000          xcall _angle_5C
+ 0200                   .dbline 89
+ 0200           ;       }
+ 0200 04C0              xjmp L14
+ 0202           L13:
+ 0202                   .dbline 91
+ 0202           ;       else
+ 0202           ;       {
+ 0202                   .dbline 92
+ 0202           ;               toggle = 0;
+ 0202 2224              clr R2
+ 0204 20920000          sts _toggle,R2
+ 0208                   .dbline 93
+ 0208           ;               stand();
+ 0208 01DF              xcall _stand
+ 020A                   .dbline 104
+ 020A           ;               // angle_1B(STAND_B);
+ 020A           ;               // angle_6B(STAND_B);
+ 020A           ;               
+ 020A           ;               // angle_1C(STAND_C);
+ 020A           ;               // angle_6C(STAND_C);
+ 020A           ;               
+ 020A           ;               // angle_2B(STAND_B);
+ 020A           ;               // angle_3B(STAND_B);
+ 020A           ;               // angle_4B(STAND_B);
+ 020A           ;               // angle_5B(STAND_B);
+ 020A           ;       }
+ 020A           L14:
+ 020A                   .dbline -2
+ 020A           L12:
+ 020A                   .dbline 0 ; func end
+ 020A 0895              ret
+ 020C                   .dbend
+ 020C                   .dbfunc e step25 _step25 fV
+                        .even
+ 020C           _step25::
+ 020C                   .dbline -1
+ 020C                   .dbline 108
+ 020C           ; }
+ 020C           ; 
+ 020C           ; void step25(void)
+ 020C           ; {
+ 020C                   .dbline 109
+ 020C           ;       if (toggle == 0)
+ 020C 20900000          lds R2,_toggle
+ 0210 2220              tst R2
+ 0212 A1F5              brne L16
+ 0214           X3:
+ 0214                   .dbline 110
+ 0214           ;       {
+ 0214                   .dbline 111
+ 0214           ;               toggle = 1;
+ 0214 81E0              ldi R24,1
+ 0216 80930000          sts _toggle,R24
+ 021A                   .dbline 112
+ 021A           ;               angle_2B(0);
+ 021A 0027              clr R16
+ 021C 1127              clr R17
+ 021E 0E940000          xcall _angle_2B
+ 0222                   .dbline 113
+ 0222           ;               angle_5B(0);
+ 0222 0027              clr R16
+ 0224 1127              clr R17
+ 0226 0E940000          xcall _angle_5B
+ 022A                   .dbline 114
+ 022A           ;               angle_2C(100);
+ 022A 04E6              ldi R16,100
+ 022C 10E0              ldi R17,0
+ 022E 0E940000          xcall _angle_2C
+ 0232                   .dbline 115
+ 0232           ;               angle_5C(100);
+ 0232 04E6              ldi R16,100
+ 0234 10E0              ldi R17,0
+ 0236 0E940000          xcall _angle_5C
+ 023A                   .dbline 117
+ 023A           ;               
+ 023A           ;               angle_1B(40);
+ 023A 08E2              ldi R16,40
+ 023C 10E0              ldi R17,0
+ 023E 0E940000          xcall _angle_1B
+ 0242                   .dbline 118
+ 0242           ;               angle_3B(40);
+ 0242 08E2              ldi R16,40
+ 0244 10E0              ldi R17,0
+ 0246 0E940000          xcall _angle_3B
+ 024A                   .dbline 119
+ 024A           ;               angle_4B(40);
+ 024A 08E2              ldi R16,40
+ 024C 10E0              ldi R17,0
+ 024E 0E940000          xcall _angle_4B
+ 0252                   .dbline 120
+ 0252           ;               angle_6B(40);
+ 0252 08E2              ldi R16,40
+ 0254 10E0              ldi R17,0
+ 0256 0E940000          xcall _angle_6B
+ 025A                   .dbline 122
+ 025A           ;               
+ 025A           ;               angle_1C(0);
+ 025A 0027              clr R16
+ 025C 1127              clr R17
+ 025E 0E940000          xcall _angle_1C
+ 0262                   .dbline 123
+ 0262           ;               angle_3C(0);
+ 0262 0027              clr R16
+ 0264 1127              clr R17
+ 0266 0E940000          xcall _angle_3C
+ 026A                   .dbline 124
+ 026A           ;               angle_4C(0);
+ 026A 0027              clr R16
+ 026C 1127              clr R17
+ 026E 0E940000          xcall _angle_4C
+ 0272                   .dbline 125
+ 0272           ;               angle_6C(0);
+ 0272 0027              clr R16
+ 0274 1127              clr R17
+ 0276 0E940000          xcall _angle_6C
+ 027A                   .dbline 126
+ 027A           ;       }
+ 027A 04C0              xjmp L17
+ 027C           L16:
+ 027C                   .dbline 128
+ 027C           ;       else
+ 027C           ;       {
+ 027C                   .dbline 129
+ 027C           ;               toggle = 0;
+ 027C 2224              clr R2
+ 027E 20920000          sts _toggle,R2
+ 0282                   .dbline 130
+ 0282           ;               stand();
+ 0282 C4DE              xcall _stand
+ 0284                   .dbline 141
+ 0284           ;               // angle_2B(STAND_B);
+ 0284           ;               // angle_5B(STAND_B);
+ 0284           ;               
+ 0284           ;               // angle_2C(STAND_C);
+ 0284           ;               // angle_5C(STAND_C);
+ 0284           ;               
+ 0284           ;               // angle_1B(STAND_B);
+ 0284           ;               // angle_3B(STAND_B);
+ 0284           ;               // angle_4B(STAND_B);
+ 0284           ;               // angle_6B(STAND_B);
+ 0284           ;       }
+ 0284           L17:
+ 0284                   .dbline -2
+ 0284           L15:
+ 0284                   .dbline 0 ; func end
+ 0284 0895              ret
+ 0286                   .dbend
+ 0286                   .dbfunc e step34 _step34 fV
+                        .even
+ 0286           _step34::
+ 0286                   .dbline -1
+ 0286                   .dbline 145
+ 0286           ; }
+ 0286           ; 
+ 0286           ; void step34(void)
+ 0286           ; {
+ 0286                   .dbline 146
+ 0286           ;       if (toggle == 0)
+ 0286 20900000          lds R2,_toggle
+ 028A 2220              tst R2
+ 028C A1F5              brne L19
+ 028E           X4:
+ 028E                   .dbline 147
+ 028E           ;       {
+ 028E                   .dbline 148
+ 028E           ;               toggle = 1;
+ 028E 81E0              ldi R24,1
+ 0290 80930000          sts _toggle,R24
+ 0294                   .dbline 149
+ 0294           ;               angle_3B(0);
+ 0294 0027              clr R16
+ 0296 1127              clr R17
+ 0298 0E940000          xcall _angle_3B
+ 029C                   .dbline 150
+ 029C           ;               angle_4B(0);
+ 029C 0027              clr R16
+ 029E 1127              clr R17
+ 02A0 0E940000          xcall _angle_4B
+ 02A4                   .dbline 151
+ 02A4           ;               angle_3C(100);
+ 02A4 04E6              ldi R16,100
+ 02A6 10E0              ldi R17,0
+ 02A8 0E940000          xcall _angle_3C
+ 02AC                   .dbline 152
+ 02AC           ;               angle_4C(100);
+ 02AC 04E6              ldi R16,100
+ 02AE 10E0              ldi R17,0
+ 02B0 0E940000          xcall _angle_4C
+ 02B4                   .dbline 154
+ 02B4           ;               
+ 02B4           ;               angle_2B(40);
+ 02B4 08E2              ldi R16,40
+ 02B6 10E0              ldi R17,0
+ 02B8 0E940000          xcall _angle_2B
+ 02BC                   .dbline 155
+ 02BC           ;               angle_1B(40);
+ 02BC 08E2              ldi R16,40
+ 02BE 10E0              ldi R17,0
+ 02C0 0E940000          xcall _angle_1B
+ 02C4                   .dbline 156
+ 02C4           ;               angle_6B(40);
+ 02C4 08E2              ldi R16,40
+ 02C6 10E0              ldi R17,0
+ 02C8 0E940000          xcall _angle_6B
+ 02CC                   .dbline 157
+ 02CC           ;               angle_5B(40);
+ 02CC 08E2              ldi R16,40
+ 02CE 10E0              ldi R17,0
+ 02D0 0E940000          xcall _angle_5B
+ 02D4                   .dbline 159
+ 02D4           ;               
+ 02D4           ;               angle_2C(0);
+ 02D4 0027              clr R16
+ 02D6 1127              clr R17
+ 02D8 0E940000          xcall _angle_2C
+ 02DC                   .dbline 160
+ 02DC           ;               angle_1C(0);
+ 02DC 0027              clr R16
+ 02DE 1127              clr R17
+ 02E0 0E940000          xcall _angle_1C
+ 02E4                   .dbline 161
+ 02E4           ;               angle_6C(0);
+ 02E4 0027              clr R16
+ 02E6 1127              clr R17
+ 02E8 0E940000          xcall _angle_6C
+ 02EC                   .dbline 162
+ 02EC           ;               angle_5C(0);
+ 02EC 0027              clr R16
+ 02EE 1127              clr R17
+ 02F0 0E940000          xcall _angle_5C
+ 02F4                   .dbline 163
+ 02F4           ;       }
+ 02F4 04C0              xjmp L20
+ 02F6           L19:
+ 02F6                   .dbline 165
+ 02F6           ;       else
+ 02F6           ;       {
+ 02F6                   .dbline 166
+ 02F6           ;               toggle = 0;
+ 02F6 2224              clr R2
+ 02F8 20920000          sts _toggle,R2
+ 02FC                   .dbline 167
+ 02FC           ;               stand();
+ 02FC 87DE              xcall _stand
+ 02FE                   .dbline 178
+ 02FE           ;               // angle_4B(STAND_B);
+ 02FE           ;               // angle_3C(STAND_C);
+ 02FE           ;               // angle_3B(STAND_B);
+ 02FE           ;               
+ 02FE           ;               // angle_4C(STAND_C);
+ 02FE           ;               
+ 02FE           ;               // angle_2B(STAND_B);
+ 02FE           ;               // angle_1B(STAND_B);
+ 02FE           ;               // angle_6B(STAND_B);
+ 02FE           ;               // angle_5B(STAND_B);
+ 02FE           ;       }
+ 02FE           L20:
+ 02FE                   .dbline -2
+ 02FE           L18:
+ 02FE                   .dbline 0 ; func end
+ 02FE 0895              ret
+ 0300                   .dbend
+ 0300                   .dbfunc e danceMove_HANDS_AIR _danceMove_HANDS_AIR fV
+ 0300           ;          stage -> R20
+                        .even
+ 0300           _danceMove_HANDS_AIR::
+ 0300 4A93              st -y,R20
+ 0302                   .dbline -1
+ 0302                   .dbline 182
+ 0302           ; }
+ 0302           ; 
+ 0302           ; void danceMove_HANDS_AIR(void)
+ 0302           ; {
+ 0302                   .dbline 183
+ 0302           ;       unsigned char stage = getStage();
+ 0302 7EDE              xcall _getStage
+ 0304 402F              mov R20,R16
+ 0306                   .dbline 185
+ 0306           ; 
+ 0306           ;       motion_busy = 1;
+ 0306 81E0              ldi R24,1
+ 0308 80930100          sts _motion_busy,R24
+ 030C                   .dbline 187
+ 030C           ;       
+ 030C           ;       if (stage == 0)
+ 030C 0023              tst R16
+ 030E 11F4              brne L22
+ 0310           X5:
+ 0310                   .dbline 188
+ 0310           ;       {
+ 0310                   .dbline 189
+ 0310           ;               stand();
+ 0310 7DDE              xcall _stand
+ 0312                   .dbline 190
+ 0312           ;       }
+ 0312 1FC0              xjmp L23
+ 0314           L22:
+ 0314                   .dbline 191
+ 0314           ;       else if (stage == 1)
+ 0314 4130              cpi R20,1
+ 0316 11F4              brne L24
+ 0318           X6:
+ 0318                   .dbline 192
+ 0318           ;       {
+ 0318                   .dbline 193
+ 0318           ;               step16();
+ 0318 3CDF              xcall _step16
+ 031A                   .dbline 194
+ 031A           ;       }
+ 031A 1BC0              xjmp L25
+ 031C           L24:
+ 031C                   .dbline 195
+ 031C           ;       else if (stage == 2)
+ 031C 4230              cpi R20,2
+ 031E 11F4              brne L26
+ 0320           X7:
+ 0320                   .dbline 196
+ 0320           ;       {
+ 0320                   .dbline 197
+ 0320           ;               step16();
+ 0320 38DF              xcall _step16
+ 0322                   .dbline 198
+ 0322           ;       }
+ 0322 17C0              xjmp L27
+ 0324           L26:
+ 0324                   .dbline 199
+ 0324           ;       else if (stage == 3)
+ 0324 4330              cpi R20,3
+ 0326 11F4              brne L28
+ 0328           X8:
+ 0328                   .dbline 200
+ 0328           ;       {
+ 0328                   .dbline 201
+ 0328           ;               step25();
+ 0328 71DF              xcall _step25
+ 032A                   .dbline 202
+ 032A           ;       }
+ 032A 13C0              xjmp L29
+ 032C           L28:
+ 032C                   .dbline 203
+ 032C           ;       else if (stage == 4)
+ 032C 4430              cpi R20,4
+ 032E 11F4              brne L30
+ 0330           X9:
+ 0330                   .dbline 204
+ 0330           ;       {
+ 0330                   .dbline 205
+ 0330           ;               step25();
+ 0330 6DDF              xcall _step25
+ 0332                   .dbline 206
+ 0332           ;       }
+ 0332 0FC0              xjmp L31
+ 0334           L30:
+ 0334                   .dbline 207
+ 0334           ;       else if (stage == 5)
+ 0334 4530              cpi R20,5
+ 0336 11F4              brne L32
+ 0338           X10:
+ 0338                   .dbline 208
+ 0338           ;       {
+ 0338                   .dbline 209
+ 0338           ;               step34();
+ 0338 A6DF              xcall _step34
+ 033A                   .dbline 210
+ 033A           ;       }
+ 033A 0BC0              xjmp L33
+ 033C           L32:
+ 033C                   .dbline 211
+ 033C           ;       else if (stage == 6)
+ 033C 4630              cpi R20,6
+ 033E 11F4              brne L34
+ 0340           X11:
+ 0340                   .dbline 212
+ 0340           ;       {
+ 0340                   .dbline 213
+ 0340           ;               step34();
+ 0340 A2DF              xcall _step34
+ 0342                   .dbline 214
+ 0342           ;       }
+ 0342 07C0              xjmp L35
+ 0344           L34:
+ 0344                   .dbline 215
+ 0344           ;       else if (stage == 7)
+ 0344 4730              cpi R20,7
+ 0346 11F4              brne L36
+ 0348           X12:
+ 0348                   .dbline 216
+ 0348           ;       {
+ 0348                   .dbline 217
+ 0348           ;               step_down();
+ 0348 11DF              xcall _step_down
+ 034A                   .dbline 218
+ 034A           ;       }
+ 034A 03C0              xjmp L37
+ 034C           L36:
+ 034C                   .dbline 219
+ 034C           ;       else if (stage == 8)
+ 034C 4830              cpi R20,8
+ 034E 09F4              brne L38
+ 0350           X13:
+ 0350                   .dbline 220
+ 0350           ;       {
+ 0350                   .dbline 221
+ 0350           ;               stand();
+ 0350 5DDE              xcall _stand
+ 0352                   .dbline 222
+ 0352           ;       }
+ 0352           L38:
+ 0352           L37:
+ 0352           L35:
+ 0352           L33:
+ 0352           L31:
+ 0352           L29:
+ 0352           L27:
+ 0352           L25:
+ 0352           L23:
+ 0352                   .dbline 223
+ 0352           ;       delay_50ms();
+ 0352 0E940000          xcall _delay_50ms
+ 0356                   .dbline 224
+ 0356           ;       if (stage == 8)
+ 0356 4830              cpi R20,8
+ 0358 19F4              brne L40
+ 035A           X14:
+ 035A                   .dbline 225
+ 035A           ;               setStage(1);
+ 035A 01E0              ldi R16,1
+ 035C 54DE              xcall _setStage
+ 035E 03C0              xjmp L41
+ 0360           L40:
+ 0360                   .dbline 227
+ 0360           ;       else
+ 0360           ;               setStage(stage + 1);
+ 0360 042F              mov R16,R20
+ 0362 0F5F              subi R16,255    ; addi 1
+ 0364 50DE              xcall _setStage
+ 0366           L41:
+ 0366                   .dbline 229
+ 0366           ;       
+ 0366           ;       motion_busy = 0;
+ 0366 2224              clr R2
+ 0368 20920100          sts _motion_busy,R2
+ 036C                   .dbline -2
+ 036C           L21:
+ 036C                   .dbline 0 ; func end
+ 036C 4991              ld R20,y+
+ 036E 0895              ret
+ 0370                   .dbsym r stage 20 c
+ 0370                   .dbend
+ 0370                   .dbfunc e slow_step_down _slow_step_down fV
+ 0370           ;             pa -> R22
+ 0370           ;             pc -> R12
+ 0370           ;              i -> R20
+ 0370           ;           time -> R10,R11
+                        .even
+ 0370           _slow_step_down::
+ 0370 0E940000          xcall push_xgsetF03C
+ 0374 5801              movw R10,R16
+ 0376 2297              sbiw R28,2
+ 0378                   .dbline -1
+ 0378                   .dbline 232
+ 0378           ; }
+ 0378           ; void slow_step_down(unsigned int time)
+ 0378           ; {
+ 0378                   .dbline 233
+ 0378           ;       unsigned char i = 0;
+ 0378                   .dbline 234
+ 0378           ;       unsigned char pa = 30, pc = 0;
+ 0378 6EE1              ldi R22,30
+ 037A                   .dbline 234
+ 037A CC24              clr R12
+ 037C                   .dbline 236
+ 037C           ;       
+ 037C           ;       for( i=1; i<16; i++)
+ 037C 41E0              ldi R20,1
+ 037E 1BC0              xjmp L46
+ 0380           L43:
+ 0380                   .dbline 237
+ 0380           ;       {
+ 0380                   .dbline 238
+ 0380           ;               pa = STAND_B - 2 * i;
+ 0380 242E              mov R2,R20
+ 0382 220C              lsl R2
+ 0384 60910300          lds R22,_STAND_B
+ 0388 6219              sub R22,R2
+ 038A                   .dbline 239
+ 038A           ;               pc = STAND_C - 1 * i;
+ 038A 81E0              ldi R24,1
+ 038C 849F              mul R24,R20
+ 038E C0900400          lds R12,_STAND_C
+ 0392 C018              sub R12,R0
+ 0394                   .dbline 240
+ 0394           ;               if (i == 15){
+ 0394 4F30              cpi R20,15
+ 0396 09F4              brne L47
+ 0398           X15:
+ 0398                   .dbline 240
+ 0398                   .dbline 241
+ 0398           ;                       pc = 0;
+ 0398 CC24              clr R12
+ 039A                   .dbline 242
+ 039A           ;               }
+ 039A           L47:
+ 039A                   .dbline 243
+ 039A           ;               angle_all(NO_ACTION,pa,pc);
+ 039A 2C2C              mov R2,R12
+ 039C 3324              clr R3
+ 039E 3982              std y+1,R3
+ 03A0 2882              std y+0,R2
+ 03A2 262F              mov R18,R22
+ 03A4 3327              clr R19
+ 03A6 08EC              ldi R16,200
+ 03A8 10E0              ldi R17,0
+ 03AA 0E940000          xcall _angle_all
+ 03AE                   .dbline 244
+ 03AE           ;               delay_xms(time);
+ 03AE 8501              movw R16,R10
+ 03B0 0E940000          xcall _delay_xms
+ 03B4                   .dbline 245
+ 03B4           ;       }
+ 03B4           L44:
+ 03B4                   .dbline 236
+ 03B4 4395              inc R20
+ 03B6           L46:
+ 03B6                   .dbline 236
+ 03B6 4031              cpi R20,16
+ 03B8 18F3              brlo L43
+ 03BA           X16:
+ 03BA                   .dbline -2
+ 03BA           L42:
+ 03BA                   .dbline 0 ; func end
+ 03BA 2296              adiw R28,2
+ 03BC 0C940000          xjmp pop_xgsetF03C
+ 03C0                   .dbsym r pa 22 c
+ 03C0                   .dbsym r pc 12 c
+ 03C0                   .dbsym r i 20 c
+ 03C0                   .dbsym r time 10 i
+ 03C0                   .dbend
+ 03C0                   .dbfunc e legs246_up_left _legs246_up_left fV
+ 03C0           ;              i -> R20
+ 03C0           ;           time -> R10,R11
+                        .even
+ 03C0           _legs246_up_left::
+ 03C0 0E940000          xcall push_xgset300C
+ 03C4 5801              movw R10,R16
+ 03C6 2297              sbiw R28,2
+ 03C8                   .dbline -1
+ 03C8                   .dbline 248
+ 03C8           ; }
+ 03C8           ; void legs246_up_left(unsigned int time)
+ 03C8           ; {
+ 03C8                   .dbline 249
+ 03C8           ;       unsigned char i=0;
+ 03C8                   .dbline 251
+ 03C8           ;       //angle_246(30, 10, 140);
+ 03C8           ;       for(i=1; i<21; i++)
+ 03C8 41E0              ldi R20,1
+ 03CA 17C0              xjmp L53
+ 03CC           L50:
+ 03CC                   .dbline 252
+ 03CC           ;       {
+ 03CC                   .dbline 253
+ 03CC           ;               angle_246(STAND_A - 3*i, 30 - i, 7*i);
+ 03CC 87E0              ldi R24,7
+ 03CE 849F              mul R24,R20
+ 03D0 1982              std y+1,R1
+ 03D2 0882              std y+0,R0
+ 03D4 242E              mov R2,R20
+ 03D6 3324              clr R3
+ 03D8 2EE1              ldi R18,30
+ 03DA 30E0              ldi R19,0
+ 03DC 2219              sub R18,R2
+ 03DE 3309              sbc R19,R3
+ 03E0 83E0              ldi R24,3
+ 03E2 849F              mul R24,R20
+ 03E4 00910200          lds R16,_STAND_A
+ 03E8 1127              clr R17
+ 03EA 0019              sub R16,R0
+ 03EC 1109              sbc R17,R1
+ 03EE 0E940000          xcall _angle_246
+ 03F2                   .dbline 254
+ 03F2           ;               delay_xms(time);
+ 03F2 8501              movw R16,R10
+ 03F4 0E940000          xcall _delay_xms
+ 03F8                   .dbline 255
+ 03F8           ;       }
+ 03F8           L51:
+ 03F8                   .dbline 251
+ 03F8 4395              inc R20
+ 03FA           L53:
+ 03FA                   .dbline 251
+ 03FA 4531              cpi R20,21
+ 03FC 38F3              brlo L50
+ 03FE           X17:
+ 03FE                   .dbline -2
+ 03FE           L49:
+ 03FE                   .dbline 0 ; func end
+ 03FE 2296              adiw R28,2
+ 0400 0C940000          xjmp pop_xgset300C
+ 0404                   .dbsym r i 20 c
+ 0404                   .dbsym r time 10 i
+ 0404                   .dbend
+ 0404                   .dbfunc e danceMove_SlowTripod _danceMove_SlowTripod fV
+ 0404           ;              j -> R12,R13
+ 0404           ;          stage -> R12
+ 0404           ;           time -> R10,R11
+ 0404           ;              i -> R20
+ 0404           ;              t -> R10
+                        .even
+ 0404           _danceMove_SlowTripod::
+ 0404 0E940000          xcall push_xgset303C
+ 0408 A02E              mov R10,R16
+ 040A 2297              sbiw R28,2
+ 040C                   .dbline -1
+ 040C                   .dbline 260
+ 040C           ; }
+ 040C           ; 
+ 040C           ; unsigned char time_temp;
+ 040C           ; 
+ 040C           ; void danceMove_SlowTripod(unsigned char t){
+ 040C                   .dbline 261
+ 040C           ;       unsigned char i = 0;
+ 040C                   .dbline 262
+ 040C           ;       unsigned char stage = getStage();
+ 040C F9DD              xcall _getStage
+ 040E                   .dbline 263
+ 040E           ;       unsigned int j = 0;
+ 040E CC24              clr R12
+ 0410 DD24              clr R13
+ 0412                   .dbline 264
+ 0412           ;       unsigned int time = t;
+ 0412 BB24              clr R11
+ 0414                   .dbline 266
+ 0414           ;       
+ 0414           ;       i=0;
+ 0414                   .dbline 267
+ 0414           ;       motion_busy = 1;
+ 0414 81E0              ldi R24,1
+ 0416 80930100          sts _motion_busy,R24
+ 041A                   .dbline 268
+ 041A           ;       stand();
+ 041A F8DD              xcall _stand
+ 041C                   .dbline 269
+ 041C           ;       slow_step_down(time);   
+ 041C 8501              movw R16,R10
+ 041E A8DF              xcall _slow_step_down
+ 0420                   .dbline 270
+ 0420           ;       legs246_up_left(time);
+ 0420 8501              movw R16,R10
+ 0422 CEDF              xcall _legs246_up_left
+ 0424                   .dbline 272
+ 0424           ;       
+ 0424           ;       for (i=1; i < 21; i++)
+ 0424 41E0              ldi R20,1
+ 0426 21C0              xjmp L58
+ 0428           L55:
+ 0428                   .dbline 273
+ 0428           ;       {
+ 0428                   .dbline 274
+ 0428           ;               angle_135(NO_ACTION , 30 + 4*i, 3*i);
+ 0428 83E0              ldi R24,3
+ 042A 849F              mul R24,R20
+ 042C 1982              std y+1,R1
+ 042E 0882              std y+0,R0
+ 0430 242F              mov R18,R20
+ 0432 3327              clr R19
+ 0434 220F              lsl R18
+ 0436 331F              rol R19
+ 0438 220F              lsl R18
+ 043A 331F              rol R19
+ 043C 225E              subi R18,226  ; offset = 30
+ 043E 3F4F              sbci R19,255
+ 0440 08EC              ldi R16,200
+ 0442 10E0              ldi R17,0
+ 0444 0E940000          xcall _angle_135
+ 0448                   .dbline 275
+ 0448           ;               angle_246(30 + 6*i, NO_ACTION, NO_ACTION);
+ 0448 88EC              ldi R24,200
+ 044A 90E0              ldi R25,0
+ 044C 9983              std y+1,R25
+ 044E 8883              std y+0,R24
+ 0450 28EC              ldi R18,200
+ 0452 30E0              ldi R19,0
+ 0454 86E0              ldi R24,6
+ 0456 849F              mul R24,R20
+ 0458 8001              movw R16,R0
+ 045A 025E              subi R16,226  ; offset = 30
+ 045C 1F4F              sbci R17,255
+ 045E 0E940000          xcall _angle_246
+ 0462                   .dbline 276
+ 0462           ;               delay_xms(time);
+ 0462 8501              movw R16,R10
+ 0464 0E940000          xcall _delay_xms
+ 0468                   .dbline 277
+ 0468           ;       }
+ 0468           L56:
+ 0468                   .dbline 272
+ 0468 4395              inc R20
+ 046A           L58:
+ 046A                   .dbline 272
+ 046A 4531              cpi R20,21
+ 046C E8F2              brlo L55
+ 046E           X18:
+ 046E                   .dbline 280
+ 046E           ;       //delay_1s();
+ 046E           ;       
+ 046E           ;       for (i=1; i < 21; i++)
+ 046E 41E0              ldi R20,1
+ 0470 29C0              xjmp L62
+ 0472           L59:
+ 0472                   .dbline 281
+ 0472           ;       {
+ 0472                   .dbline 282
+ 0472           ;               angle_135(NO_ACTION , 110 - 4*i, 60 - 3*i);
+ 0472 83E0              ldi R24,3
+ 0474 849F              mul R24,R20
+ 0476 8CE3              ldi R24,60
+ 0478 90E0              ldi R25,0
+ 047A 1C01              movw R2,R24
+ 047C 2018              sub R2,R0
+ 047E 3108              sbc R3,R1
+ 0480 3982              std y+1,R3
+ 0482 2882              std y+0,R2
+ 0484 242E              mov R2,R20
+ 0486 3324              clr R3
+ 0488 220C              lsl R2
+ 048A 331C              rol R3
+ 048C 220C              lsl R2
+ 048E 331C              rol R3
+ 0490 2EE6              ldi R18,110
+ 0492 30E0              ldi R19,0
+ 0494 2219              sub R18,R2
+ 0496 3309              sbc R19,R3
+ 0498 08EC              ldi R16,200
+ 049A 10E0              ldi R17,0
+ 049C 0E940000          xcall _angle_135
+ 04A0                   .dbline 283
+ 04A0           ;               angle_246(150 - 6*i, NO_ACTION, NO_ACTION);
+ 04A0 88EC              ldi R24,200
+ 04A2 90E0              ldi R25,0
+ 04A4 9983              std y+1,R25
+ 04A6 8883              std y+0,R24
+ 04A8 28EC              ldi R18,200
+ 04AA 30E0              ldi R19,0
+ 04AC 86E0              ldi R24,6
+ 04AE 849F              mul R24,R20
+ 04B0 06E9              ldi R16,150
+ 04B2 10E0              ldi R17,0
+ 04B4 0019              sub R16,R0
+ 04B6 1109              sbc R17,R1
+ 04B8 0E940000          xcall _angle_246
+ 04BC                   .dbline 284
+ 04BC           ;               delay_xms(time);
+ 04BC 8501              movw R16,R10
+ 04BE 0E940000          xcall _delay_xms
+ 04C2                   .dbline 285
+ 04C2           ;       }
+ 04C2           L60:
+ 04C2                   .dbline 280
+ 04C2 4395              inc R20
+ 04C4           L62:
+ 04C4                   .dbline 280
+ 04C4 4531              cpi R20,21
+ 04C6 A8F2              brlo L59
+ 04C8           X19:
+ 04C8                   .dbline 287
+ 04C8           ;       //delay_1s();
+ 04C8           ;       for (i=1; i < 21; i++)
+ 04C8 41E0              ldi R20,1
+ 04CA 21C0              xjmp L66
+ 04CC           L63:
+ 04CC                   .dbline 288
+ 04CC           ;       {
+ 04CC                   .dbline 289
+ 04CC           ;               angle_135(NO_ACTION , 30 + 4*i, 3*i);
+ 04CC 83E0              ldi R24,3
+ 04CE 849F              mul R24,R20
+ 04D0 1982              std y+1,R1
+ 04D2 0882              std y+0,R0
+ 04D4 242F              mov R18,R20
+ 04D6 3327              clr R19
+ 04D8 220F              lsl R18
+ 04DA 331F              rol R19
+ 04DC 220F              lsl R18
+ 04DE 331F              rol R19
+ 04E0 225E              subi R18,226  ; offset = 30
+ 04E2 3F4F              sbci R19,255
+ 04E4 08EC              ldi R16,200
+ 04E6 10E0              ldi R17,0
+ 04E8 0E940000          xcall _angle_135
+ 04EC                   .dbline 290
+ 04EC           ;               angle_246(30 + 6*i, NO_ACTION, NO_ACTION);
+ 04EC 88EC              ldi R24,200
+ 04EE 90E0              ldi R25,0
+ 04F0 9983              std y+1,R25
+ 04F2 8883              std y+0,R24
+ 04F4 28EC              ldi R18,200
+ 04F6 30E0              ldi R19,0
+ 04F8 86E0              ldi R24,6
+ 04FA 849F              mul R24,R20
+ 04FC 8001              movw R16,R0
+ 04FE 025E              subi R16,226  ; offset = 30
+ 0500 1F4F              sbci R17,255
+ 0502 0E940000          xcall _angle_246
+ 0506                   .dbline 291
+ 0506           ;               delay_xms(time);
+ 0506 8501              movw R16,R10
+ 0508 0E940000          xcall _delay_xms
+ 050C                   .dbline 292
+ 050C           ;       }
+ 050C           L64:
+ 050C                   .dbline 287
+ 050C 4395              inc R20
+ 050E           L66:
+ 050E                   .dbline 287
+ 050E 4531              cpi R20,21
+ 0510 E8F2              brlo L63
+ 0512           X20:
+ 0512                   .dbline 295
+ 0512           ;       //delay_1s();
+ 0512           ;       
+ 0512           ;       for (i=1; i < 21; i++)
+ 0512 41E0              ldi R20,1
+ 0514 29C0              xjmp L70
+ 0516           L67:
+ 0516                   .dbline 296
+ 0516           ;       {
+ 0516                   .dbline 297
+ 0516           ;               angle_135(NO_ACTION , 110 - 4*i, 60 - 3*i);
+ 0516 83E0              ldi R24,3
+ 0518 849F              mul R24,R20
+ 051A 8CE3              ldi R24,60
+ 051C 90E0              ldi R25,0
+ 051E 1C01              movw R2,R24
+ 0520 2018              sub R2,R0
+ 0522 3108              sbc R3,R1
+ 0524 3982              std y+1,R3
+ 0526 2882              std y+0,R2
+ 0528 242E              mov R2,R20
+ 052A 3324              clr R3
+ 052C 220C              lsl R2
+ 052E 331C              rol R3
+ 0530 220C              lsl R2
+ 0532 331C              rol R3
+ 0534 2EE6              ldi R18,110
+ 0536 30E0              ldi R19,0
+ 0538 2219              sub R18,R2
+ 053A 3309              sbc R19,R3
+ 053C 08EC              ldi R16,200
+ 053E 10E0              ldi R17,0
+ 0540 0E940000          xcall _angle_135
+ 0544                   .dbline 298
+ 0544           ;               angle_246(150 - 6*i, NO_ACTION, NO_ACTION);
+ 0544 88EC              ldi R24,200
+ 0546 90E0              ldi R25,0
+ 0548 9983              std y+1,R25
+ 054A 8883              std y+0,R24
+ 054C 28EC              ldi R18,200
+ 054E 30E0              ldi R19,0
+ 0550 86E0              ldi R24,6
+ 0552 849F              mul R24,R20
+ 0554 06E9              ldi R16,150
+ 0556 10E0              ldi R17,0
+ 0558 0019              sub R16,R0
+ 055A 1109              sbc R17,R1
+ 055C 0E940000          xcall _angle_246
+ 0560                   .dbline 299
+ 0560           ;               delay_xms(time);
+ 0560 8501              movw R16,R10
+ 0562 0E940000          xcall _delay_xms
+ 0566                   .dbline 300
+ 0566           ;       }
+ 0566           L68:
+ 0566                   .dbline 295
+ 0566 4395              inc R20
+ 0568           L70:
+ 0568                   .dbline 295
+ 0568 4531              cpi R20,21
+ 056A A8F2              brlo L67
+ 056C           X21:
+ 056C                   .dbline 303
+ 056C           ;       
+ 056C           ;       
+ 056C           ;       for(i=1; i<21; i++)
+ 056C 41E0              ldi R20,1
+ 056E 18C0              xjmp L74
+ 0570           L71:
+ 0570                   .dbline 304
+ 0570           ;       {
+ 0570                   .dbline 305
+ 0570           ;               angle_246(30 + 3*i, 10 + i, 140 - 7*i);
+ 0570 87E0              ldi R24,7
+ 0572 849F              mul R24,R20
+ 0574 8CE8              ldi R24,140
+ 0576 90E0              ldi R25,0
+ 0578 1C01              movw R2,R24
+ 057A 2018              sub R2,R0
+ 057C 3108              sbc R3,R1
+ 057E 3982              std y+1,R3
+ 0580 2882              std y+0,R2
+ 0582 242F              mov R18,R20
+ 0584 3327              clr R19
+ 0586 265F              subi R18,246  ; offset = 10
+ 0588 3F4F              sbci R19,255
+ 058A 83E0              ldi R24,3
+ 058C 849F              mul R24,R20
+ 058E 8001              movw R16,R0
+ 0590 025E              subi R16,226  ; offset = 30
+ 0592 1F4F              sbci R17,255
+ 0594 0E940000          xcall _angle_246
+ 0598                   .dbline 306
+ 0598           ;               delay_xms(time);
+ 0598 8501              movw R16,R10
+ 059A 0E940000          xcall _delay_xms
+ 059E                   .dbline 307
+ 059E           ;       }
+ 059E           L72:
+ 059E                   .dbline 303
+ 059E 4395              inc R20
+ 05A0           L74:
+ 05A0                   .dbline 303
+ 05A0 4531              cpi R20,21
+ 05A2 30F3              brlo L71
+ 05A4           X22:
+ 05A4                   .dbline 309
+ 05A4           ;       
+ 05A4           ;       for(i=1; i<21; i++)
+ 05A4 41E0              ldi R20,1
+ 05A6 3BC0              xjmp L78
+ 05A8           L75:
+ 05A8                   .dbline 310
+ 05A8           ;       {
+ 05A8                   .dbline 311
+ 05A8           ;               if (i < 11)
+ 05A8 4B30              cpi R20,11
+ 05AA E8F4              brsh L79
+ 05AC           X23:
+ 05AC                   .dbline 312
+ 05AC           ;               {
+ 05AC                   .dbline 313
+ 05AC           ;                       angle_135(NO_ACTION, 30+2*i, i);
+ 05AC 242E              mov R2,R20
+ 05AE 3324              clr R3
+ 05B0 3982              std y+1,R3
+ 05B2 2882              std y+0,R2
+ 05B4 222D              mov R18,R2
+ 05B6 3327              clr R19
+ 05B8 220F              lsl R18
+ 05BA 331F              rol R19
+ 05BC 225E              subi R18,226  ; offset = 30
+ 05BE 3F4F              sbci R19,255
+ 05C0 08EC              ldi R16,200
+ 05C2 10E0              ldi R17,0
+ 05C4 0E940000          xcall _angle_135
+ 05C8                   .dbline 314
+ 05C8           ;                       angle_246(NO_ACTION, 30+2*i, i);
+ 05C8 242E              mov R2,R20
+ 05CA 3324              clr R3
+ 05CC 3982              std y+1,R3
+ 05CE 2882              std y+0,R2
+ 05D0 222D              mov R18,R2
+ 05D2 3327              clr R19
+ 05D4 220F              lsl R18
+ 05D6 331F              rol R19
+ 05D8 225E              subi R18,226  ; offset = 30
+ 05DA 3F4F              sbci R19,255
+ 05DC 08EC              ldi R16,200
+ 05DE 10E0              ldi R17,0
+ 05E0 0E940000          xcall _angle_246
+ 05E4                   .dbline 315
+ 05E4           ;               }
+ 05E4 18C0              xjmp L80
+ 05E6           L79:
+ 05E6                   .dbline 317
+ 05E6           ;               else
+ 05E6           ;               {
+ 05E6                   .dbline 318
+ 05E6           ;                       angle_135(NO_ACTION, 50+i, i);
+ 05E6 242E              mov R2,R20
+ 05E8 3324              clr R3
+ 05EA 3982              std y+1,R3
+ 05EC 2882              std y+0,R2
+ 05EE 222D              mov R18,R2
+ 05F0 3327              clr R19
+ 05F2 2E5C              subi R18,206  ; offset = 50
+ 05F4 3F4F              sbci R19,255
+ 05F6 08EC              ldi R16,200
+ 05F8 10E0              ldi R17,0
+ 05FA 0E940000          xcall _angle_135
+ 05FE                   .dbline 319
+ 05FE           ;                       angle_246(NO_ACTION, 50+i, i);
+ 05FE 242E              mov R2,R20
+ 0600 3324              clr R3
+ 0602 3982              std y+1,R3
+ 0604 2882              std y+0,R2
+ 0606 222D              mov R18,R2
+ 0608 3327              clr R19
+ 060A 2E5C              subi R18,206  ; offset = 50
+ 060C 3F4F              sbci R19,255
+ 060E 08EC              ldi R16,200
+ 0610 10E0              ldi R17,0
+ 0612 0E940000          xcall _angle_246
+ 0616                   .dbline 320
+ 0616           ;               }
+ 0616           L80:
+ 0616                   .dbline 321
+ 0616           ;               delay_xms(time);
+ 0616 8501              movw R16,R10
+ 0618 0E940000          xcall _delay_xms
+ 061C                   .dbline 322
+ 061C           ;       }
+ 061C           L76:
+ 061C                   .dbline 309
+ 061C 4395              inc R20
+ 061E           L78:
+ 061E                   .dbline 309
+ 061E 4531              cpi R20,21
+ 0620 18F2              brlo L75
+ 0622           X24:
+ 0622                   .dbline 324
+ 0622           ;       
+ 0622           ;       stand();
+ 0622 F4DC              xcall _stand
+ 0624                   .dbline 325
+ 0624           ;       motion_busy = 0;
+ 0624 2224              clr R2
+ 0626 20920100          sts _motion_busy,R2
+ 062A                   .dbline -2
+ 062A           L54:
+ 062A                   .dbline 0 ; func end
+ 062A 2296              adiw R28,2
+ 062C 0C940000          xjmp pop_xgset303C
+ 0630                   .dbsym r j 12 i
+ 0630                   .dbsym r stage 12 c
+ 0630                   .dbsym r time 10 i
+ 0630                   .dbsym r i 20 c
+ 0630                   .dbsym r t 10 c
+ 0630                   .dbend
+ 0630                   .dbfunc e danceMove_RobotVibrate _danceMove_RobotVibrate fV
+ 0630           ;              j -> R12,R13
+ 0630           ;          stage -> R10
+ 0630           ;        angle_C -> R10
+ 0630           ;        angle_B -> R22
+ 0630           ;              i -> R20,R21
+                        .even
+ 0630           _danceMove_RobotVibrate::
+ 0630 0E940000          xcall push_xgsetF03C
+ 0634 2297              sbiw R28,2
+ 0636                   .dbline -1
+ 0636                   .dbline 331
+ 0636           ;       
+ 0636           ; 
+ 0636           ; }
+ 0636           ; 
+ 0636           ; void danceMove_RobotVibrate(void)
+ 0636           ; {
+ 0636                   .dbline 332
+ 0636           ;       unsigned char stage = getStage();
+ 0636 E4DC              xcall _getStage
+ 0638                   .dbline 333
+ 0638           ;       unsigned int i = 0;
+ 0638                   .dbline 334
+ 0638           ;       unsigned char angle_B = 30;
+ 0638 6EE1              ldi R22,30
+ 063A                   .dbline 335
+ 063A           ;       unsigned char angle_C = 0;
+ 063A AA24              clr R10
+ 063C                   .dbline 337
+ 063C           ; 
+ 063C           ;       int j = 1;
+ 063C 81E0              ldi R24,1
+ 063E 90E0              ldi R25,0
+ 0640 6C01              movw R12,R24
+ 0642                   .dbline 339
+ 0642           ; 
+ 0642           ;       motion_busy = 1;
+ 0642 80930100          sts _motion_busy,R24
+ 0646                   .dbline 340
+ 0646           ;       stand();
+ 0646 E2DC              xcall _stand
+ 0648                   .dbline 343
+ 0648           ;       
+ 0648           ;       
+ 0648           ;       step_down();
+ 0648 91DD              xcall _step_down
+ 064A                   .dbline 345
+ 064A           ; 
+ 064A           ;       delay_250ms();
+ 064A 0E940000          xcall _delay_250ms
+ 064E                   .dbline 346
+ 064E           ;       step_up_slow();
+ 064E 4BDD              xcall _step_up_slow
+ 0650                   .dbline 347
+ 0650           ;               delay_250ms();
+ 0650 0E940000          xcall _delay_250ms
+ 0654                   .dbline 348
+ 0654           ;       step_down();
+ 0654 8BDD              xcall _step_down
+ 0656                   .dbline 349
+ 0656           ;       delay_250ms();
+ 0656 0E940000          xcall _delay_250ms
+ 065A                   .dbline 350
+ 065A           ;       for (i=0;i<=5;i++){
+ 065A 4427              clr R20
+ 065C 5527              clr R21
+ 065E 2EC0              xjmp L85
+ 0660           L82:
+ 0660                   .dbline 350
+ 0660                   .dbline 351
+ 0660           ;               angle_B = 30 + 3*(5-i);
+ 0660 25E0              ldi R18,5
+ 0662 30E0              ldi R19,0
+ 0664 241B              sub R18,R20
+ 0666 350B              sbc R19,R21
+ 0668 03E0              ldi R16,3
+ 066A 10E0              ldi R17,0
+ 066C 0E940000          xcall empy16s
+ 0670 B801              movw R22,R16
+ 0672 625E              subi R22,226  ; offset = 30
+ 0674 7F4F              sbci R23,255
+ 0676                   .dbline 352
+ 0676           ;               angle_C = 2*(5-i);
+ 0676 85E0              ldi R24,5
+ 0678 90E0              ldi R25,0
+ 067A 5C01              movw R10,R24
+ 067C A41A              sub R10,R20
+ 067E B50A              sbc R11,R21
+ 0680 AA0C              lsl R10
+ 0682 BB1C              rol R11
+ 0684                   .dbline 353
+ 0684           ;               angle_all(NO_ACTION,angle_B,angle_C);
+ 0684 2A2C              mov R2,R10
+ 0686 3324              clr R3
+ 0688 3982              std y+1,R3
+ 068A 2882              std y+0,R2
+ 068C 262F              mov R18,R22
+ 068E 3327              clr R19
+ 0690 08EC              ldi R16,200
+ 0692 10E0              ldi R17,0
+ 0694 0E940000          xcall _angle_all
+ 0698                   .dbline 355
+ 0698           ;       
+ 0698           ;               delay_100ms();
+ 0698 0E940000          xcall _delay_100ms
+ 069C                   .dbline 357
+ 069C           ;       
+ 069C           ;               angle_B = 30;
+ 069C 6EE1              ldi R22,30
+ 069E                   .dbline 358
+ 069E           ;               angle_C = 0;
+ 069E AA24              clr R10
+ 06A0                   .dbline 359
+ 06A0           ;               angle_all(NO_ACTION,angle_B,angle_C);
+ 06A0 2A2C              mov R2,R10
+ 06A2 3324              clr R3
+ 06A4 3982              std y+1,R3
+ 06A6 2882              std y+0,R2
+ 06A8 262F              mov R18,R22
+ 06AA 3327              clr R19
+ 06AC 08EC              ldi R16,200
+ 06AE 10E0              ldi R17,0
+ 06B0 0E940000          xcall _angle_all
+ 06B4                   .dbline 361
+ 06B4           ;       
+ 06B4           ;               delay_100ms();
+ 06B4 0E940000          xcall _delay_100ms
+ 06B8                   .dbline 363
+ 06B8           ;       
+ 06B8           ;       }
+ 06B8           L83:
+ 06B8                   .dbline 350
+ 06B8 4F5F              subi R20,255  ; offset = 1
+ 06BA 5F4F              sbci R21,255
+ 06BC           L85:
+ 06BC                   .dbline 350
+ 06BC 85E0              ldi R24,5
+ 06BE 90E0              ldi R25,0
+ 06C0 8417              cp R24,R20
+ 06C2 9507              cpc R25,R21
+ 06C4 68F6              brsh L82
+ 06C6           X25:
+ 06C6                   .dbline 371
+ 06C6           ; 
+ 06C6           ;       
+ 06C6           ;       
+ 06C6           ;       
+ 06C6           ;       
+ 06C6           ;       
+ 06C6           ;       
+ 06C6           ;       delay_250ms();
+ 06C6 0E940000          xcall _delay_250ms
+ 06CA                   .dbline 372
+ 06CA           ;       stand();
+ 06CA A0DC              xcall _stand
+ 06CC                   .dbline 373
+ 06CC           ;       motion_busy = 0;
+ 06CC 2224              clr R2
+ 06CE 20920100          sts _motion_busy,R2
+ 06D2                   .dbline -2
+ 06D2           L81:
+ 06D2                   .dbline 0 ; func end
+ 06D2 2296              adiw R28,2
+ 06D4 0C940000          xjmp pop_xgsetF03C
+ 06D8                   .dbsym r j 12 I
+ 06D8                   .dbsym r stage 10 c
+ 06D8                   .dbsym r angle_C 10 c
+ 06D8                   .dbsym r angle_B 22 c
+ 06D8                   .dbsym r i 20 i
+ 06D8                   .dbend
+ 06D8                   .dbfunc e danceMove_circularRaise _danceMove_circularRaise fV
+ 06D8           ;          stage -> R20
+                        .even
+ 06D8           _danceMove_circularRaise::
+ 06D8 4A93              st -y,R20
+ 06DA                   .dbline -1
+ 06DA                   .dbline 377
+ 06DA           ; }
+ 06DA           ; 
+ 06DA           ; void danceMove_circularRaise(void)
+ 06DA           ; {
+ 06DA                   .dbline 378
+ 06DA           ;        unsigned char stage = getStage();
+ 06DA 92DC              xcall _getStage
+ 06DC 402F              mov R20,R16
+ 06DE                   .dbline 380
+ 06DE           ; 
+ 06DE           ;       motion_busy = 1;
+ 06DE 81E0              ldi R24,1
+ 06E0 80930100          sts _motion_busy,R24
+ 06E4                   .dbline 381
+ 06E4           ;       if ( stage == 0 ){
+ 06E4 0023              tst R16
+ 06E6 11F4              brne L87
+ 06E8           X26:
+ 06E8                   .dbline 381
+ 06E8                   .dbline 382
+ 06E8           ;       stand();
+ 06E8 91DC              xcall _stand
+ 06EA                   .dbline 383
+ 06EA           ;       }
+ 06EA 37C0              xjmp L88
+ 06EC           L87:
+ 06EC                   .dbline 384
+ 06EC           ;       else if (stage == 1 ){
+ 06EC 4130              cpi R20,1
+ 06EE 29F4              brne L89
+ 06F0           X27:
+ 06F0                   .dbline 384
+ 06F0                   .dbline 385
+ 06F0           ;       angle_1B(30);
+ 06F0 0EE1              ldi R16,30
+ 06F2 10E0              ldi R17,0
+ 06F4 0E940000          xcall _angle_1B
+ 06F8                   .dbline 386
+ 06F8           ;       }
+ 06F8 30C0              xjmp L90
+ 06FA           L89:
+ 06FA                   .dbline 387
+ 06FA           ;       else if (stage == 2 ){
+ 06FA 4230              cpi R20,2
+ 06FC 29F4              brne L91
+ 06FE           X28:
+ 06FE                   .dbline 387
+ 06FE                   .dbline 388
+ 06FE           ;       angle_1B(60);
+ 06FE 0CE3              ldi R16,60
+ 0700 10E0              ldi R17,0
+ 0702 0E940000          xcall _angle_1B
+ 0706                   .dbline 389
+ 0706           ;       }
+ 0706 29C0              xjmp L92
+ 0708           L91:
+ 0708                   .dbline 391
+ 0708           ;       // 2
+ 0708           ;       else if (stage == 3 ){
+ 0708 4330              cpi R20,3
+ 070A 29F4              brne L93
+ 070C           X29:
+ 070C                   .dbline 391
+ 070C                   .dbline 392
+ 070C           ;       angle_2B(30);
+ 070C 0EE1              ldi R16,30
+ 070E 10E0              ldi R17,0
+ 0710 0E940000          xcall _angle_2B
+ 0714                   .dbline 393
+ 0714           ;       }
+ 0714 22C0              xjmp L94
+ 0716           L93:
+ 0716                   .dbline 394
+ 0716           ;       else if (stage == 4 ){
+ 0716 4430              cpi R20,4
+ 0718 29F4              brne L95
+ 071A           X30:
+ 071A                   .dbline 394
+ 071A                   .dbline 395
+ 071A           ;       angle_2B(60);
+ 071A 0CE3              ldi R16,60
+ 071C 10E0              ldi R17,0
+ 071E 0E940000          xcall _angle_2B
+ 0722                   .dbline 396
+ 0722           ;       }
+ 0722 1BC0              xjmp L96
+ 0724           L95:
+ 0724                   .dbline 399
+ 0724           ;       
+ 0724           ;       //3
+ 0724           ;       else if (stage == 5 ){
+ 0724 4530              cpi R20,5
+ 0726 29F4              brne L97
+ 0728           X31:
+ 0728                   .dbline 399
+ 0728                   .dbline 400
+ 0728           ;       angle_3B(30);
+ 0728 0EE1              ldi R16,30
+ 072A 10E0              ldi R17,0
+ 072C 0E940000          xcall _angle_3B
+ 0730                   .dbline 401
+ 0730           ;       }
+ 0730 14C0              xjmp L98
+ 0732           L97:
+ 0732                   .dbline 402
+ 0732           ;       else if (stage == 6 ){
+ 0732 4630              cpi R20,6
+ 0734 29F4              brne L99
+ 0736           X32:
+ 0736                   .dbline 402
+ 0736                   .dbline 403
+ 0736           ;       angle_3B(60);
+ 0736 0CE3              ldi R16,60
+ 0738 10E0              ldi R17,0
+ 073A 0E940000          xcall _angle_3B
+ 073E                   .dbline 404
+ 073E           ;       }
+ 073E 0DC0              xjmp L100
+ 0740           L99:
+ 0740                   .dbline 406
+ 0740           ;       //6
+ 0740           ;       else if (stage == 7 ){
+ 0740 4730              cpi R20,7
+ 0742 29F4              brne L101
+ 0744           X33:
+ 0744                   .dbline 406
+ 0744                   .dbline 407
+ 0744           ;       angle_6B(30);
+ 0744 0EE1              ldi R16,30
+ 0746 10E0              ldi R17,0
+ 0748 0E940000          xcall _angle_6B
+ 074C                   .dbline 408
+ 074C           ;       }
+ 074C 06C0              xjmp L102
+ 074E           L101:
+ 074E                   .dbline 409
+ 074E           ;       else if (stage == 8){
+ 074E 4830              cpi R20,8
+ 0750 21F4              brne L103
+ 0752           X34:
+ 0752                   .dbline 409
+ 0752                   .dbline 410
+ 0752           ;       angle_6B(60);
+ 0752 0CE3              ldi R16,60
+ 0754 10E0              ldi R17,0
+ 0756 0E940000          xcall _angle_6B
+ 075A                   .dbline 411
+ 075A           ;       }
+ 075A           L103:
+ 075A           L102:
+ 075A           L100:
+ 075A           L98:
+ 075A           L96:
+ 075A           L94:
+ 075A           L92:
+ 075A           L90:
+ 075A           L88:
+ 075A                   .dbline 412
+ 075A           ;       if (stage == 8)
+ 075A 4830              cpi R20,8
+ 075C 19F4              brne L105
+ 075E           X35:
+ 075E                   .dbline 413
+ 075E           ;               setStage(1);
+ 075E 01E0              ldi R16,1
+ 0760 52DC              xcall _setStage
+ 0762 03C0              xjmp L106
+ 0764           L105:
+ 0764                   .dbline 415
+ 0764           ;       else
+ 0764           ;               setStage(stage + 1);
+ 0764 042F              mov R16,R20
+ 0766 0F5F              subi R16,255    ; addi 1
+ 0768 4EDC              xcall _setStage
+ 076A           L106:
+ 076A                   .dbline 416
+ 076A           ;               motion_busy = 0;
+ 076A 2224              clr R2
+ 076C 20920100          sts _motion_busy,R2
+ 0770                   .dbline -2
+ 0770           L86:
+ 0770                   .dbline 0 ; func end
+ 0770 4991              ld R20,y+
+ 0772 0895              ret
+ 0774                   .dbsym r stage 20 c
+ 0774                   .dbend
+ 0774                   .dbfunc e danceMove_zhigzhigRise _danceMove_zhigzhigRise fV
+ 0774           ;        angle_C -> R12
+ 0774           ;        angle_B -> R10
+ 0774           ;              i -> R22,R23
+ 0774           ;          stage -> R20
+                        .even
+ 0774           _danceMove_zhigzhigRise::
+ 0774 0E940000          xcall push_xgsetF03C
+ 0778 2297              sbiw R28,2
+ 077A                   .dbline -1
+ 077A                   .dbline 420
+ 077A           ; }
+ 077A           ; 
+ 077A           ; void danceMove_zhigzhigRise(void)
+ 077A           ; {
+ 077A                   .dbline 421
+ 077A           ;       unsigned int i = 0;
+ 077A 6627              clr R22
+ 077C 7727              clr R23
+ 077E                   .dbline 422
+ 077E           ;       unsigned char angle_B = 30;
+ 077E 8EE1              ldi R24,30
+ 0780 A82E              mov R10,R24
+ 0782                   .dbline 423
+ 0782           ;       unsigned char angle_C = 0;
+ 0782 CC24              clr R12
+ 0784                   .dbline 424
+ 0784           ;       unsigned char stage = getStage();
+ 0784 3DDC              xcall _getStage
+ 0786 402F              mov R20,R16
+ 0788                   .dbline 426
+ 0788           ; 
+ 0788           ;       motion_busy = 1;
+ 0788 81E0              ldi R24,1
+ 078A 80930100          sts _motion_busy,R24
+ 078E                   .dbline 428
+ 078E           ;       
+ 078E           ;       if (stage == 0)
+ 078E 0023              tst R16
+ 0790 29F4              brne L108
+ 0792           X36:
+ 0792                   .dbline 429
+ 0792           ;       {
+ 0792                   .dbline 430
+ 0792           ;               stand();
+ 0792 3CDC              xcall _stand
+ 0794                   .dbline 431
+ 0794           ;               toggle = 0;
+ 0794 2224              clr R2
+ 0796 20920000          sts _toggle,R2
+ 079A                   .dbline 432
+ 079A           ;       }
+ 079A 67C0              xjmp L109
+ 079C           L108:
+ 079C                   .dbline 433
+ 079C           ;       else if (stage == 1){
+ 079C 4130              cpi R20,1
+ 079E 11F4              brne L110
+ 07A0           X37:
+ 07A0                   .dbline 433
+ 07A0                   .dbline 434
+ 07A0           ;       step_down();
+ 07A0 E5DC              xcall _step_down
+ 07A2                   .dbline 435
+ 07A2           ;       }
+ 07A2 63C0              xjmp L111
+ 07A4           L110:
+ 07A4                   .dbline 436
+ 07A4           ;       else if (stage == 2 || stage == 3) {
+ 07A4 4230              cpi R20,2
+ 07A6 11F0              breq L114
+ 07A8           X38:
+ 07A8 4330              cpi R20,3
+ 07AA 09F4              brne L112
+ 07AC           X39:
+ 07AC           L114:
+ 07AC                   .dbline 436
+ 07AC                   .dbline 437
+ 07AC           ;       }
+ 07AC 5EC0              xjmp L113
+ 07AE           L112:
+ 07AE                   .dbline 439
+ 07AE           ;       
+ 07AE           ;       else if (stage >=4 && stage <= 14){
+ 07AE 4430              cpi R20,4
+ 07B0 30F0              brlo L115
+ 07B2           X40:
+ 07B2 8EE0              ldi R24,14
+ 07B4 8417              cp R24,R20
+ 07B6 18F0              brlo L115
+ 07B8           X41:
+ 07B8                   .dbline 439
+ 07B8                   .dbline 440
+ 07B8           ;       step_up_zhigzhig(stage);
+ 07B8 042F              mov R16,R20
+ 07BA A8DC              xcall _step_up_zhigzhig
+ 07BC                   .dbline 441
+ 07BC           ;       }
+ 07BC 56C0              xjmp L116
+ 07BE           L115:
+ 07BE                   .dbline 442
+ 07BE           ;       else if (stage > 14 && stage <= 18){
+ 07BE 8EE0              ldi R24,14
+ 07C0 8417              cp R24,R20
+ 07C2 20F4              brsh L117
+ 07C4           X42:
+ 07C4 82E1              ldi R24,18
+ 07C6 8417              cp R24,R20
+ 07C8 08F0              brlo L117
+ 07CA           X43:
+ 07CA                   .dbline 442
+ 07CA                   .dbline 444
+ 07CA           ;               
+ 07CA           ;       }
+ 07CA 4FC0              xjmp L118
+ 07CC           L117:
+ 07CC                   .dbline 445
+ 07CC           ;       else if (stage == 19){
+ 07CC 4331              cpi R20,19
+ 07CE 09F0              breq X52
+ 07D0 3DC0              xjmp L119
+ 07D2           X52:
+ 07D2           X44:
+ 07D2                   .dbline 445
+ 07D2                   .dbline 446
+ 07D2           ;               step_down();
+ 07D2 CCDC              xcall _step_down
+ 07D4                   .dbline 447
+ 07D4           ;               delay_100ms();
+ 07D4 0E940000          xcall _delay_100ms
+ 07D8                   .dbline 448
+ 07D8           ;               for (i=0;i<=5;i++){
+ 07D8 6627              clr R22
+ 07DA 7727              clr R23
+ 07DC 31C0              xjmp L124
+ 07DE           L121:
+ 07DE                   .dbline 448
+ 07DE                   .dbline 450
+ 07DE           ;       
+ 07DE           ;               angle_B = 30 + 6*(5-i);
+ 07DE 25E0              ldi R18,5
+ 07E0 30E0              ldi R19,0
+ 07E2 261B              sub R18,R22
+ 07E4 370B              sbc R19,R23
+ 07E6 06E0              ldi R16,6
+ 07E8 10E0              ldi R17,0
+ 07EA 0E940000          xcall empy16s
+ 07EE C801              movw R24,R16
+ 07F0 4E96              adiw R24,30
+ 07F2 A82E              mov R10,R24
+ 07F4                   .dbline 451
+ 07F4           ;               angle_C = 4*(5-i);
+ 07F4 85E0              ldi R24,5
+ 07F6 90E0              ldi R25,0
+ 07F8 6C01              movw R12,R24
+ 07FA C61A              sub R12,R22
+ 07FC D70A              sbc R13,R23
+ 07FE CC0C              lsl R12
+ 0800 DD1C              rol R13
+ 0802 CC0C              lsl R12
+ 0804 DD1C              rol R13
+ 0806                   .dbline 452
+ 0806           ;               angle_all(NO_ACTION,angle_B,angle_C);
+ 0806 2C2C              mov R2,R12
+ 0808 3324              clr R3
+ 080A 3982              std y+1,R3
+ 080C 2882              std y+0,R2
+ 080E 2A2D              mov R18,R10
+ 0810 3327              clr R19
+ 0812 08EC              ldi R16,200
+ 0814 10E0              ldi R17,0
+ 0816 0E940000          xcall _angle_all
+ 081A                   .dbline 454
+ 081A           ;               
+ 081A           ;               delay_100ms();
+ 081A 0E940000          xcall _delay_100ms
+ 081E                   .dbline 456
+ 081E           ;               
+ 081E           ;               angle_B = 30;
+ 081E 8EE1              ldi R24,30
+ 0820 A82E              mov R10,R24
+ 0822                   .dbline 457
+ 0822           ;               angle_C = 0;
+ 0822 CC24              clr R12
+ 0824                   .dbline 458
+ 0824           ;               angle_all(NO_ACTION,angle_B,angle_C);
+ 0824 2C2C              mov R2,R12
+ 0826 3324              clr R3
+ 0828 3982              std y+1,R3
+ 082A 2882              std y+0,R2
+ 082C 282F              mov R18,R24
+ 082E 3327              clr R19
+ 0830 08EC              ldi R16,200
+ 0832 10E0              ldi R17,0
+ 0834 0E940000          xcall _angle_all
+ 0838                   .dbline 460
+ 0838           ;               
+ 0838           ;               delay_100ms();
+ 0838 0E940000          xcall _delay_100ms
+ 083C                   .dbline 461
+ 083C           ;               }
+ 083C           L122:
+ 083C                   .dbline 448
+ 083C 6F5F              subi R22,255  ; offset = 1
+ 083E 7F4F              sbci R23,255
+ 0840           L124:
+ 0840                   .dbline 448
+ 0840 85E0              ldi R24,5
+ 0842 90E0              ldi R25,0
+ 0844 8617              cp R24,R22
+ 0846 9707              cpc R25,R23
+ 0848 50F6              brsh L121
+ 084A           X45:
+ 084A                   .dbline 462
+ 084A           ;       }
+ 084A 0FC0              xjmp L120
+ 084C           L119:
+ 084C                   .dbline 463
+ 084C           ;       else if (stage >= 20 && stage < 26){
+ 084C 4431              cpi R20,20
+ 084E 18F0              brlo L125
+ 0850           X46:
+ 0850 4A31              cpi R20,26
+ 0852 08F4              brsh L125
+ 0854           X47:
+ 0854                   .dbline 463
+ 0854                   .dbline 465
+ 0854           ;       
+ 0854           ;       }
+ 0854 0AC0              xjmp L126
+ 0856           L125:
+ 0856                   .dbline 466
+ 0856           ;       else if (stage == 26 ){
+ 0856 4A31              cpi R20,26
+ 0858 11F4              brne L127
+ 085A           X48:
+ 085A                   .dbline 466
+ 085A                   .dbline 467
+ 085A           ;       stand();
+ 085A D8DB              xcall _stand
+ 085C                   .dbline 468
+ 085C           ;       }
+ 085C 06C0              xjmp L128
+ 085E           L127:
+ 085E                   .dbline 469
+ 085E           ;       else if (stage ==27){
+ 085E 4B31              cpi R20,27
+ 0860 09F4              brne L129
+ 0862           X49:
+ 0862                   .dbline 469
+ 0862                   .dbline 470
+ 0862           ;       }
+ 0862 03C0              xjmp L130
+ 0864           L129:
+ 0864                   .dbline 471
+ 0864           ;       else if (stage == 28) {
+ 0864 4C31              cpi R20,28
+ 0866 09F4              brne L131
+ 0868           X50:
+ 0868                   .dbline 471
+ 0868                   .dbline 472
+ 0868           ;               finale();
+ 0868 8ED0              xcall _finale
+ 086A                   .dbline 473
+ 086A           ;       }
+ 086A           L131:
+ 086A           L130:
+ 086A           L128:
+ 086A           L126:
+ 086A           L120:
+ 086A           L118:
+ 086A           L116:
+ 086A           L113:
+ 086A           L111:
+ 086A           L109:
+ 086A                   .dbline 475
+ 086A           ;       
+ 086A           ;       if (stage == 29){
+ 086A 4D31              cpi R20,29
+ 086C 09F4              brne L133
+ 086E           X51:
+ 086E                   .dbline 475
+ 086E                   .dbline 477
+ 086E           ;               
+ 086E           ;       }
+ 086E 03C0              xjmp L134
+ 0870           L133:
+ 0870                   .dbline 478
+ 0870           ;       else{
+ 0870                   .dbline 479
+ 0870           ;               setStage(stage + 1);
+ 0870 042F              mov R16,R20
+ 0872 0F5F              subi R16,255    ; addi 1
+ 0874 C8DB              xcall _setStage
+ 0876                   .dbline 480
+ 0876           ;       }
+ 0876           L134:
+ 0876                   .dbline 483
+ 0876           ;       
+ 0876           ;       
+ 0876           ;       motion_busy = 0;
+ 0876 2224              clr R2
+ 0878 20920100          sts _motion_busy,R2
+ 087C                   .dbline -2
+ 087C           L107:
+ 087C                   .dbline 0 ; func end
+ 087C 2296              adiw R28,2
+ 087E 0C940000          xjmp pop_xgsetF03C
+ 0882                   .dbsym r angle_C 12 c
+ 0882                   .dbsym r angle_B 10 c
+ 0882                   .dbsym r i 22 i
+ 0882                   .dbsym r stage 20 c
+ 0882                   .dbend
+ 0882                   .dbfunc e danceMove_ZHIGZHIG _danceMove_ZHIGZHIG fV
+ 0882           ;          stage -> R20
+                        .even
+ 0882           _danceMove_ZHIGZHIG::
+ 0882 4A93              st -y,R20
+ 0884 2297              sbiw R28,2
+ 0886                   .dbline -1
+ 0886                   .dbline 490
+ 0886           ; }
+ 0886           ; 
+ 0886           ; 
+ 0886           ; 
+ 0886           ; 
+ 0886           ; void danceMove_ZHIGZHIG(void)
+ 0886           ; {
+ 0886                   .dbline 491
+ 0886           ;       unsigned char stage = getStage();
+ 0886 BCDB              xcall _getStage
+ 0888 402F              mov R20,R16
+ 088A                   .dbline 493
+ 088A           ; 
+ 088A           ;       motion_busy = 1;
+ 088A 81E0              ldi R24,1
+ 088C 80930100          sts _motion_busy,R24
+ 0890                   .dbline 495
+ 0890           ;       
+ 0890           ;       if (stage == 0)
+ 0890 0023              tst R16
+ 0892 41F4              brne L136
+ 0894           X53:
+ 0894                   .dbline 496
+ 0894           ;       {
+ 0894                   .dbline 497
+ 0894           ;               stand();
+ 0894 BBDB              xcall _stand
+ 0896                   .dbline 498
+ 0896           ;               toggle = 0;
+ 0896 2224              clr R2
+ 0898 20920000          sts _toggle,R2
+ 089C                   .dbline 499
+ 089C           ;               setStage(stage + 1);
+ 089C 042F              mov R16,R20
+ 089E 0F5F              subi R16,255    ; addi 1
+ 08A0 B2DB              xcall _setStage
+ 08A2                   .dbline 500
+ 08A2           ;       }
+ 08A2 23C0              xjmp L137
+ 08A4           L136:
+ 08A4                   .dbline 501
+ 08A4           ;       else if (toggle == 0)
+ 08A4 20900000          lds R2,_toggle
+ 08A8 2220              tst R2
+ 08AA 71F4              brne L138
+ 08AC           X54:
+ 08AC                   .dbline 502
+ 08AC           ;       {
+ 08AC                   .dbline 503
+ 08AC           ;               toggle = 1;
+ 08AC 81E0              ldi R24,1
+ 08AE 80930000          sts _toggle,R24
+ 08B2                   .dbline 504
+ 08B2           ;               angle_all(20, NO_ACTION, NO_ACTION);
+ 08B2 88EC              ldi R24,200
+ 08B4 90E0              ldi R25,0
+ 08B6 9983              std y+1,R25
+ 08B8 8883              std y+0,R24
+ 08BA 28EC              ldi R18,200
+ 08BC 30E0              ldi R19,0
+ 08BE 04E1              ldi R16,20
+ 08C0 10E0              ldi R17,0
+ 08C2 0E940000          xcall _angle_all
+ 08C6                   .dbline 505
+ 08C6           ;       }
+ 08C6 11C0              xjmp L139
+ 08C8           L138:
+ 08C8                   .dbline 506
+ 08C8           ;       else if (toggle == 1)
+ 08C8 80910000          lds R24,_toggle
+ 08CC 8130              cpi R24,1
+ 08CE 69F4              brne L140
+ 08D0           X55:
+ 08D0                   .dbline 507
+ 08D0           ;       {
+ 08D0                   .dbline 508
+ 08D0           ;               toggle = 0;
+ 08D0 2224              clr R2
+ 08D2 20920000          sts _toggle,R2
+ 08D6                   .dbline 509
+ 08D6           ;               angle_all(160, NO_ACTION, NO_ACTION);
+ 08D6 88EC              ldi R24,200
+ 08D8 90E0              ldi R25,0
+ 08DA 9983              std y+1,R25
+ 08DC 8883              std y+0,R24
+ 08DE 28EC              ldi R18,200
+ 08E0 30E0              ldi R19,0
+ 08E2 00EA              ldi R16,160
+ 08E4 10E0              ldi R17,0
+ 08E6 0E940000          xcall _angle_all
+ 08EA                   .dbline 510
+ 08EA           ;       }
+ 08EA           L140:
+ 08EA           L139:
+ 08EA           L137:
+ 08EA                   .dbline 512
+ 08EA           ;       
+ 08EA           ;       motion_busy = 0;
+ 08EA 2224              clr R2
+ 08EC 20920100          sts _motion_busy,R2
+ 08F0                   .dbline -2
+ 08F0           L135:
+ 08F0                   .dbline 0 ; func end
+ 08F0 2296              adiw R28,2
+ 08F2 4991              ld R20,y+
+ 08F4 0895              ret
+ 08F6                   .dbsym r stage 20 c
+ 08F6                   .dbend
+ 08F6                   .dbfunc e danceMove_KICK _danceMove_KICK fV
+ 08F6           ;          stage -> R20
+                        .even
+ 08F6           _danceMove_KICK::
+ 08F6 4A93              st -y,R20
+ 08F8                   .dbline -1
+ 08F8                   .dbline 516
+ 08F8           ; }
+ 08F8           ; 
+ 08F8           ; void danceMove_KICK(void)
+ 08F8           ; {
+ 08F8                   .dbline 517
+ 08F8           ;       unsigned char stage = getStage();
+ 08F8 83DB              xcall _getStage
+ 08FA 402F              mov R20,R16
+ 08FC                   .dbline 519
+ 08FC           ; 
+ 08FC           ;       motion_busy = 1;
+ 08FC 81E0              ldi R24,1
+ 08FE 80930100          sts _motion_busy,R24
+ 0902                   .dbline 521
+ 0902           ;       
+ 0902           ;       if (stage == 0)
+ 0902 0023              tst R16
+ 0904 41F4              brne L143
+ 0906           X56:
+ 0906                   .dbline 522
+ 0906           ;       {
+ 0906                   .dbline 523
+ 0906           ;               stand();
+ 0906 82DB              xcall _stand
+ 0908                   .dbline 524
+ 0908           ;               toggle = 0;
+ 0908 2224              clr R2
+ 090A 20920000          sts _toggle,R2
+ 090E                   .dbline 525
+ 090E           ;               setStage(stage + 1);
+ 090E 042F              mov R16,R20
+ 0910 0F5F              subi R16,255    ; addi 1
+ 0912 79DB              xcall _setStage
+ 0914                   .dbline 526
+ 0914           ;       }
+ 0914 33C0              xjmp L144
+ 0916           L143:
+ 0916                   .dbline 527
+ 0916           ;       else if (toggle == 0)
+ 0916 20900000          lds R2,_toggle
+ 091A 2220              tst R2
+ 091C A1F4              brne L145
+ 091E           X57:
+ 091E                   .dbline 528
+ 091E           ;       {
+ 091E                   .dbline 529
+ 091E           ;               toggle = 1;
+ 091E 81E0              ldi R24,1
+ 0920 80930000          sts _toggle,R24
+ 0924                   .dbline 531
+ 0924           ;               
+ 0924           ;               angle_1B(30);
+ 0924 0EE1              ldi R16,30
+ 0926 10E0              ldi R17,0
+ 0928 0E940000          xcall _angle_1B
+ 092C                   .dbline 532
+ 092C           ;               angle_6B(30);
+ 092C 0EE1              ldi R16,30
+ 092E 10E0              ldi R17,0
+ 0930 0E940000          xcall _angle_6B
+ 0934                   .dbline 533
+ 0934           ;               angle_1C(60);
+ 0934 0CE3              ldi R16,60
+ 0936 10E0              ldi R17,0
+ 0938 0E940000          xcall _angle_1C
+ 093C                   .dbline 534
+ 093C           ;               angle_6C(60);
+ 093C 0CE3              ldi R16,60
+ 093E 10E0              ldi R17,0
+ 0940 0E940000          xcall _angle_6C
+ 0944                   .dbline 536
+ 0944           ;               
+ 0944           ;       }
+ 0944 1BC0              xjmp L146
+ 0946           L145:
+ 0946                   .dbline 537
+ 0946           ;       else if (toggle == 1)
+ 0946 80910000          lds R24,_toggle
+ 094A 8130              cpi R24,1
+ 094C B9F4              brne L147
+ 094E           X58:
+ 094E                   .dbline 538
+ 094E           ;       {
+ 094E                   .dbline 539
+ 094E           ;               toggle = 0;
+ 094E 2224              clr R2
+ 0950 20920000          sts _toggle,R2
+ 0954                   .dbline 540
+ 0954           ;               angle_1B(STAND_B);
+ 0954 00910300          lds R16,_STAND_B
+ 0958 1127              clr R17
+ 095A 0E940000          xcall _angle_1B
+ 095E                   .dbline 541
+ 095E           ;               angle_6B(STAND_B);
+ 095E 00910300          lds R16,_STAND_B
+ 0962 1127              clr R17
+ 0964 0E940000          xcall _angle_6B
+ 0968                   .dbline 542
+ 0968           ;               angle_1C(STAND_C);
+ 0968 00910400          lds R16,_STAND_C
+ 096C 1127              clr R17
+ 096E 0E940000          xcall _angle_1C
+ 0972                   .dbline 543
+ 0972           ;               angle_6C(STAND_C);
+ 0972 00910400          lds R16,_STAND_C
+ 0976 1127              clr R17
+ 0978 0E940000          xcall _angle_6C
+ 097C                   .dbline 546
+ 097C           ;               
+ 097C           ; 
+ 097C           ;       }
+ 097C           L147:
+ 097C           L146:
+ 097C           L144:
+ 097C                   .dbline 548
+ 097C           ;       
+ 097C           ;       motion_busy = 0;
+ 097C 2224              clr R2
+ 097E 20920100          sts _motion_busy,R2
+ 0982                   .dbline -2
+ 0982           L142:
+ 0982                   .dbline 0 ; func end
+ 0982 4991              ld R20,y+
+ 0984 0895              ret
+ 0986                   .dbsym r stage 20 c
+ 0986                   .dbend
+ 0986                   .dbfunc e finale _finale fV
+ 0986           ;        angle_C -> R22
+ 0986           ;        angle_B -> R22
+ 0986           ;              i -> R20
+                        .even
+ 0986           _finale::
+ 0986 4A93              st -y,R20
+ 0988 6A93              st -y,R22
+ 098A                   .dbline -1
+ 098A                   .dbline 552
+ 098A           ; }
+ 098A           ; 
+ 098A           ; void finale(void)
+ 098A           ; {     unsigned char i = 0;
+ 098A                   .dbline 552
+ 098A                   .dbline 553
+ 098A           ;       unsigned char angle_B = 150;
+ 098A                   .dbline 554
+ 098A           ;       unsigned char angle_C = 120;
+ 098A 68E7              ldi R22,120
+ 098C                   .dbline 555
+ 098C           ;       motion_busy = 1;
+ 098C 81E0              ldi R24,1
+ 098E 80930100          sts _motion_busy,R24
+ 0992                   .dbline 557
+ 0992           ;       
+ 0992           ;       stand();
+ 0992 3CDB              xcall _stand
+ 0994                   .dbline 558
+ 0994           ;       delay_1s();
+ 0994 0E940000          xcall _delay_1s
+ 0998                   .dbline 561
+ 0998           ;       
+ 0998           ;       // back legs to the back
+ 0998           ;       angle_6B(30);
+ 0998 0EE1              ldi R16,30
+ 099A 10E0              ldi R17,0
+ 099C 0E940000          xcall _angle_6B
+ 09A0                   .dbline 562
+ 09A0           ;       angle_3B(30);
+ 09A0 0EE1              ldi R16,30
+ 09A2 10E0              ldi R17,0
+ 09A4 0E940000          xcall _angle_3B
+ 09A8                   .dbline 563
+ 09A8           ;       delay_250ms();
+ 09A8 0E940000          xcall _delay_250ms
+ 09AC                   .dbline 564
+ 09AC           ;       angle_6A(50);
+ 09AC 02E3              ldi R16,50
+ 09AE 10E0              ldi R17,0
+ 09B0 0E940000          xcall _angle_6A
+ 09B4                   .dbline 565
+ 09B4           ;       angle_3A(130);
+ 09B4 02E8              ldi R16,130
+ 09B6 10E0              ldi R17,0
+ 09B8 0E940000          xcall _angle_3A
+ 09BC                   .dbline 566
+ 09BC           ;       delay_250ms();
+ 09BC 0E940000          xcall _delay_250ms
+ 09C0                   .dbline 567
+ 09C0           ;       angle_6B(60);
+ 09C0 0CE3              ldi R16,60
+ 09C2 10E0              ldi R17,0
+ 09C4 0E940000          xcall _angle_6B
+ 09C8                   .dbline 568
+ 09C8           ;       angle_3B(60);
+ 09C8 0CE3              ldi R16,60
+ 09CA 10E0              ldi R17,0
+ 09CC 0E940000          xcall _angle_3B
+ 09D0                   .dbline 569
+ 09D0           ;       delay_250ms();
+ 09D0 0E940000          xcall _delay_250ms
+ 09D4                   .dbline 582
+ 09D4           ;       
+ 09D4           ;       // angle_2B(30);
+ 09D4           ;       // angle_5B(30);
+ 09D4           ;       // delay_250ms();
+ 09D4           ;       // angle_2A(30);
+ 09D4           ;       // angle_5A(150);
+ 09D4           ;       // delay_1s();
+ 09D4           ;       // angle_2B(60);
+ 09D4           ;       // angle_5B(60);
+ 09D4           ;       // delay_1s();
+ 09D4           ;               
+ 09D4           ; 
+ 09D4           ;       step_up();
+ 09D4 75DB              xcall _step_up
+ 09D6                   .dbline 583
+ 09D6           ;       delay_250ms();
+ 09D6 0E940000          xcall _delay_250ms
+ 09DA                   .dbline 584
+ 09DA           ;       angle_2A(30);
+ 09DA 0EE1              ldi R16,30
+ 09DC 10E0              ldi R17,0
+ 09DE 0E940000          xcall _angle_2A
+ 09E2                   .dbline 585
+ 09E2           ;       angle_5A(150);
+ 09E2 06E9              ldi R16,150
+ 09E4 10E0              ldi R17,0
+ 09E6 0E940000          xcall _angle_5A
+ 09EA                   .dbline 588
+ 09EA           ;       
+ 09EA           ;       
+ 09EA           ;       delay_250ms();
+ 09EA 0E940000          xcall _delay_250ms
+ 09EE                   .dbline 592
+ 09EE           ;       
+ 09EE           ;       
+ 09EE           ;       
+ 09EE           ;       angle_1B(0);
+ 09EE 0027              clr R16
+ 09F0 1127              clr R17
+ 09F2 0E940000          xcall _angle_1B
+ 09F6                   .dbline 593
+ 09F6           ;       angle_4B(0);
+ 09F6 0027              clr R16
+ 09F8 1127              clr R17
+ 09FA 0E940000          xcall _angle_4B
+ 09FE                   .dbline 594
+ 09FE           ;       angle_3C(0);
+ 09FE 0027              clr R16
+ 0A00 1127              clr R17
+ 0A02 0E940000          xcall _angle_3C
+ 0A06                   .dbline 595
+ 0A06           ;       angle_6C(0);
+ 0A06 0027              clr R16
+ 0A08 1127              clr R17
+ 0A0A 0E940000          xcall _angle_6C
+ 0A0E                   .dbline 597
+ 0A0E           ;       
+ 0A0E           ;       delay_250ms();
+ 0A0E 0E940000          xcall _delay_250ms
+ 0A12                   .dbline 599
+ 0A12           ;       
+ 0A12           ;       for (i=1;i<5;i++){
+ 0A12 41E0              ldi R20,1
+ 0A14 25C0              xjmp L153
+ 0A16           L150:
+ 0A16                   .dbline 599
+ 0A16                   .dbline 600
+ 0A16           ;       angle_1C(160);
+ 0A16 00EA              ldi R16,160
+ 0A18 10E0              ldi R17,0
+ 0A1A 0E940000          xcall _angle_1C
+ 0A1E                   .dbline 601
+ 0A1E           ;       angle_4C(160);
+ 0A1E 00EA              ldi R16,160
+ 0A20 10E0              ldi R17,0
+ 0A22 0E940000          xcall _angle_4C
+ 0A26                   .dbline 602
+ 0A26           ;       angle_2B(170);
+ 0A26 0AEA              ldi R16,170
+ 0A28 10E0              ldi R17,0
+ 0A2A 0E940000          xcall _angle_2B
+ 0A2E                   .dbline 603
+ 0A2E           ;       angle_5B(170);
+ 0A2E 0AEA              ldi R16,170
+ 0A30 10E0              ldi R17,0
+ 0A32 0E940000          xcall _angle_5B
+ 0A36                   .dbline 605
+ 0A36           ;       
+ 0A36           ;       delay_250ms();
+ 0A36 0E940000          xcall _delay_250ms
+ 0A3A                   .dbline 606
+ 0A3A           ;       angle_1C(120);
+ 0A3A 08E7              ldi R16,120
+ 0A3C 10E0              ldi R17,0
+ 0A3E 0E940000          xcall _angle_1C
+ 0A42                   .dbline 607
+ 0A42           ;       angle_4C(120);
+ 0A42 08E7              ldi R16,120
+ 0A44 10E0              ldi R17,0
+ 0A46 0E940000          xcall _angle_4C
+ 0A4A                   .dbline 608
+ 0A4A           ;       angle_2B(150);
+ 0A4A 06E9              ldi R16,150
+ 0A4C 10E0              ldi R17,0
+ 0A4E 0E940000          xcall _angle_2B
+ 0A52                   .dbline 609
+ 0A52           ;       angle_2B(150);
+ 0A52 06E9              ldi R16,150
+ 0A54 10E0              ldi R17,0
+ 0A56 0E940000          xcall _angle_2B
+ 0A5A                   .dbline 611
+ 0A5A           ;       
+ 0A5A           ;       delay_250ms();
+ 0A5A 0E940000          xcall _delay_250ms
+ 0A5E                   .dbline 613
+ 0A5E           ;       
+ 0A5E           ;       }
+ 0A5E           L151:
+ 0A5E                   .dbline 599
+ 0A5E 4395              inc R20
+ 0A60           L153:
+ 0A60                   .dbline 599
+ 0A60 4530              cpi R20,5
+ 0A62 C8F2              brlo L150
+ 0A64           X59:
+ 0A64                   .dbline 617
+ 0A64           ;       
+ 0A64           ; 
+ 0A64           ;       
+ 0A64           ;       motion_busy = 0;
+ 0A64 2224              clr R2
+ 0A66 20920100          sts _motion_busy,R2
+ 0A6A                   .dbline -2
+ 0A6A           L149:
+ 0A6A                   .dbline 0 ; func end
+ 0A6A 6991              ld R22,y+
+ 0A6C 4991              ld R20,y+
+ 0A6E 0895              ret
+ 0A70                   .dbsym r angle_C 22 c
+ 0A70                   .dbsym r angle_B 22 c
+ 0A70                   .dbsym r i 20 c
+ 0A70                   .dbend
+ 0A70                   .dbfunc e performDanceMove _performDanceMove fV
+ 0A70           ;         moveId -> R20
+                        .even
+ 0A70           _performDanceMove::
+ 0A70 4A93              st -y,R20
+ 0A72 402F              mov R20,R16
+ 0A74                   .dbline -1
+ 0A74                   .dbline 621
+ 0A74           ; }
+ 0A74           ; 
+ 0A74           ; void performDanceMove(unsigned char moveId)
+ 0A74           ; {
+ 0A74                   .dbline 622
+ 0A74           ;       if (moveId == 'a')
+ 0A74 4136              cpi R20,97
+ 0A76 11F4              brne L155
+ 0A78           X60:
+ 0A78                   .dbline 623
+ 0A78           ;       {
+ 0A78                   .dbline 624
+ 0A78           ;               danceMove_KICK();
+ 0A78 3EDF              xcall _danceMove_KICK
+ 0A7A                   .dbline 625
+ 0A7A           ;       }
+ 0A7A 19C0              xjmp L156
+ 0A7C           L155:
+ 0A7C                   .dbline 626
+ 0A7C           ;       else if (moveId == 'b')
+ 0A7C 4236              cpi R20,98
+ 0A7E 11F4              brne L157
+ 0A80           X61:
+ 0A80                   .dbline 627
+ 0A80           ;       {
+ 0A80                   .dbline 628
+ 0A80           ;               danceMove_KICK();
+ 0A80 3ADF              xcall _danceMove_KICK
+ 0A82                   .dbline 629
+ 0A82           ;       }
+ 0A82 15C0              xjmp L158
+ 0A84           L157:
+ 0A84                   .dbline 630
+ 0A84           ;       else if (moveId == 'c'){
+ 0A84 4336              cpi R20,99
+ 0A86 11F4              brne L159
+ 0A88           X62:
+ 0A88                   .dbline 630
+ 0A88                   .dbline 631
+ 0A88           ;               danceMove_ZHIGZHIG();
+ 0A88 FCDE              xcall _danceMove_ZHIGZHIG
+ 0A8A                   .dbline 632
+ 0A8A           ;       }
+ 0A8A 11C0              xjmp L160
+ 0A8C           L159:
+ 0A8C                   .dbline 633
+ 0A8C           ;       else if (moveId == 'd'){
+ 0A8C 4436              cpi R20,100
+ 0A8E 11F4              brne L161
+ 0A90           X63:
+ 0A90                   .dbline 633
+ 0A90                   .dbline 634
+ 0A90           ;               danceMove_circularRaise();
+ 0A90 23DE              xcall _danceMove_circularRaise
+ 0A92                   .dbline 635
+ 0A92           ;       }
+ 0A92 0DC0              xjmp L162
+ 0A94           L161:
+ 0A94                   .dbline 636
+ 0A94           ;       else if (moveId == 'e'){
+ 0A94 4536              cpi R20,101
+ 0A96 11F4              brne L163
+ 0A98           X64:
+ 0A98                   .dbline 636
+ 0A98                   .dbline 637
+ 0A98           ;               danceMove_HANDS_AIR();
+ 0A98 33DC              xcall _danceMove_HANDS_AIR
+ 0A9A                   .dbline 638
+ 0A9A           ;       }
+ 0A9A 09C0              xjmp L164
+ 0A9C           L163:
+ 0A9C                   .dbline 639
+ 0A9C           ;       else if (moveId == 'f'){
+ 0A9C 4636              cpi R20,102
+ 0A9E 11F4              brne L165
+ 0AA0           X65:
+ 0AA0                   .dbline 639
+ 0AA0                   .dbline 640
+ 0AA0           ;               danceMove_zhigzhigRise();
+ 0AA0 69DE              xcall _danceMove_zhigzhigRise
+ 0AA2                   .dbline 641
+ 0AA2           ;       }
+ 0AA2 05C0              xjmp L166
+ 0AA4           L165:
+ 0AA4                   .dbline 642
+ 0AA4           ;       else if (moveId == 'g') {
+ 0AA4 4736              cpi R20,103
+ 0AA6 19F4              brne L167
+ 0AA8           X66:
+ 0AA8                   .dbline 642
+ 0AA8                   .dbline 643
+ 0AA8           ;               danceMove_SlowTripod(time_temp);
+ 0AA8 00910000          lds R16,_time_temp
+ 0AAC ABDC              xcall _danceMove_SlowTripod
+ 0AAE                   .dbline 644
+ 0AAE           ;       }
+ 0AAE           L167:
+ 0AAE           L166:
+ 0AAE           L164:
+ 0AAE           L162:
+ 0AAE           L160:
+ 0AAE           L158:
+ 0AAE           L156:
+ 0AAE                   .dbline -2
+ 0AAE           L154:
+ 0AAE                   .dbline 0 ; func end
+ 0AAE 4991              ld R20,y+
+ 0AB0 0895              ret
+ 0AB2                   .dbsym r moveId 20 c
+ 0AB2                   .dbend
+ 0AB2                   .dbfunc e performDanceMoveTime _performDanceMoveTime fV
+ 0AB2           ;           time -> R10
+ 0AB2           ;         moveId -> R20
+                        .even
+ 0AB2           _performDanceMoveTime::
+ 0AB2 AA92              st -y,R10
+ 0AB4 4A93              st -y,R20
+ 0AB6 A22E              mov R10,R18
+ 0AB8 402F              mov R20,R16
+ 0ABA                   .dbline -1
+ 0ABA                   .dbline 649
+ 0ABA           ;       
+ 0ABA           ;        
+ 0ABA           ; }
+ 0ABA           ; 
+ 0ABA           ; void performDanceMoveTime(unsigned char moveId,unsigned char time){
+ 0ABA                   .dbline 650
+ 0ABA           ;  if (moveId == 'g'){
+ 0ABA 4736              cpi R20,103
+ 0ABC 21F4              brne L170
+ 0ABE           X67:
+ 0ABE                   .dbline 650
+ 0ABE                   .dbline 651
+ 0ABE           ;       time_temp = time;
+ 0ABE A0920000          sts _time_temp,R10
+ 0AC2                   .dbline 652
+ 0AC2           ;       danceMove_SlowTripod(time);
+ 0AC2 0A2D              mov R16,R10
+ 0AC4 9FDC              xcall _danceMove_SlowTripod
+ 0AC6                   .dbline 653
+ 0AC6           ;       }
+ 0AC6           L170:
+ 0AC6                   .dbline -2
+ 0AC6           L169:
+ 0AC6                   .dbline 0 ; func end
+ 0AC6 4991              ld R20,y+
+ 0AC8 A990              ld R10,y+
+ 0ACA 0895              ret
+ 0ACC                   .dbsym r time 10 c
+ 0ACC                   .dbsym r moveId 20 c
+ 0ACC                   .dbend
+ 0ACC                   .dbfunc e cancelMove _cancelMove fV
+                        .even
+ 0ACC           _cancelMove::
+ 0ACC                   .dbline -1
+ 0ACC                   .dbline 658
+ 0ACC           ; 
+ 0ACC           ; }
+ 0ACC           ; 
+ 0ACC           ; void cancelMove(void)
+ 0ACC           ; {
+ 0ACC                   .dbline 659
+ 0ACC           ;       stand();
+ 0ACC 9FDA              xcall _stand
+ 0ACE                   .dbline 660
+ 0ACE           ;       delay_250ms();
+ 0ACE 0E940000          xcall _delay_250ms
+ 0AD2                   .dbline 661
+ 0AD2           ;       setStage(0);
+ 0AD2 0027              clr R16
+ 0AD4                   .dbline -2
+ 0AD4           L172:
+ 0AD4                   .dbline 0 ; func end
+ 0AD4 98CA              xjmp _setStage
+ 0AD6                   .dbend
+                        .area bss(ram, con, rel)
+ 0000                   .dbfile C:\Users\dell\Dropbox\workspace\Hexapod_code_final\dance_moves.c
+ 0000           _time_temp::
+ 0000                   .blkb 1
+ 0001                   .dbsym e time_temp _time_temp c
+ 0001           ; }

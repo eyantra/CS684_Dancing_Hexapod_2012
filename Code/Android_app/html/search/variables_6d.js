@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['mac_5faddress',['MAC_ADDRESS',['../classcom_1_1iitb_1_1justdance_1_1BluetoothTest.html#a746d16cd9b498c423081a50af1512390',1,'com::iitb::justdance::BluetoothTest.MAC_ADDRESS()'],['../classcom_1_1iitb_1_1justdance_1_1CommunicationModule.html#a25b76840bb9131d7c378708aed1f3185',1,'com::iitb::justdance::CommunicationModule.MAC_ADDRESS()']]],
+  ['maxbeatfreq',['maxBeatFreq',['../classcom_1_1iitb_1_1beatdetector_1_1BeatDetector.html#ae27938094b71014ddcc112320206ed52',1,'com::iitb::beatdetector::BeatDetector']]],
+  ['mbeattogglebutton',['mBeatToggleButton',['../classcom_1_1iitb_1_1justdance_1_1MainActivity.html#a5265379de95f8816de611eaea6e40ad4',1,'com::iitb::justdance::MainActivity']]],
+  ['mbluetoothadapter',['mBluetoothAdapter',['../classcom_1_1iitb_1_1justdance_1_1BluetoothTest.html#a1d2b2048baf14b49493adf19bc391e63',1,'com::iitb::justdance::BluetoothTest.mBluetoothAdapter()'],['../classcom_1_1iitb_1_1justdance_1_1CommunicationModule.html#a8dc27754374d31429d855a7c4e33e935',1,'com::iitb::justdance::CommunicationModule.mBluetoothAdapter()']]],
+  ['mchoosefilebutton',['mChooseFileButton',['../classcom_1_1iitb_1_1justdance_1_1MainActivity.html#a1de493307ef2c6e68678146833885705',1,'com::iitb::justdance::MainActivity']]],
+  ['mconnect',['mConnect',['../classcom_1_1iitb_1_1justdance_1_1BluetoothTest.html#aacc8c0016fa657d2da7978c897937d15',1,'com::iitb::justdance::BluetoothTest.mConnect()'],['../classcom_1_1iitb_1_1justdance_1_1MainActivity.html#a733aaf03e29bc9538119ac51b00ad399',1,'com::iitb::justdance::MainActivity.mConnect()']]],
+  ['mdisconnect',['mDisconnect',['../classcom_1_1iitb_1_1justdance_1_1BluetoothTest.html#a504e8ec8b5bcfaf08c61076172a16610',1,'com::iitb::justdance::BluetoothTest.mDisconnect()'],['../classcom_1_1iitb_1_1justdance_1_1MainActivity.html#a4f942d91f23e305935af4443095f2c54',1,'com::iitb::justdance::MainActivity.mDisconnect()']]],
+  ['minputfiletext',['mInputFileText',['../classcom_1_1iitb_1_1justdance_1_1MainActivity.html#a498a9601ee15fff04a01d329be92bf5c',1,'com::iitb::justdance::MainActivity']]],
+  ['minputtext',['mInputText',['../classcom_1_1iitb_1_1justdance_1_1BluetoothTest.html#a641636c15aa53fda038add7a27525531',1,'com::iitb::justdance::BluetoothTest']]],
+  ['minsteptime',['minStepTime',['../classcom_1_1iitb_1_1justdance_1_1DanceMove.html#ade0f2e7d5ea7b93623b401c68ed3f14a',1,'com::iitb::justdance::DanceMove']]],
+  ['mminputstream',['mmInputStream',['../classcom_1_1iitb_1_1justdance_1_1BluetoothTest.html#a71a8df5148c34b1071bae8a44b58a6a3',1,'com::iitb::justdance::BluetoothTest.mmInputStream()'],['../classcom_1_1iitb_1_1justdance_1_1CommunicationModule.html#aabd4613df23cabaf7b45a222fc8c0460',1,'com::iitb::justdance::CommunicationModule.mmInputStream()']]],
+  ['mmoutputstream',['mmOutputStream',['../classcom_1_1iitb_1_1justdance_1_1BluetoothTest.html#a4240c275d675ade93e8c4521156f1861',1,'com::iitb::justdance::BluetoothTest.mmOutputStream()'],['../classcom_1_1iitb_1_1justdance_1_1CommunicationModule.html#ac56321e5caf27de90fa5806e006e4f8b',1,'com::iitb::justdance::CommunicationModule.mmOutputStream()']]],
+  ['mmsocket',['mmSocket',['../classcom_1_1iitb_1_1justdance_1_1BluetoothTest.html#aed55e398a5a4a0d3b46578413e60226e',1,'com::iitb::justdance::BluetoothTest.mmSocket()'],['../classcom_1_1iitb_1_1justdance_1_1CommunicationModule.html#ae2f41d019f649dc35d8925e59e5d51fd',1,'com::iitb::justdance::CommunicationModule.mmSocket()']]],
+  ['moveid',['moveId',['../classcom_1_1iitb_1_1justdance_1_1DanceMove.html#a6fdeb71b3b61f7dfc40725e4cbffcace',1,'com::iitb::justdance::DanceMove']]],
+  ['movetype',['moveType',['../classcom_1_1iitb_1_1justdance_1_1DanceMove.html#a2798c04c22c4038134825afbe5c28da1',1,'com::iitb::justdance::DanceMove']]],
+  ['mplaypausebutton',['mPlayPauseButton',['../classcom_1_1iitb_1_1justdance_1_1MainActivity.html#aa6613b99f8965a17c346fbd3a141c7c9',1,'com::iitb::justdance::MainActivity']]],
+  ['msend',['mSend',['../classcom_1_1iitb_1_1justdance_1_1BluetoothTest.html#a45235b3cb496f2dd5131077bb0c9e0b1',1,'com::iitb::justdance::BluetoothTest']]],
+  ['mspinnerfilechooser',['mSpinnerFileChooser',['../classcom_1_1iitb_1_1justdance_1_1MainActivity.html#af27bd27b0ce02c356a30b3d57e3dd560',1,'com::iitb::justdance::MainActivity']]],
+  ['mspinnermovechooser',['mSpinnerMoveChooser',['../classcom_1_1iitb_1_1justdance_1_1MainActivity.html#a654788892c64c4ca1fdbedb62bb8d9f8',1,'com::iitb::justdance::MainActivity']]],
+  ['mstartbutton',['mStartButton',['../classcom_1_1iitb_1_1justdance_1_1MainActivity.html#aeb07b6ed82026882c197f256ec492cc0',1,'com::iitb::justdance::MainActivity']]],
+  ['mstatustext',['mStatusText',['../classcom_1_1iitb_1_1justdance_1_1BluetoothTest.html#a90e2d9e82f6b05ca776b02dd90d1cd62',1,'com::iitb::justdance::BluetoothTest.mStatusText()'],['../classcom_1_1iitb_1_1justdance_1_1MainActivity.html#a317a7ddaa0c1b502a7916de9105b515b',1,'com::iitb::justdance::MainActivity.mStatusText()']]]
+];

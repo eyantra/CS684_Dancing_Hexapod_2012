@@ -1,0 +1,191 @@
+                        .module globals.c
+                        .area text(rom, con, rel)
+ 0000                   .dbfile globals.c
+                        .area data(ram, con, rel)
+ 0000                   .dbfile globals.c
+ 0000           _arm_number::
+ 0000                   .blkb 1
+                        .area idata
+ 0000 00                .byte 0
+                        .area data(ram, con, rel)
+ 0001                   .dbfile globals.c
+ 0001                   .dbfile C:\Users\dell\Desktop\Hexapod_code_ver_7_motion_demo_ICC_AVR\globals.c
+ 0001                   .dbsym e arm_number _arm_number c
+ 0001           _angle_upper_byte::
+ 0001                   .blkb 1
+                        .area idata
+ 0001 00                .byte 0
+                        .area data(ram, con, rel)
+ 0002                   .dbfile C:\Users\dell\Desktop\Hexapod_code_ver_7_motion_demo_ICC_AVR\globals.c
+ 0002                   .dbsym e angle_upper_byte _angle_upper_byte c
+ 0002           _angle_lower_byte::
+ 0002                   .blkb 1
+                        .area idata
+ 0002 00                .byte 0
+                        .area data(ram, con, rel)
+ 0003                   .dbfile C:\Users\dell\Desktop\Hexapod_code_ver_7_motion_demo_ICC_AVR\globals.c
+ 0003                   .dbsym e angle_lower_byte _angle_lower_byte c
+ 0003           _degree::
+ 0003                   .blkb 1
+                        .area idata
+ 0003 00                .byte 0
+                        .area data(ram, con, rel)
+ 0004                   .dbfile C:\Users\dell\Desktop\Hexapod_code_ver_7_motion_demo_ICC_AVR\globals.c
+ 0004                   .dbsym e degree _degree c
+ 0004           _delay_count::
+ 0004                   .blkb 2
+                        .area idata
+ 0004 0000              .word 0
+                        .area data(ram, con, rel)
+ 0006                   .dbfile C:\Users\dell\Desktop\Hexapod_code_ver_7_motion_demo_ICC_AVR\globals.c
+ 0006                   .dbsym e delay_count _delay_count i
+ 0006           _serial_communication_interval::
+ 0006                   .blkb 2
+                        .area idata
+ 0006 0000              .word 0
+                        .area data(ram, con, rel)
+ 0008                   .dbfile C:\Users\dell\Desktop\Hexapod_code_ver_7_motion_demo_ICC_AVR\globals.c
+ 0008                   .dbsym e serial_communication_interval _serial_communication_interval i
+ 0008           _serial_communication_channel_number::
+ 0008                   .blkb 1
+                        .area idata
+ 0008 00                .byte 0
+                        .area data(ram, con, rel)
+ 0009                   .dbfile C:\Users\dell\Desktop\Hexapod_code_ver_7_motion_demo_ICC_AVR\globals.c
+ 0009                   .dbsym e serial_communication_channel_number _serial_communication_channel_number c
+ 0009           _motion_busy::
+ 0009                   .blkb 1
+                        .area idata
+ 0009 00                .byte 0
+                        .area data(ram, con, rel)
+ 000A                   .dbfile C:\Users\dell\Desktop\Hexapod_code_ver_7_motion_demo_ICC_AVR\globals.c
+ 000A                   .dbsym e motion_busy _motion_busy c
+                        .area bss(ram, con, rel)
+ 0000                   .dbfile C:\Users\dell\Desktop\Hexapod_code_ver_7_motion_demo_ICC_AVR\globals.c
+ 0000           _remote_data::
+ 0000                   .blkb 8
+ 0008                   .dbsym e remote_data _remote_data A[8:8]c
+ 0008           _angle_lower_byte_6C::
+ 0008                   .blkb 2
+ 000A                   .dbsym e angle_lower_byte_6C _angle_lower_byte_6C I
+ 000A           _angle_upper_byte_6C::
+ 000A                   .blkb 2
+ 000C                   .dbsym e angle_upper_byte_6C _angle_upper_byte_6C I
+ 000C           _angle_lower_byte_6B::
+ 000C                   .blkb 2
+ 000E                   .dbsym e angle_lower_byte_6B _angle_lower_byte_6B I
+ 000E           _angle_upper_byte_6B::
+ 000E                   .blkb 2
+ 0010                   .dbsym e angle_upper_byte_6B _angle_upper_byte_6B I
+ 0010           _angle_lower_byte_6A::
+ 0010                   .blkb 1
+ 0011                   .dbsym e angle_lower_byte_6A _angle_lower_byte_6A c
+ 0011           _angle_upper_byte_6A::
+ 0011                   .blkb 1
+ 0012                   .dbsym e angle_upper_byte_6A _angle_upper_byte_6A c
+ 0012           _angle_lower_byte_5C::
+ 0012                   .blkb 2
+ 0014                   .dbsym e angle_lower_byte_5C _angle_lower_byte_5C I
+ 0014           _angle_upper_byte_5C::
+ 0014                   .blkb 2
+ 0016                   .dbsym e angle_upper_byte_5C _angle_upper_byte_5C I
+ 0016           _angle_lower_byte_5B::
+ 0016                   .blkb 2
+ 0018                   .dbsym e angle_lower_byte_5B _angle_lower_byte_5B I
+ 0018           _angle_upper_byte_5B::
+ 0018                   .blkb 2
+ 001A                   .dbsym e angle_upper_byte_5B _angle_upper_byte_5B I
+ 001A           _angle_lower_byte_5A::
+ 001A                   .blkb 1
+ 001B                   .dbsym e angle_lower_byte_5A _angle_lower_byte_5A c
+ 001B           _angle_upper_byte_5A::
+ 001B                   .blkb 1
+ 001C                   .dbsym e angle_upper_byte_5A _angle_upper_byte_5A c
+ 001C           _angle_lower_byte_4C::
+ 001C                   .blkb 2
+ 001E                   .dbsym e angle_lower_byte_4C _angle_lower_byte_4C I
+ 001E           _angle_upper_byte_4C::
+ 001E                   .blkb 2
+ 0020                   .dbsym e angle_upper_byte_4C _angle_upper_byte_4C I
+ 0020           _angle_lower_byte_4B::
+ 0020                   .blkb 2
+ 0022                   .dbsym e angle_lower_byte_4B _angle_lower_byte_4B I
+ 0022           _angle_upper_byte_4B::
+ 0022                   .blkb 2
+ 0024                   .dbsym e angle_upper_byte_4B _angle_upper_byte_4B I
+ 0024           _angle_lower_byte_4A::
+ 0024                   .blkb 1
+ 0025                   .dbsym e angle_lower_byte_4A _angle_lower_byte_4A c
+ 0025           _angle_upper_byte_4A::
+ 0025                   .blkb 1
+ 0026                   .dbsym e angle_upper_byte_4A _angle_upper_byte_4A c
+ 0026           _angle_lower_byte_3C::
+ 0026                   .blkb 2
+ 0028                   .dbsym e angle_lower_byte_3C _angle_lower_byte_3C I
+ 0028           _angle_upper_byte_3C::
+ 0028                   .blkb 2
+ 002A                   .dbsym e angle_upper_byte_3C _angle_upper_byte_3C I
+ 002A           _angle_lower_byte_3B::
+ 002A                   .blkb 2
+ 002C                   .dbsym e angle_lower_byte_3B _angle_lower_byte_3B I
+ 002C           _angle_upper_byte_3B::
+ 002C                   .blkb 2
+ 002E                   .dbsym e angle_upper_byte_3B _angle_upper_byte_3B I
+ 002E           _angle_lower_byte_3A::
+ 002E                   .blkb 1
+ 002F                   .dbsym e angle_lower_byte_3A _angle_lower_byte_3A c
+ 002F           _angle_upper_byte_3A::
+ 002F                   .blkb 1
+ 0030                   .dbsym e angle_upper_byte_3A _angle_upper_byte_3A c
+ 0030           _angle_lower_byte_2C::
+ 0030                   .blkb 2
+ 0032                   .dbsym e angle_lower_byte_2C _angle_lower_byte_2C I
+ 0032           _angle_upper_byte_2C::
+ 0032                   .blkb 2
+ 0034                   .dbsym e angle_upper_byte_2C _angle_upper_byte_2C I
+ 0034           _angle_lower_byte_2B::
+ 0034                   .blkb 2
+ 0036                   .dbsym e angle_lower_byte_2B _angle_lower_byte_2B I
+ 0036           _angle_upper_byte_2B::
+ 0036                   .blkb 2
+ 0038                   .dbsym e angle_upper_byte_2B _angle_upper_byte_2B I
+ 0038           _angle_lower_byte_2A::
+ 0038                   .blkb 1
+ 0039                   .dbsym e angle_lower_byte_2A _angle_lower_byte_2A c
+ 0039           _angle_upper_byte_2A::
+ 0039                   .blkb 1
+ 003A                   .dbsym e angle_upper_byte_2A _angle_upper_byte_2A c
+ 003A           _angle_lower_byte_1C::
+ 003A                   .blkb 2
+ 003C                   .dbsym e angle_lower_byte_1C _angle_lower_byte_1C I
+ 003C           _angle_upper_byte_1C::
+ 003C                   .blkb 2
+ 003E                   .dbsym e angle_upper_byte_1C _angle_upper_byte_1C I
+ 003E           _angle_lower_byte_1B::
+ 003E                   .blkb 2
+ 0040                   .dbsym e angle_lower_byte_1B _angle_lower_byte_1B I
+ 0040           _angle_upper_byte_1B::
+ 0040                   .blkb 2
+ 0042                   .dbsym e angle_upper_byte_1B _angle_upper_byte_1B I
+ 0042           _angle_lower_byte_1A::
+ 0042                   .blkb 1
+ 0043                   .dbsym e angle_lower_byte_1A _angle_lower_byte_1A c
+ 0043           _angle_upper_byte_1A::
+ 0043                   .blkb 1
+ 0044                   .dbsym e angle_upper_byte_1A _angle_upper_byte_1A c
+ 0044           ; unsigned char arm_number = 0;
+ 0044           ; unsigned char angle_upper_byte = 0; 
+ 0044           ; unsigned char angle_lower_byte = 0;
+ 0044           ; unsigned char degree = 0;
+ 0044           ; unsigned char angle_upper_byte_1A, angle_lower_byte_1A; angle_upper_byte_1B, angle_lower_byte_1B; angle_upper_byte_1C, angle_lower_byte_1C;
+ 0044           ; unsigned char angle_upper_byte_2A, angle_lower_byte_2A; angle_upper_byte_2B, angle_lower_byte_2B; angle_upper_byte_2C, angle_lower_byte_2C;
+ 0044           ; unsigned char angle_upper_byte_3A, angle_lower_byte_3A; angle_upper_byte_3B, angle_lower_byte_3B; angle_upper_byte_3C, angle_lower_byte_3C;
+ 0044           ; unsigned char angle_upper_byte_4A, angle_lower_byte_4A; angle_upper_byte_4B, angle_lower_byte_4B; angle_upper_byte_4C, angle_lower_byte_4C;
+ 0044           ; unsigned char angle_upper_byte_5A, angle_lower_byte_5A; angle_upper_byte_5B, angle_lower_byte_5B; angle_upper_byte_5C, angle_lower_byte_5C;
+ 0044           ; unsigned char angle_upper_byte_6A, angle_lower_byte_6A; angle_upper_byte_6B, angle_lower_byte_6B; angle_upper_byte_6C, angle_lower_byte_6C;
+ 0044           ; unsigned int delay_count = 0;
+ 0044           ; //variables relatd to the serial commuication or remote control
+ 0044           ; unsigned int serial_communication_interval = 0;
+ 0044           ; unsigned char serial_communication_channel_number  = 0;
+ 0044           ; unsigned char remote_data [8]; //see remote channel allocation in the notes above
+ 0044           ; unsigned char motion_busy = 0; //sets to one if any of the motion function is called.

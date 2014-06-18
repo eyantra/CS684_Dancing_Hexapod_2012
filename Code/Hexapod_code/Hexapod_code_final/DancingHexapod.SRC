@@ -1,0 +1,13 @@
+[Files]
+main.c
+dance_moves.c
+[Headers]
+communication.h
+dance_moves.h
+globalFunctions.h
+globals.h
+helpers.h
+hexapod_motion.h
+init.h
+lcd.h
+[Documents]

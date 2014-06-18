@@ -1,0 +1,31 @@
+<resources>
+
+    <string name="app_name">JustDance</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">JustDance</string>
+    <string name="chooseFile">Choose Song</string>
+    <string name="labelInputFile">Currently Selected File:</string>
+    <string name="NoInput">No file chosen</string>
+    <string name="playPause">Play/Pause</string>
+    <string name="start">Start</string>
+    <string name="beat">Beat</string>
+    <string name="bluetooth">Test Bluetooth</string>
+    
+    <string name="title_activity_bluetooth_test">BluetoothTest</string>
+	<string name="connect">Connect</string>
+    <string name="hintCharacter">Enter string to send</string>
+    <string name="send">Send</string>
+    <string name="disconnect">Disconnect</string>
+    <string-array name="moves">
+        <item>Kick_Beat</item>
+        <item>Kick_Period</item>
+        <item>ZigZag</item>
+        <item>Leg Raise</item>
+        <item>Hands Air</item>
+        <item>Slow Move</item>
+        <item>ZigZag Rise + Finale</item>
+        
+    </string-array>
+    
+</resources>
